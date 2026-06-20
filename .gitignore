@@ -30,6 +30,9 @@ yarn-error.log
 .history/*
 
 # Miscellaneous
+/.env
+/.env.local
+/projects/playground/server/chat-store.json
 /.angular/cache
 .sass-cache/
 /connect.lock

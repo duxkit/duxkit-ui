@@ -1,8 +1,15 @@
-/* To learn more about Typescript configuration file: https://www.typescriptlang.org/docs/handbook/tsconfig-json.html. */
-/* To learn more about Angular compiler options: https://angular.dev/reference/configs/angular-compiler-options. */
 {
   "compileOnSave": false,
   "compilerOptions": {
+    "paths": {
+      "ai-sdk-angular": ["./dist/ai-sdk-angular"],
+      "ai-sdk-angular/helm/button": ["./projects/ai-sdk-angular/helm/button/src/index.ts"],
+      "ai-sdk-angular/helm/utils": ["./projects/ai-sdk-angular/helm/utils/src/index.ts"],
+      "ai-sdk-angular/helm/textarea": ["./projects/ai-sdk-angular/helm/textarea/src/index.ts"],
+      "ai-sdk-angular/helm/avatar": ["./projects/ai-sdk-angular/helm/avatar/src/index.ts"],
+      "ai-sdk-angular/helm/tooltip": ["./projects/ai-sdk-angular/helm/tooltip/src/index.ts"],
+      "ai-sdk-angular/helm/input": ["./projects/ai-sdk-angular/helm/input/src/index.ts"]
+    },
     "noImplicitOverride": true,
     "noPropertyAccessFromIndexSignature": true,
     "noImplicitReturns": true,
@@ -19,5 +26,19 @@
     "strictInjectionParameters": true,
     "strictInputAccessModifiers": true
   },
-  "files": []
+  "files": [],
+  "references": [
+    {
+      "path": "./projects/ai-sdk-angular/tsconfig.lib.json"
+    },
+    {
+      "path": "./projects/ai-sdk-angular/tsconfig.spec.json"
+    },
+    {
+      "path": "./projects/playground/tsconfig.app.json"
+    },
+    {
+      "path": "./projects/playground/tsconfig.spec.json"
+    }
+  ]
 }

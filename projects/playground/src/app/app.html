@@ -1,0 +1,62 @@
+<main class="playground-shell">
+  <section class="chat-panel" aria-label="AI chat playground">
+    <header class="chat-header">
+      <div>
+        <p class="eyebrow">Ollama playground</p>
+        <h1>Angular AI SDK Kit</h1>
+      </div>
+
+      <span class="status" [class.status-busy]="chat.status !== 'ready'">
+        {{ chat.status }}
+      </span>
+    </header>
+
+    <ai-conversation>
+      <ai-conversation-content class="message-list" aria-live="polite">
+        @if (chat.messages.length === 0) {
+          <p class="empty-state">
+            Send a prompt to test local streaming through the Angular AI SDK adapter.
+          </p>
+        }
+
+        @for (message of chat.messages; track message.id) {
+          <ai-message [from]="message.role">
+            @for (part of message.parts; track $index) {
+              @if (part.type === 'text' && part.text.trim().length > 0) {
+                <ai-message-content>
+                  {{ part.text }}
+                </ai-message-content>
+              }
+            }
+          </ai-message>
+        }
+
+        <div aiConversationScrollAnchor></div>
+      </ai-conversation-content>
+    </ai-conversation>
+
+    @if (chat.error) {
+      <p class="error" role="alert">
+        The local model request failed. Check that Ollama is running and the model is pulled.
+      </p>
+    }
+
+    <form class="composer" (submit)="sendMessage(); $event.preventDefault()">
+      <label class="sr-only" for="prompt">Message</label>
+      <textarea
+        id="prompt"
+        rows="3"
+        [value]="prompt()"
+        (input)="updatePrompt($event)"
+        [disabled]="chat.status !== 'ready'"
+        placeholder="Ask your local model something..."
+      ></textarea>
+
+      @if (chat.status === 'ready') {
+        <button type="submit" [disabled]="!canSubmit()">Send</button>
+      } @else {
+        <button type="button" (click)="chat.stop()">Stop</button>
+      }
+    </form>
+  </section>
+</main>

@@ -1,0 +1,6 @@
+{
+  "componentsPath": "projects/ai-sdk-angular/helm",
+  "buildable": false,
+  "generateAs": "library",
+  "importAlias": "ai-sdk-angular/helm"
+}

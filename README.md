@@ -1,59 +1,146 @@
-# AngularAiSdkKit
+# Angular AI SDK Kit
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 22.0.2.
+Angular AI UI primitives built on the Vercel AI SDK and Spartan UI.
 
-## Development server
+This package is set up as a normal Angular library with Spartan Helm generated as package secondary entrypoints. The first component work should build on these generated Helm exports instead of copying ad-hoc button/input/avatar code into each AI component.
 
-To start a local development server, run:
+## Stack
 
-```bash
-ng serve
-```
+- Angular 22
+- `@ai-sdk/angular` and `ai`
+- Spartan `@spartan-ng/brain`
+- Spartan Helm generated entrypoints
+- Tailwind CSS v4
+- `@tailwindcss/postcss`
+- Vitest through the Angular test builder
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+## Node
 
-## Code scaffolding
-
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
-
-```bash
-ng generate component component-name
-```
-
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+Use the pinned Node version before running Angular or Spartan commands:
 
 ```bash
-ng generate --help
+nvm use
 ```
 
-## Building
-
-To build the project run:
+If the host shell overrides `node`, use:
 
 ```bash
-ng build
+unset npm_config_prefix
+source ~/.nvm/nvm.sh
+export PATH="$(dirname $(nvm which 24.15.0)):$PATH"
 ```
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
+## Library Entrypoints
 
-## Running unit tests
+Primary package:
 
-To execute unit tests with the [Vitest](https://vitest.dev/) test runner, use the following command:
+```ts
+import { AiChatStatus, AiMessage, AiMessagePart } from 'ai-sdk-angular';
+```
+
+Generated Spartan Helm entrypoints:
+
+```ts
+import { HlmButton } from 'ai-sdk-angular/helm/button';
+import { HlmInput } from 'ai-sdk-angular/helm/input';
+import { HlmTextarea } from 'ai-sdk-angular/helm/textarea';
+import { HlmAvatar } from 'ai-sdk-angular/helm/avatar';
+import { HlmTooltip } from 'ai-sdk-angular/helm/tooltip';
+import { provideSpartanHlm } from 'ai-sdk-angular/helm/utils';
+```
+
+## Spartan Setup
+
+The playground is initialized with the Spartan Tailwind preset and zinc theme in:
+
+```text
+projects/playground/src/styles.scss
+```
+
+Consumers of the package need Tailwind CSS v4, the Tailwind PostCSS plugin, and the Spartan preset. Angular's Tailwind setup expects a PostCSS config for Tailwind v4:
+
+```json
+{
+  "plugins": {
+    "@tailwindcss/postcss": {}
+  }
+}
+```
+
+The app stylesheet should include Tailwind layers and the Spartan preset:
+
+```scss
+@layer theme, base, components, utilities;
+@import 'tailwindcss/theme.css' layer(theme);
+@import 'tailwindcss/preflight.css' layer(base);
+@import 'tailwindcss/utilities.css';
+@import '@spartan-ng/brain/hlm-tailwind-preset.css';
+```
+
+The Spartan preset already imports `tw-animate-css` and the Angular CDK overlay stylesheet.
+
+## Generate More Helm Components
+
+The Spartan CLI is configured by `components.json` to generate Helm entrypoints under:
+
+```text
+projects/ai-sdk-angular/helm
+```
+
+Generate only the primitives the AI components actually need:
 
 ```bash
-ng test
+pnpm exec ng g @spartan-ng/cli:ui button --interactive=false
+pnpm exec ng g @spartan-ng/cli:ui input --interactive=false
+pnpm exec ng g @spartan-ng/cli:ui textarea --interactive=false
+pnpm exec ng g @spartan-ng/cli:ui avatar --interactive=false
+pnpm exec ng g @spartan-ng/cli:ui tooltip --interactive=false
 ```
 
-## Running end-to-end tests
+If the generated primitive should be published, add an `ng-package.json` beside it with:
 
-For end-to-end (e2e) testing, run:
+```json
+{
+  "lib": {
+    "entryFile": "src/index.ts"
+  }
+}
+```
+
+## Commands
 
 ```bash
-ng e2e
+pnpm build:lib
+pnpm build:playground
+pnpm test:ci
 ```
 
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
+`pnpm build:lib` should emit the primary package plus the Helm secondary entrypoints under `dist/ai-sdk-angular`.
 
-## Additional Resources
+## Playground With Ollama
 
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+The playground uses a local Express API so provider calls stay out of the Angular browser bundle. By default it targets Ollama's OpenAI-compatible endpoint:
+
+```text
+http://127.0.0.1:11434/v1
+```
+
+Install and start Ollama, then pull a model:
+
+```bash
+ollama pull qwen3:4b
+```
+
+Run the Angular app and playground API together:
+
+```bash
+pnpm start:playground
+```
+
+Override the local model with environment variables:
+
+```bash
+OLLAMA_MODEL=llama3.2 pnpm start:playground
+```
+
+The Angular app calls `/api/chat`; `projects/playground/proxy.conf.json` forwards that to the Express server on port `8787`.

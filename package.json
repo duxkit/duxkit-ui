@@ -4,26 +4,53 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
+    "start:playground": "pnpm build:lib && concurrently -k -n api,ng -c cyan,green \"pnpm run server:playground\" \"ng serve playground\"",
+    "server:playground": "node projects/playground/server/server.mjs",
     "build": "ng build",
-    "watch": "ng build --watch --configuration development",
-    "test": "ng test"
+    "build:lib": "ng build ai-sdk-angular",
+    "build:playground": "pnpm build:lib && CI=1 ng build playground --progress=false",
+    "watch": "ng build ai-sdk-angular --watch --configuration development",
+    "test": "ng test",
+    "test:ci": "CI=1 ng test --watch=false"
   },
   "private": true,
-  "packageManager": "npm@11.11.0",
+  "packageManager": "pnpm@10.32.1",
+  "engines": {
+    "node": ">=24.15.0 <25 || >=22.22.3 <23 || >=26.0.0"
+  },
   "dependencies": {
+    "@ai-sdk/angular": "^2.0.208",
+    "@ai-sdk/openai-compatible": "^2.0.51",
+    "@angular/cdk": "^22.0.2",
     "@angular/common": "^22.0.0",
     "@angular/compiler": "^22.0.0",
     "@angular/core": "^22.0.0",
     "@angular/forms": "^22.0.0",
     "@angular/platform-browser": "^22.0.0",
     "@angular/router": "^22.0.0",
+    "@spartan-ng/brain": "0.0.1-alpha.718",
+    "ai": "^6.0.207",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1",
     "rxjs": "~7.8.0",
-    "tslib": "^2.3.0"
+    "tailwind-merge": "^3.6.0",
+    "tslib": "^2.3.0",
+    "tw-animate-css": "^1.4.0"
   },
   "devDependencies": {
+    "@angular/build": "^22.0.2",
     "@angular/cli": "^22.0.2",
     "@angular/compiler-cli": "^22.0.0",
+    "@spartan-ng/cli": "0.0.1-alpha.718",
+    "@tailwindcss/postcss": "^4.3.1",
+    "concurrently": "^10.0.3",
+    "jsdom": "^28.0.0",
+    "ng-packagr": "^22.0.0",
     "prettier": "^3.8.1",
-    "typescript": "~6.0.2"
+    "tailwindcss": "^4.3.1",
+    "typescript": "~6.0.2",
+    "vitest": "^4.0.8"
   }
 }
