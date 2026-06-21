@@ -8,7 +8,8 @@
       "ai-sdk-angular/helm/textarea": ["./projects/ai-sdk-angular/helm/textarea/src/index.ts"],
       "ai-sdk-angular/helm/avatar": ["./projects/ai-sdk-angular/helm/avatar/src/index.ts"],
       "ai-sdk-angular/helm/tooltip": ["./projects/ai-sdk-angular/helm/tooltip/src/index.ts"],
-      "ai-sdk-angular/helm/input": ["./projects/ai-sdk-angular/helm/input/src/index.ts"]
+      "ai-sdk-angular/helm/input": ["./projects/ai-sdk-angular/helm/input/src/index.ts"],
+      "ai-sdk-angular/helm/icon": ["./projects/ai-sdk-angular/helm/icon/src/index.ts"]
     },
     "noImplicitOverride": true,
     "noPropertyAccessFromIndexSignature": true,

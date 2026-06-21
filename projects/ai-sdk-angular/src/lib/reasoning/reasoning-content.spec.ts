@@ -1,0 +1,105 @@
+import { Component, signal, viewChild } from '@angular/core';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+
+import { Reasoning } from './reasoning';
+import { ReasoningContent } from './reasoning-content';
+
+@Component({
+  imports: [Reasoning, ReasoningContent],
+  template: `
+    <ai-reasoning [isStreaming]="isStreaming()">
+      <ai-reasoning-content class="custom-content">Reasoning text</ai-reasoning-content>
+    </ai-reasoning>
+  `,
+})
+class Host {
+  readonly isStreaming = signal(true);
+  readonly content = viewChild.required(ReasoningContent);
+}
+
+@Component({
+  imports: [Reasoning, ReasoningContent],
+  template: `
+    <ai-reasoning [isStreaming]="true">
+      <ai-reasoning-content [markdown]="markdown()" />
+    </ai-reasoning>
+  `,
+})
+class MarkdownHost {
+  readonly markdown = signal(
+    [
+      '**Reasoning**',
+      '',
+      '| Step | Status |',
+      '| --- | --- |',
+      '| Parse | Done |',
+      '',
+      '```json',
+      '{ "status": "ok" }',
+      '```',
+      '',
+      '<script>alert("x")</script><img src="x" onerror="alert(1)">',
+    ].join('\n'),
+  );
+}
+
+describe('ReasoningContent', () => {
+  let fixture: ComponentFixture<Host>;
+
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
+      imports: [Host],
+    }).compileComponents();
+
+    fixture = TestBed.createComponent(Host);
+    fixture.detectChanges();
+    await fixture.whenStable();
+  });
+
+  it('matches element usage and preserves projected content', () => {
+    const element = fixture.nativeElement as HTMLElement;
+    const content = element.querySelector('ai-reasoning-content');
+
+    expect(fixture.componentInstance.content()).toBeTruthy();
+    expect(content?.textContent).toContain('Reasoning text');
+  });
+
+  it('applies default content classes and preserves consumer classes', () => {
+    const element = fixture.nativeElement as HTMLElement;
+    const content = element.querySelector('ai-reasoning-content');
+
+    expect(content?.classList).toContain('mt-4');
+    expect(content?.classList).toContain('text-sm');
+    expect(content?.classList).toContain('text-muted-foreground');
+    expect(content?.classList).toContain('data-[state=closed]:hidden');
+    expect(content?.classList).toContain('custom-content');
+  });
+
+  it('renders markdown when the markdown input is provided', async () => {
+    await TestBed.resetTestingModule()
+      .configureTestingModule({
+        imports: [MarkdownHost],
+      })
+      .compileComponents();
+
+    const markdownFixture = TestBed.createComponent(MarkdownHost);
+    markdownFixture.detectChanges();
+    await markdownFixture.whenStable();
+
+    const element = markdownFixture.nativeElement as HTMLElement;
+    const markdown = element.querySelector('ai-reasoning-content > div');
+    const strong = element.querySelector('strong');
+    const script = element.querySelector('script');
+    const image = element.querySelector('img');
+
+    expect(markdown?.classList).toContain('ai-markdown');
+    expect(markdown?.classList).toContain('ai-markdown-reasoning');
+    expect(strong?.textContent).toBe('Reasoning');
+    expect(element.querySelector('table')).not.toBeNull();
+    expect(element.querySelector('th')?.textContent).toBe('Step');
+    expect(element.querySelector('code.language-json')).not.toBeNull();
+    expect(element.querySelector('.hljs-attr')?.textContent).toContain('status');
+    expect(script).toBeNull();
+    expect(image?.getAttribute('onerror')).toBeNull();
+  });
+});

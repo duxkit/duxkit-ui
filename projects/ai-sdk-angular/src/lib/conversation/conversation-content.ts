@@ -1,5 +1,6 @@
 import {
   contentChild,
+  computed,
   DestroyRef,
   Directive,
   effect,
@@ -7,6 +8,7 @@ import {
   inject,
   input,
 } from '@angular/core';
+import { twMerge } from 'tailwind-merge';
 import { ConversationScrollAnchor } from './conversation-scroll-anchor';
 import { Conversation } from './conversation';
 
@@ -16,7 +18,7 @@ import { Conversation } from './conversation';
     '(wheel)': 'onUserScroll()',
     '(touchmove)': 'onUserScroll()',
     '(keydown)': 'onUserScroll()',
-    '[class]': 'userClass()',
+    '[class]': 'classes()',
   },
 })
 export class ConversationContent {
@@ -24,6 +26,9 @@ export class ConversationContent {
 
   readonly anchor = contentChild(ConversationScrollAnchor);
   readonly userClass = input<string | undefined>(undefined, { alias: 'class' });
+  protected readonly classes = computed(() =>
+    twMerge('min-h-0 min-w-0 grow overflow-y-auto overscroll-contain', this.userClass()),
+  );
 
   private readonly elementRef = inject<ElementRef<HTMLElement>>(ElementRef);
   private readonly destroyRef = inject(DestroyRef);
@@ -81,7 +86,7 @@ export class ConversationContent {
 
     const distanceFromBottom = scrollHeight - scrollTop - clientHeight;
 
-    return distanceFromBottom <= 4;
+    return distanceFromBottom <= 20;
   }
 
   onUserScroll(): void {

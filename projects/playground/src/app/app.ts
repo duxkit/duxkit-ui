@@ -7,6 +7,9 @@ import {
   ConversationScrollAnchor,
   Message,
   MessageContent,
+  Reasoning,
+  ReasoningContent,
+  ReasoningTrigger,
 } from 'ai-sdk-angular';
 
 @Component({
@@ -17,6 +20,9 @@ import {
     ConversationScrollAnchor,
     Message,
     MessageContent,
+    Reasoning,
+    ReasoningContent,
+    ReasoningTrigger,
   ],
   templateUrl: './app.html',
   styleUrl: './app.scss',

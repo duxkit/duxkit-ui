@@ -90,6 +90,7 @@ app.post('/api/chat', async (req, res) => {
 
     const response = result.toUIMessageStreamResponse({
       originalMessages: messages,
+      sendReasoning: true,
       onFinish(event) {
         return writePersistedMessages(event.messages);
       },

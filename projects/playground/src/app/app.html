@@ -10,22 +10,25 @@
         {{ chat.status }}
       </span>
     </header>
-
     <ai-conversation>
-      <ai-conversation-content class="message-list" aria-live="polite">
+      <ai-conversation-content class="message-list p-2" aria-live="polite">
         @if (chat.messages.length === 0) {
           <p class="empty-state">
             Send a prompt to test local streaming through the Angular AI SDK adapter.
           </p>
         }
 
-        @for (message of chat.messages; track message.id) {
+        @for (message of chat.messages; track message.id; let lastMessage = $last) {
           <ai-message [from]="message.role">
-            @for (part of message.parts; track $index) {
+            @for (part of message.parts; track $index; let lastPart = $last) {
+              @if (part.type === 'reasoning') {
+                <ai-reasoning [isStreaming]="chat.status === 'streaming' && lastMessage && lastPart">
+                  <button aiReasoningTrigger></button>
+                  <ai-reasoning-content [markdown]="part.text" />
+                </ai-reasoning>
+              }
               @if (part.type === 'text' && part.text.trim().length > 0) {
-                <ai-message-content>
-                  {{ part.text }}
-                </ai-message-content>
+                <ai-message-content [markdown]="part.text" />
               }
             }
           </ai-message>

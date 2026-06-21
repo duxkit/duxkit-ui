@@ -5,4 +5,6 @@
 export * from './lib/ai-sdk-angular';
 export * from './lib/types';
 export * from './lib/conversation';
+export * from './lib/markdown';
 export * from './lib/message';
+export * from './lib/reasoning';

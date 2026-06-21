@@ -10,7 +10,7 @@
 .chat-panel {
   width: min(880px, 100%);
   min-height: min(760px, calc(100vh - 64px));
-  display: grid;
+  display: block;
   grid-template-rows: auto 1fr auto auto;
   gap: 20px;
   padding: 24px;
@@ -130,7 +130,7 @@ textarea:focus {
   outline-offset: 2px;
 }
 
-button {
+.composer button {
   min-width: 96px;
   min-height: 44px;
   border: 1px solid #134e4a;
@@ -142,14 +142,14 @@ button {
   cursor: pointer;
 }
 
-button:disabled {
+.composer button:disabled {
   border-color: #d4d4d8;
   background: #e4e4e7;
   color: #71717a;
   cursor: not-allowed;
 }
 
-button:focus-visible {
+.composer button:focus-visible {
   outline: 2px solid #0f766e;
   outline-offset: 2px;
 }
