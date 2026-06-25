@@ -34,6 +34,28 @@
           "options": {
             "tsConfig": "projects/ai-sdk-angular/tsconfig.spec.json"
           }
+        },
+        "storybook": {
+          "builder": "@storybook/angular:start-storybook",
+          "options": {
+            "configDir": ".storybook",
+            "tsConfig": "projects/ai-sdk-angular/tsconfig.storybook.json",
+            "styles": ["projects/playground/src/styles.scss"],
+            "port": 6006,
+            "compodoc": false,
+            "experimentalZoneless": true
+          }
+        },
+        "build-storybook": {
+          "builder": "@storybook/angular:build-storybook",
+          "options": {
+            "configDir": ".storybook",
+            "tsConfig": "projects/ai-sdk-angular/tsconfig.storybook.json",
+            "styles": ["projects/playground/src/styles.scss"],
+            "outputDir": "dist/storybook/ai-sdk-angular",
+            "compodoc": false,
+            "experimentalZoneless": true
+          }
         }
       }
     },
