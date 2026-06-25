@@ -1,5 +1,5 @@
 import type { Language } from 'highlight.js';
-import { renderMarkdown } from './markdown';
+import { parseMarkdownBlocks, renderMarkdown } from './markdown';
 
 const customLanguage = (): Language => ({
   name: 'Custom language',
@@ -12,6 +12,33 @@ const customLanguage = (): Language => ({
 });
 
 describe('markdown', () => {
+  it('splits fenced code into structured code blocks', () => {
+    const blocks = parseMarkdownBlocks(
+      ['Intro **text**.', '', '```ts', 'const value = 1;', '```', '', 'Outro text.'].join('\n'),
+    );
+
+    expect(blocks.length).toBe(3);
+    expect(blocks[0]?.type).toBe('html');
+    expect(blocks[0]?.type === 'html' ? blocks[0].html : '').toContain(
+      '<p>Intro <strong>text</strong>.</p>',
+    );
+    expect(blocks[1]?.type).toBe('code');
+    expect(blocks[1]?.type === 'code' ? blocks[1].language : '').toBe('ts');
+    expect(blocks[1]?.type === 'code' ? blocks[1].code : '').toBe('const value = 1;');
+    expect(blocks[2]?.type === 'html' ? blocks[2].html : '').toContain('<p>Outro text.</p>');
+  });
+
+  it('keeps tables in html blocks when splitting markdown', () => {
+    const blocks = parseMarkdownBlocks(
+      ['| Name | Value |', '| --- | --- |', '| status | ok |'].join('\n'),
+    );
+
+    expect(blocks.length).toBe(1);
+    expect(blocks[0]?.type).toBe('html');
+    expect(blocks[0]?.type === 'html' ? blocks[0].html : '').toContain('<table>');
+    expect(blocks[0]?.type === 'html' ? blocks[0].html : '').toContain('<td>status</td>');
+  });
+
   it('renders unknown languages as escaped plain code', () => {
     const html = renderMarkdown('```unknown\nconst value = "<unsafe>";\n```');
 

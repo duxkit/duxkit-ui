@@ -4,12 +4,14 @@ import { twMerge } from 'tailwind-merge';
 import {
   AI_MARKDOWN_OPTIONS,
   markdownStyles,
+  parseMarkdownBlocks,
   reasoningMarkdownContentClasses,
-  renderMarkdown,
 } from '../markdown';
+import { CodeBlock } from '../code-block';
 
 @Component({
   selector: '[aiReasoningContent],ai-reasoning-content',
+  imports: [CodeBlock],
   encapsulation: ViewEncapsulation.None,
   hostDirectives: [{ directive: BrnCollapsibleContent, inputs: ['id'] }],
   host: {
@@ -18,7 +20,15 @@ import {
   styles: [markdownStyles],
   template: `
     @if (markdown() !== undefined) {
-      <div [class]="markdownClasses" [innerHTML]="renderedMarkdown()"></div>
+      <div [class]="markdownClasses">
+        @for (block of markdownBlocks(); track block.id) {
+          @if (block.type === 'html') {
+            <div [innerHTML]="block.html"></div>
+          } @else {
+            <ai-code-block [code]="block.code" [language]="block.language" />
+          }
+        }
+      </div>
     } @else {
       <ng-content />
     }
@@ -30,14 +40,14 @@ export class ReasoningContent {
   protected readonly markdownClasses = reasoningMarkdownContentClasses;
   private readonly markdownOptions = inject(AI_MARKDOWN_OPTIONS);
 
-  protected readonly renderedMarkdown = computed(() => {
+  protected readonly markdownBlocks = computed(() => {
     const markdown = this.markdown();
 
     if (markdown === undefined) {
-      return '';
+      return [];
     }
 
-    return renderMarkdown(markdown, this.markdownOptions);
+    return parseMarkdownBlocks(markdown, this.markdownOptions);
   });
 
   protected readonly classes = computed(() =>

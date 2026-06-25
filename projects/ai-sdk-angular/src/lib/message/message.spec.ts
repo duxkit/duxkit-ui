@@ -137,7 +137,9 @@ describe('Message', () => {
     expect(element.querySelector('table')).not.toBeNull();
     expect(element.querySelector('th')?.textContent).toBe('Name');
     expect(element.querySelector('td')?.textContent).toBe('status');
-    expect(element.querySelector('code.language-ts')).not.toBeNull();
-    expect(element.querySelector('.hljs-keyword')?.textContent).toBe('const');
+    expect(element.querySelector('ai-code-block')).not.toBeNull();
+    expect(element.querySelector('ai-code-block')?.getAttribute('data-language')).toBe('ts');
+    expect(element.querySelector('ai-code-block code.language-ts')).not.toBeNull();
+    expect(element.querySelector('ai-code-block .hljs-keyword')?.textContent).toBe('const');
   });
 });

@@ -112,7 +112,20 @@ export const markdownStyles = `
     border-bottom-width: 1px;
   }
 
-  .ai-markdown .ai-code-block {
+  .ai-code-block {
+    --ai-markdown-code-bg: var(--sidebar);
+    --ai-markdown-code-border: var(--border);
+    --ai-markdown-code-color: var(--foreground);
+    --ai-markdown-code-comment: var(--muted-foreground);
+    --ai-markdown-code-gutter: var(--muted-foreground);
+    --ai-markdown-code-inline-bg: var(--muted);
+    --ai-markdown-code-keyword: var(--foreground);
+    --ai-markdown-code-label: var(--muted-foreground);
+    --ai-markdown-code-muted: var(--muted-foreground);
+    --ai-markdown-code-radius: 0.625rem;
+    --ai-markdown-code-string: var(--foreground);
+    --ai-markdown-code-surface: var(--background);
+
     margin: 1rem 0;
     display: flex;
     width: 100%;
@@ -126,21 +139,27 @@ export const markdownStyles = `
     padding: 0.5rem;
   }
 
-  .ai-markdown .ai-code-block-header {
+  .ai-code-block-header {
     display: flex;
     height: 2rem;
     align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
     color: var(--ai-markdown-code-label);
     font-size: 0.75rem;
   }
 
-  .ai-markdown .ai-code-block-language {
+  .ai-code-block-language {
     margin-left: 0.25rem;
     font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
     text-transform: lowercase;
   }
 
-  .ai-markdown .ai-code-block-body {
+  .ai-code-block-actions {
+    flex-shrink: 0;
+  }
+
+  .ai-code-block-body {
     min-width: 0;
     max-width: 100%;
     overflow: hidden;
@@ -151,14 +170,14 @@ export const markdownStyles = `
     font-size: 0.875rem;
   }
 
-  .ai-markdown .ai-code-block-body pre {
+  .ai-code-block-body pre {
     max-width: 100%;
     overflow-x: auto;
     overflow-y: hidden;
     background: transparent;
   }
 
-  .ai-markdown .ai-code-block code {
+  .ai-code-block code {
     display: block;
     background: transparent;
     padding: 0;
@@ -167,13 +186,13 @@ export const markdownStyles = `
     line-height: 1.5rem;
   }
 
-  .ai-markdown .ai-code-line {
+  .ai-code-line {
     display: block;
     min-height: 1.5rem;
     white-space: pre;
   }
 
-  .ai-markdown .ai-code-line-number {
+  .ai-code-line-number {
     margin-right: 1rem;
     display: inline-block;
     width: 1.5rem;
@@ -189,26 +208,38 @@ export const markdownStyles = `
   .ai-markdown .hljs-number,
   .ai-markdown .hljs-property,
   .ai-markdown .hljs-type,
-  .ai-markdown .hljs-variable {
+  .ai-markdown .hljs-variable,
+  .ai-code-block .hljs-attr,
+  .ai-code-block .hljs-literal,
+  .ai-code-block .hljs-number,
+  .ai-code-block .hljs-property,
+  .ai-code-block .hljs-type,
+  .ai-code-block .hljs-variable {
     color: var(--ai-markdown-code-muted);
   }
 
   .ai-markdown .hljs-built_in,
-  .ai-markdown .hljs-title {
+  .ai-markdown .hljs-title,
+  .ai-code-block .hljs-built_in,
+  .ai-code-block .hljs-title {
     color: var(--ai-markdown-code-keyword);
   }
 
-  .ai-markdown .hljs-keyword {
+  .ai-markdown .hljs-keyword,
+  .ai-code-block .hljs-keyword {
     color: var(--ai-markdown-code-keyword);
     font-weight: 500;
   }
 
   .ai-markdown .hljs-comment,
-  .ai-markdown .hljs-meta {
+  .ai-markdown .hljs-meta,
+  .ai-code-block .hljs-comment,
+  .ai-code-block .hljs-meta {
     color: var(--ai-markdown-code-comment);
   }
 
-  .ai-markdown .hljs-string {
+  .ai-markdown .hljs-string,
+  .ai-code-block .hljs-string {
     color: var(--ai-markdown-code-string);
   }
 
@@ -263,6 +294,21 @@ export interface AiMarkdownLanguage {
   readonly aliases?: readonly string[];
 }
 
+export type AiMarkdownBlock = AiMarkdownHtmlBlock | AiMarkdownCodeBlock;
+
+export interface AiMarkdownHtmlBlock {
+  readonly id: string;
+  readonly type: 'html';
+  readonly html: string;
+}
+
+export interface AiMarkdownCodeBlock {
+  readonly id: string;
+  readonly type: 'code';
+  readonly code: string;
+  readonly language: string;
+}
+
 export const AI_MARKDOWN_OPTIONS = new InjectionToken<AiMarkdownOptions>('AI_MARKDOWN_OPTIONS', {
   factory: () => ({}),
 });
@@ -311,6 +357,86 @@ export function renderMarkdown(markdown: string, options: AiMarkdownOptions = {}
     gfm: true,
     silent: true,
   });
+}
+
+export function parseMarkdownBlocks(
+  markdown: string,
+  options: AiMarkdownOptions = {},
+): AiMarkdownBlock[] {
+  registerMarkdownLanguages(options.highlight?.languages ?? []);
+
+  const tokens = new Marked({ gfm: true }).lexer(markdown);
+  const blocks: AiMarkdownBlock[] = [];
+  const pendingTokens: Tokens.Generic[] = [];
+
+  const flushPendingTokens = (): void => {
+    if (pendingTokens.length === 0) {
+      return;
+    }
+
+    const rawMarkdown = pendingTokens.map((token) => token.raw).join('');
+    const html = renderMarkdown(rawMarkdown, options).trim();
+
+    if (html.length > 0) {
+      blocks.push({
+        id: `html-${blocks.length}`,
+        type: 'html',
+        html,
+      });
+    }
+
+    pendingTokens.length = 0;
+  };
+
+  for (const token of tokens) {
+    if (token.type === 'code') {
+      flushPendingTokens();
+
+      blocks.push({
+        id: `code-${blocks.length}`,
+        type: 'code',
+        code: token.text,
+        language: getLanguage(token.lang) ?? 'text',
+      });
+
+      continue;
+    }
+
+    pendingTokens.push(token);
+  }
+
+  flushPendingTokens();
+
+  return blocks;
+}
+
+export function renderHighlightedCode(
+  code: string,
+  language: string | undefined,
+  options: AiMarkdownOptions = {},
+): string {
+  registerMarkdownLanguages(options.highlight?.languages ?? []);
+
+  const normalizedLanguage = getLanguage(language);
+
+  if (
+    options.highlight?.code === false ||
+    !normalizedLanguage ||
+    !hljs.getLanguage(normalizedLanguage)
+  ) {
+    return renderCodeLines(escapeHtml(code));
+  }
+
+  try {
+    const result = hljs.highlight(code, {
+      language: normalizedLanguage,
+      ignoreIllegals: true,
+    });
+
+    return renderCodeLines(result.value);
+  } catch {
+    return renderCodeLines(escapeHtml(code));
+  }
 }
 
 function registerDefaultLanguages(): void {

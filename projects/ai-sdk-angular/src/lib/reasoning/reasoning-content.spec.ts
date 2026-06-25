@@ -97,8 +97,10 @@ describe('ReasoningContent', () => {
     expect(strong?.textContent).toBe('Reasoning');
     expect(element.querySelector('table')).not.toBeNull();
     expect(element.querySelector('th')?.textContent).toBe('Step');
-    expect(element.querySelector('code.language-json')).not.toBeNull();
-    expect(element.querySelector('.hljs-attr')?.textContent).toContain('status');
+    expect(element.querySelector('ai-code-block')).not.toBeNull();
+    expect(element.querySelector('ai-code-block')?.getAttribute('data-language')).toBe('json');
+    expect(element.querySelector('ai-code-block code.language-json')).not.toBeNull();
+    expect(element.querySelector('ai-code-block .hljs-attr')?.textContent).toContain('status');
     expect(script).toBeNull();
     expect(image?.getAttribute('onerror')).toBeNull();
   });

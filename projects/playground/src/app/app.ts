@@ -6,6 +6,10 @@ import {
   ConversationContent,
   ConversationScrollAnchor,
   Message,
+  MessageActions,
+  MessageActionsCopy,
+  MessageActionsThumbsDown,
+  MessageActionsThumbsUp,
   MessageContent,
   Reasoning,
   ReasoningContent,
@@ -19,6 +23,10 @@ import {
     ConversationContent,
     ConversationScrollAnchor,
     Message,
+    MessageActions,
+    MessageActionsCopy,
+    MessageActionsThumbsDown,
+    MessageActionsThumbsUp,
     MessageContent,
     Reasoning,
     ReasoningContent,
@@ -29,6 +37,7 @@ import {
 })
 export class App {
   protected readonly prompt = signal('');
+  protected readonly messageFeedback = signal<Record<string, 'up' | 'down'>>({});
   protected readonly canSubmit = computed(
     () => this.prompt().trim().length > 0 && this.chat.status === 'ready',
   );
@@ -53,6 +62,10 @@ export class App {
 
     this.prompt.set('');
     await this.chat.sendMessage({ text });
+  }
+
+  protected setMessageFeedback(messageId: string, feedback: 'up' | 'down'): void {
+    this.messageFeedback.update((current) => ({ ...current, [messageId]: feedback }));
   }
 
   private async loadPersistedMessages(): Promise<void> {

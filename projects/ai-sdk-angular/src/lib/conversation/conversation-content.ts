@@ -1,9 +1,9 @@
 import {
+  afterRenderEffect,
   contentChild,
   computed,
   DestroyRef,
   Directive,
-  effect,
   ElementRef,
   inject,
   input,
@@ -34,42 +34,78 @@ export class ConversationContent {
   private readonly destroyRef = inject(DestroyRef);
   private readonly conversation = inject(Conversation);
   private readonly stickToBottom = this.conversation.stickToBottom;
-  private readonly resizeObserver = new ResizeObserver(() => {
-    this.scrollToBottomIfNeeded();
-  });
-  private readonly mutationObserver = new MutationObserver(() => {
-    this.scrollToBottomIfNeeded();
-  });
+  private previousMessageElementCount = 0;
+  private readonly resizeObserver =
+    typeof ResizeObserver === 'undefined'
+      ? undefined
+      : new ResizeObserver(() => {
+          this.scrollToBottomIfNeeded();
+        });
+  private readonly mutationObserver =
+    typeof MutationObserver === 'undefined'
+      ? undefined
+      : new MutationObserver(() => {
+          this.onContentMutated();
+        });
 
   constructor() {
     const element = this.elementRef.nativeElement;
 
-    this.resizeObserver.observe(element);
-    this.mutationObserver.observe(element, {
+    this.resizeObserver?.observe(element);
+    this.mutationObserver?.observe(element, {
       childList: true,
       characterData: true,
       subtree: true,
     });
 
     this.destroyRef.onDestroy(() => {
-      this.resizeObserver.disconnect();
-      this.mutationObserver.disconnect();
+      this.resizeObserver?.disconnect();
+      this.mutationObserver?.disconnect();
     });
 
-    effect(() => {
+    afterRenderEffect(() => {
       this.stickToBottom();
       this.anchor();
       this.scrollToBottomIfNeeded();
     });
   }
 
+  private onContentMutated(): void {
+    const messageElements = Array.from(
+      this.elementRef.nativeElement.querySelectorAll<HTMLElement>('[data-ai-message-role]'),
+    );
+    const didAddMessage = messageElements.length > this.previousMessageElementCount;
+    const lastMessageRole = messageElements.at(-1)?.getAttribute('data-ai-message-role');
+
+    this.previousMessageElementCount = messageElements.length;
+
+    if (didAddMessage && lastMessageRole === 'user') {
+      this.autoScroll = true;
+      this.scrollToBottom();
+      return;
+    }
+
+    this.scrollToBottomIfNeeded();
+  }
+
   private scrollToBottomIfNeeded(): void {
     const anchor = this.anchor();
     const stickToBottom = this.stickToBottom();
-    const shouldScroll =
-      stickToBottom === true || (stickToBottom === 'auto' && this.autoScroll);
+    const shouldScroll = stickToBottom === true || (stickToBottom === 'auto' && this.autoScroll);
 
     if (!shouldScroll || !anchor) {
+      return;
+    }
+
+    requestAnimationFrame(() => {
+      anchor.scrollIntoView({ behavior: 'smooth' });
+    });
+  }
+
+  private scrollToBottom(): void {
+    const anchor = this.anchor();
+
+    if (!anchor) {
       return;
     }
 

@@ -6,8 +6,8 @@
     "outDir": "../../out-tsc/app",
     "types": [],
     "paths": {
-      "ai-sdk-angular": ["../../dist/ai-sdk-angular"],
-      "ai-sdk-angular/helm/*": ["../../dist/ai-sdk-angular/helm/*"]
+      "ai-sdk-angular": ["../../dist/ai-sdk-angular", "./dist/ai-sdk-angular"],
+      "ai-sdk-angular/helm/*": ["../../dist/ai-sdk-angular/helm/*", "./dist/ai-sdk-angular/helm/*"]
     }
   },
   "include": ["src/**/*.ts"],

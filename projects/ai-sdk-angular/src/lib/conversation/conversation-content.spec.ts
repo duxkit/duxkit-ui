@@ -2,6 +2,7 @@ import { Component, viewChild } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { Conversation } from './conversation';
 import { ConversationContent } from './conversation-content';
+import { ConversationScrollAnchor } from './conversation-scroll-anchor';
 
 @Component({
   imports: [Conversation, ConversationContent],
@@ -15,10 +16,27 @@ class Host {
   readonly content = viewChild.required(ConversationContent);
 }
 
+@Component({
+  imports: [Conversation, ConversationContent, ConversationScrollAnchor],
+  template: `
+    <ai-conversation>
+      <ai-conversation-content>
+        <div aiConversationScrollAnchor></div>
+      </ai-conversation-content>
+    </ai-conversation>
+  `,
+})
+class MessagesHost {
+  readonly content = viewChild.required(ConversationContent);
+}
+
 describe('ConversationContent', () => {
   let fixture: ComponentFixture<Host>;
   let originalResizeObserver: typeof ResizeObserver | undefined;
   let originalMutationObserver: typeof MutationObserver;
+  let originalRequestAnimationFrame: typeof requestAnimationFrame;
+  let originalScrollIntoView: typeof HTMLElement.prototype.scrollIntoView | undefined;
+  let mutationObservers: TestMutationObserver[];
 
   class TestResizeObserver {
     observe(): void {}
@@ -31,16 +49,31 @@ describe('ConversationContent', () => {
     observe(): void {}
     disconnect(): void {}
     takeRecords(): MutationRecord[] {
-      this.callback([], this as unknown as MutationObserver);
+      this.trigger();
       return [];
+    }
+    trigger(): void {
+      this.callback([], this as unknown as MutationObserver);
     }
   }
 
   beforeEach(async () => {
     originalResizeObserver = globalThis.ResizeObserver;
     originalMutationObserver = globalThis.MutationObserver;
+    originalRequestAnimationFrame = globalThis.requestAnimationFrame;
+    originalScrollIntoView = HTMLElement.prototype.scrollIntoView;
+    mutationObservers = [];
     globalThis.ResizeObserver = TestResizeObserver as unknown as typeof ResizeObserver;
-    globalThis.MutationObserver = TestMutationObserver as unknown as typeof MutationObserver;
+    globalThis.MutationObserver = class extends TestMutationObserver {
+      constructor(callback: MutationCallback) {
+        super(callback);
+        mutationObservers.push(this);
+      }
+    } as unknown as typeof MutationObserver;
+    globalThis.requestAnimationFrame = ((callback: FrameRequestCallback) => {
+      callback(0);
+      return 0;
+    }) as typeof requestAnimationFrame;
 
     await TestBed.configureTestingModule({
       imports: [Host],
@@ -59,6 +92,15 @@ describe('ConversationContent', () => {
     }
 
     globalThis.MutationObserver = originalMutationObserver;
+    globalThis.requestAnimationFrame = originalRequestAnimationFrame;
+
+    if (originalScrollIntoView) {
+      HTMLElement.prototype.scrollIntoView = originalScrollIntoView;
+    } else {
+      delete (
+        HTMLElement.prototype as { scrollIntoView?: typeof HTMLElement.prototype.scrollIntoView }
+      ).scrollIntoView;
+    }
   });
 
   it('matches element usage', () => {
@@ -77,4 +119,42 @@ describe('ConversationContent', () => {
     expect(element.classList).not.toContain('overflow-y-auto');
     expect(element.classList).not.toContain('grow');
   });
+
+  it('forces scroll when a user message is added after the user intentionally scrolled up', async () => {
+    const scrollIntoView = vi.fn();
+    HTMLElement.prototype.scrollIntoView = scrollIntoView;
+
+    await TestBed.resetTestingModule()
+      .configureTestingModule({
+        imports: [MessagesHost],
+      })
+      .compileComponents();
+
+    const messagesFixture = TestBed.createComponent(MessagesHost);
+    messagesFixture.detectChanges();
+    await messagesFixture.whenStable();
+
+    scrollIntoView.mockClear();
+    messagesFixture.componentInstance.content().autoScroll = false;
+    appendMessage(messagesFixture, 'assistant');
+    mutationObservers.forEach((observer) => observer.trigger());
+    await messagesFixture.whenStable();
+
+    expect(scrollIntoView).not.toHaveBeenCalled();
+
+    appendMessage(messagesFixture, 'user');
+    mutationObservers.forEach((observer) => observer.trigger());
+    await messagesFixture.whenStable();
+
+    expect(scrollIntoView).toHaveBeenCalledWith({ behavior: 'smooth', block: 'end' });
+    expect(messagesFixture.componentInstance.content().autoScroll).toBe(true);
+  });
 });
+
+function appendMessage(fixture: ComponentFixture<MessagesHost>, role: 'assistant' | 'user'): void {
+  const content = fixture.nativeElement.querySelector('ai-conversation-content') as HTMLElement;
+  const message = document.createElement('div');
+
+  message.setAttribute('data-ai-message-role', role);
+  content.append(message);
+}

@@ -1,4 +1,12 @@
-import { Component, computed, inject, input, ViewEncapsulation } from '@angular/core';
+import {
+  Component,
+  computed,
+  DestroyRef,
+  effect,
+  inject,
+  input,
+  ViewEncapsulation,
+} from '@angular/core';
 import { cva, type VariantProps } from 'class-variance-authority';
 import { clsx } from 'clsx';
 import { twMerge } from 'tailwind-merge';
@@ -6,8 +14,9 @@ import {
   AI_MARKDOWN_OPTIONS,
   markdownContentClasses,
   markdownStyles,
-  renderMarkdown,
+  parseMarkdownBlocks,
 } from '../markdown';
+import { CodeBlock } from '../code-block';
 import { Message } from './message';
 
 export const messageContentVariants = cva(
@@ -30,6 +39,7 @@ export type MessageContentVariants = VariantProps<typeof messageContentVariants>
 
 @Component({
   selector: 'ai-message-content,[aiMessageContent]',
+  imports: [CodeBlock],
   encapsulation: ViewEncapsulation.None,
   host: {
     '[class]': '_classes()',
@@ -37,7 +47,15 @@ export type MessageContentVariants = VariantProps<typeof messageContentVariants>
   styles: [markdownStyles],
   template: `
     @if (markdown() !== undefined) {
-      <div [class]="markdownClasses" [innerHTML]="renderedMarkdown()"></div>
+      <div [class]="markdownClasses">
+        @for (block of markdownBlocks(); track block.id) {
+          @if (block.type === 'html') {
+            <div [innerHTML]="block.html"></div>
+          } @else {
+            <ai-code-block [code]="block.code" [language]="block.language" />
+          }
+        }
+      </div>
     } @else {
       <ng-content />
     }
@@ -52,16 +70,28 @@ export class MessageContent {
 
   private readonly message = inject(Message);
   private readonly markdownOptions = inject(AI_MARKDOWN_OPTIONS);
+  private readonly destroyRef = inject(DestroyRef);
+  private readonly copyTextEntryId = this.message.registerCopyText();
   private readonly _from = computed(() => this.message.from());
 
-  protected readonly renderedMarkdown = computed(() => {
+  constructor() {
+    effect(() => {
+      this.message.updateCopyText(this.copyTextEntryId, this.markdown());
+    });
+
+    this.destroyRef.onDestroy(() => {
+      this.message.unregisterCopyText(this.copyTextEntryId);
+    });
+  }
+
+  protected readonly markdownBlocks = computed(() => {
     const markdown = this.markdown();
 
     if (markdown === undefined) {
-      return '';
+      return [];
     }
 
-    return renderMarkdown(markdown, this.markdownOptions);
+    return parseMarkdownBlocks(markdown, this.markdownOptions);
   });
 
   public readonly _classes = computed(() => {

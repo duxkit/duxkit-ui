@@ -4,6 +4,9 @@
     "paths": {
       "ai-sdk-angular": ["./dist/ai-sdk-angular"],
       "ai-sdk-angular/helm/button": ["./projects/ai-sdk-angular/helm/button/src/index.ts"],
+      "ai-sdk-angular/helm/button-group": [
+        "./projects/ai-sdk-angular/helm/button-group/src/index.ts"
+      ],
       "ai-sdk-angular/helm/utils": ["./projects/ai-sdk-angular/helm/utils/src/index.ts"],
       "ai-sdk-angular/helm/textarea": ["./projects/ai-sdk-angular/helm/textarea/src/index.ts"],
       "ai-sdk-angular/helm/avatar": ["./projects/ai-sdk-angular/helm/avatar/src/index.ts"],

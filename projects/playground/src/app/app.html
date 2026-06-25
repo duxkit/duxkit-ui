@@ -22,7 +22,9 @@
           <ai-message [from]="message.role">
             @for (part of message.parts; track $index; let lastPart = $last) {
               @if (part.type === 'reasoning') {
-                <ai-reasoning [isStreaming]="chat.status === 'streaming' && lastMessage && lastPart">
+                <ai-reasoning
+                  [isStreaming]="chat.status === 'streaming' && lastMessage && lastPart"
+                >
                   <button aiReasoningTrigger></button>
                   <ai-reasoning-content [markdown]="part.text" />
                 </ai-reasoning>
@@ -30,6 +32,20 @@
               @if (part.type === 'text' && part.text.trim().length > 0) {
                 <ai-message-content [markdown]="part.text" />
               }
+            }
+
+            @if (message.role === 'assistant' && lastMessage && chat.status === 'ready') {
+              <ai-message-actions>
+                <ai-message-actions-copy />
+                <ai-message-actions-thumbs-up
+                  [active]="messageFeedback()[message.id] === 'up'"
+                  (thumbsUp)="setMessageFeedback(message.id, 'up')"
+                />
+                <ai-message-actions-thumbs-down
+                  [active]="messageFeedback()[message.id] === 'down'"
+                  (thumbsDown)="setMessageFeedback(message.id, 'down')"
+                />
+              </ai-message-actions>
             }
           </ai-message>
         }
