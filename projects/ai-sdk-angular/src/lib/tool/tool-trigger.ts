@@ -5,10 +5,11 @@ import { lucideChevronDown, lucideWrench } from '@ng-icons/lucide';
 import { HlmIcon } from 'ai-sdk-angular/helm/icon';
 import { twMerge } from 'tailwind-merge';
 import { Tool } from './tool';
+import { ToolStatus } from './tool-status';
 
 @Component({
   selector: 'button[aiToolTrigger],ai-tool-trigger',
-  imports: [HlmIcon, NgIcon],
+  imports: [HlmIcon, NgIcon, ToolStatus],
   providers: [provideIcons({ lucideChevronDown, lucideWrench })],
   hostDirectives: [{ directive: BrnCollapsibleTrigger, inputs: ['type'] }],
   host: {
@@ -20,11 +21,9 @@ import { Tool } from './tool';
         <div class="flex items-center gap-2">
           <ng-icon hlm size="sm" name="lucideWrench" />
           <span class="min-w-0 truncate font-medium">{{ tool.name() }}</span>
-          <span class="shrink-0 rounded border border-border px-1.5 py-0.5 text-xs">
-            {{ tool.statusLabel() }}
-          </span>
+          <ai-tool-status variant="icon" />
         </div>
-        <div>
+        <div class="flex items-center">
           <ng-icon hlm size="sm" name="lucideChevronDown" [class.rotate-180]="expanded()" />
         </div>
       </div>

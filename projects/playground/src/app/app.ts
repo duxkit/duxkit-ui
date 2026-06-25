@@ -1,8 +1,13 @@
 import { Component, computed, signal } from '@angular/core';
 import { Chat } from '@ai-sdk/angular';
-import type { UIMessage } from 'ai';
+import { lastAssistantMessageIsCompleteWithApprovalResponses, type UIMessage } from 'ai';
 import {
   type AiToolPart,
+  Confirmation,
+  ConfirmationAction,
+  ConfirmationActions,
+  ConfirmationRequest,
+  ConfirmationTitle,
   Conversation,
   ConversationContent,
   ConversationScrollAnchor,
@@ -34,6 +39,11 @@ type MessagePart = UIMessage['parts'][number];
     MessageActionsThumbsDown,
     MessageActionsThumbsUp,
     MessageContent,
+    Confirmation,
+    ConfirmationAction,
+    ConfirmationActions,
+    ConfirmationRequest,
+    ConfirmationTitle,
     Reasoning,
     ReasoningContent,
     ReasoningTrigger,
@@ -51,7 +61,9 @@ export class App {
     () => this.prompt().trim().length > 0 && this.chat.status === 'ready',
   );
 
-  protected readonly chat = new Chat({});
+  protected readonly chat = new Chat({
+    sendAutomaticallyWhen: lastAssistantMessageIsCompleteWithApprovalResponses,
+  });
 
   constructor() {
     void this.loadPersistedMessages();
@@ -83,6 +95,20 @@ export class App {
 
   protected isToolPart(part: MessagePart): part is AiToolPart {
     return part.type === 'dynamic-tool' || part.type.startsWith('tool-');
+  }
+
+  protected respondToToolApproval(part: AiToolPart, approved: boolean): void {
+    const approval = part.approval;
+
+    if (approval === undefined || part.state !== 'approval-requested') {
+      return;
+    }
+
+    void this.chat.addToolApprovalResponse({
+      id: approval.id,
+      approved,
+      reason: approved ? 'Approved from the playground UI.' : 'Denied from the playground UI.',
+    });
   }
 
   private async loadPersistedMessages(): Promise<void> {

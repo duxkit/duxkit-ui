@@ -26,6 +26,7 @@ const tools = {
   getWeather: tool({
     description:
       'Get deterministic test weather for a city. Use this when the user asks about weather or asks to test a tool call.',
+    needsApproval: true,
     inputSchema: jsonSchema({
       type: 'object',
       properties: {
@@ -94,6 +95,27 @@ function getLatestUserText(messages) {
     .join('\n');
 }
 
+function isToolPart(part) {
+  return (
+    typeof part.type === 'string' && (part.type === 'dynamic-tool' || part.type.startsWith('tool-'))
+  );
+}
+
+function isResumingAfterToolApproval(messages) {
+  const latestMessage = messages.at(-1);
+
+  if (latestMessage?.role !== 'assistant' || !Array.isArray(latestMessage.parts)) {
+    return false;
+  }
+
+  return latestMessage.parts.some(
+    (part) =>
+      isToolPart(part) &&
+      part.state === 'approval-responded' &&
+      part.approval?.approved !== undefined,
+  );
+}
+
 app.get('/api/health', (_req, res) => {
   res.json({
     provider: 'ollama',
@@ -128,13 +150,28 @@ app.post('/api/chat', async (req, res) => {
 
     const latestUserText = getLatestUserText(messages);
     const shouldForceTool = /\b(force|test|use)\b[\s\S]*\btool\b/i.test(latestUserText);
+    const isApprovalResume = isResumingAfterToolApproval(messages);
     const result = streamText({
       model: ollama(modelId),
       system:
-        'You are helping test an Angular AI component library. Keep responses concise. If the user asks to test tools or asks about weather, call the getWeather tool.',
+        'You are helping test an Angular AI component library. Keep responses concise. If the user asks to test tools or asks about weather, call the getWeather tool. After a tool result is available, answer from that result instead of calling the same tool again.',
       messages: await convertToModelMessages(messages),
       tools,
-      toolChoice: shouldForceTool ? { type: 'tool', toolName: 'getWeather' } : 'auto',
+      toolChoice: isApprovalResume
+        ? 'none'
+        : shouldForceTool
+          ? { type: 'tool', toolName: 'getWeather' }
+          : 'auto',
+      prepareStep({ stepNumber }) {
+        if (isApprovalResume || stepNumber > 0) {
+          return {
+            activeTools: [],
+            toolChoice: 'none',
+          };
+        }
+
+        return undefined;
+      },
       stopWhen: stepCountIs(3),
     });
 

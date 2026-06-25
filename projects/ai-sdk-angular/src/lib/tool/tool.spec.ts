@@ -3,6 +3,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import type { AiToolPart } from './tool';
 import { Tool } from './tool';
 import { ToolContent } from './tool-content';
+import { ToolStatus } from './tool-status';
 import { ToolTrigger } from './tool-trigger';
 
 const toolPart: AiToolPart = {
@@ -34,6 +35,21 @@ class Host {
   readonly tool = viewChild.required(Tool);
 }
 
+@Component({
+  imports: [Tool, ToolTrigger, ToolStatus],
+  template: `
+    <ai-tool [part]="part()">
+      <button aiToolTrigger>
+        <span>Custom trigger</span>
+        <ai-tool-status variant="icon" class="custom-status" />
+      </button>
+    </ai-tool>
+  `,
+})
+class CustomTriggerHost {
+  readonly part = signal(toolPart);
+}
+
 describe('Tool', () => {
   let fixture: ComponentFixture<Host>;
 
@@ -58,12 +74,28 @@ describe('Tool', () => {
 
   it('renders the default trigger and content', () => {
     const element = fixture.nativeElement as HTMLElement;
+    const status = element.querySelector('ai-tool-status');
 
     expect(element.querySelector('button[aitooltrigger]')?.textContent).toContain('getWeather');
-    expect(element.querySelector('button[aitooltrigger]')?.textContent).toContain(
-      'output available',
-    );
+    expect(status?.textContent).toContain('output available');
+    expect(status?.getAttribute('data-variant')).toBe('badge');
     expect(element.querySelector('ai-tool-content')?.textContent).toContain('"temperature": 23');
+  });
+
+  it('supports projected trigger content with icon-only status', async () => {
+    const customFixture = TestBed.createComponent(CustomTriggerHost);
+    customFixture.detectChanges();
+    await customFixture.whenStable();
+
+    const element = customFixture.nativeElement as HTMLElement;
+    const status = element.querySelector('ai-tool-status');
+
+    expect(element.querySelector('button[aitooltrigger]')?.textContent).toContain('Custom trigger');
+    expect(status?.textContent?.trim()).toBe('');
+    expect(status?.getAttribute('data-variant')).toBe('icon');
+    expect(status?.getAttribute('aria-label')).toBe('Tool status: output available');
+    expect(status?.classList).toContain('custom-status');
+    expect(status?.querySelector('ng-icon')).not.toBeNull();
   });
 
   it('applies default classes and preserves consumer classes', () => {
