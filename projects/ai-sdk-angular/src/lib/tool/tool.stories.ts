@@ -1,5 +1,12 @@
 import type { Meta, StoryObj } from '@storybook/angular';
 import { moduleMetadata } from '@storybook/angular';
+import {
+  Confirmation,
+  ConfirmationAction,
+  ConfirmationActions,
+  ConfirmationRequest,
+  ConfirmationTitle,
+} from '../confirmation';
 import type { AiToolPart } from './tool';
 import { Tool, ToolContent, ToolStatus, ToolTrigger } from './';
 
@@ -37,7 +44,17 @@ const meta: Meta = {
   title: 'Components/Tool',
   decorators: [
     moduleMetadata({
-      imports: [Tool, ToolTrigger, ToolContent, ToolStatus],
+      imports: [
+        Confirmation,
+        ConfirmationAction,
+        ConfirmationActions,
+        ConfirmationRequest,
+        ConfirmationTitle,
+        Tool,
+        ToolTrigger,
+        ToolContent,
+        ToolStatus,
+      ],
     }),
   ],
   tags: ['autodocs'],
@@ -50,6 +67,16 @@ const meta: Meta = {
       <ai-tool class="w-[560px]" [part]="part" [expanded]="true">
         <button aiToolTrigger></button>
         <ai-tool-content />
+        <ai-confirmation [part]="part">
+          <ai-confirmation-request>
+            <ai-confirmation-title />
+            <p class="m-0 leading-relaxed">Allow this tool to run with the generated input?</p>
+            <ai-confirmation-actions>
+              <button aiConfirmationAction variant="outline">Deny</button>
+              <button aiConfirmationAction>Allow</button>
+            </ai-confirmation-actions>
+          </ai-confirmation-request>
+        </ai-confirmation>
       </ai-tool>
     `,
   }),

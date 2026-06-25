@@ -6,6 +6,7 @@ import { Confirmation } from './confirmation';
   selector: '[aiConfirmationActions],ai-confirmation-actions',
   host: {
     '[class]': 'classes()',
+    '[hidden]': '!visible()',
   },
   template: `
     @if (visible()) {

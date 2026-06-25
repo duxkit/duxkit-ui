@@ -4,6 +4,9 @@ import { confirmationResponseStates } from './confirmation.types';
 
 @Component({
   selector: '[aiConfirmationRejected],ai-confirmation-rejected',
+  host: {
+    '[hidden]': '!visible()',
+  },
   template: `
     @if (visible()) {
       <ng-content />

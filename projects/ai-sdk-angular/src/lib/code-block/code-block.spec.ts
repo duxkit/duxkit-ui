@@ -13,8 +13,15 @@ class Host {
 
 describe('CodeBlock', () => {
   let fixture: ComponentFixture<Host>;
+  let writeText: ReturnType<typeof vi.fn>;
 
   beforeEach(async () => {
+    writeText = vi.fn(async () => undefined);
+    Object.defineProperty(globalThis.navigator, 'clipboard', {
+      value: { writeText },
+      configurable: true,
+    });
+
     await TestBed.configureTestingModule({
       imports: [Host],
     }).compileComponents();
@@ -39,5 +46,21 @@ describe('CodeBlock', () => {
     expect(element.querySelector('.hljs-keyword')?.textContent).toBe('const');
     expect(copyButton).not.toBeNull();
     expect(downloadButton).not.toBeNull();
+  });
+
+  it('shows the copied icon state after copying code', async () => {
+    const element = fixture.nativeElement as HTMLElement;
+    const copyButton = element.querySelector<HTMLButtonElement>('button[aria-label="Copy code"]');
+
+    copyButton?.click();
+    await Promise.resolve();
+    fixture.detectChanges();
+    await fixture.whenStable();
+
+    const copiedButton = element.querySelector<HTMLButtonElement>('button[aria-label="Copied code"]');
+
+    expect(writeText).toHaveBeenCalledWith('const value = signal("hello");');
+    expect(copiedButton).not.toBeNull();
+    expect(copiedButton?.querySelector('ng-icon')).not.toBeNull();
   });
 });

@@ -1,5 +1,12 @@
 import { Component, signal, viewChild } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import {
+  Confirmation,
+  ConfirmationAction,
+  ConfirmationActions,
+  ConfirmationRequest,
+  ConfirmationTitle,
+} from '../confirmation';
 import type { AiToolPart } from './tool';
 import { Tool } from './tool';
 import { ToolContent } from './tool-content';
@@ -18,6 +25,19 @@ const toolPart: AiToolPart = {
     city: 'London',
     unit: 'celsius',
     temperature: 23,
+  },
+};
+
+const approvalToolPart: AiToolPart = {
+  type: 'tool-getWeather',
+  toolCallId: 'call-2',
+  state: 'approval-requested',
+  input: {
+    city: 'London',
+    unit: 'celsius',
+  },
+  approval: {
+    id: 'approval-2',
   },
 };
 
@@ -48,6 +68,37 @@ class Host {
 })
 class CustomTriggerHost {
   readonly part = signal(toolPart);
+}
+
+@Component({
+  imports: [
+    Confirmation,
+    ConfirmationAction,
+    ConfirmationActions,
+    ConfirmationRequest,
+    ConfirmationTitle,
+    Tool,
+    ToolContent,
+    ToolTrigger,
+  ],
+  template: `
+    <ai-tool [part]="part()">
+      <button aiToolTrigger></button>
+      <ai-tool-content />
+      <ai-confirmation [part]="part()">
+        <ai-confirmation-request>
+          <ai-confirmation-title />
+          <ai-confirmation-actions>
+            <button aiConfirmationAction variant="outline">Deny</button>
+            <button aiConfirmationAction>Allow</button>
+          </ai-confirmation-actions>
+        </ai-confirmation-request>
+      </ai-confirmation>
+    </ai-tool>
+  `,
+})
+class ToolConfirmationHost {
+  readonly part = signal(approvalToolPart);
 }
 
 describe('Tool', () => {
@@ -110,5 +161,22 @@ describe('Tool', () => {
     expect(trigger?.classList).toContain('custom-trigger');
     expect(content?.classList).toContain('data-[state=closed]:hidden');
     expect(content?.classList).toContain('custom-content');
+  });
+
+  it('renders confirmation as a connected tool footer', async () => {
+    const confirmationFixture = TestBed.createComponent(ToolConfirmationHost);
+    confirmationFixture.detectChanges();
+    await confirmationFixture.whenStable();
+
+    const element = confirmationFixture.nativeElement as HTMLElement;
+    const tool = element.querySelector('ai-tool');
+    const confirmation = element.querySelector('ai-confirmation');
+
+    expect(confirmation?.hasAttribute('hidden')).toBe(false);
+    expect(confirmation?.classList).toContain('rounded-lg');
+    expect(confirmation?.classList).toContain('border');
+    expect(tool?.classList).toContain('[&_ai-confirmation]:border-t');
+    expect(tool?.classList).toContain('[&_ai-confirmation]:rounded-b-lg');
+    expect(tool?.classList).toContain('[&_ai-confirmation]:rounded-t-none');
   });
 });

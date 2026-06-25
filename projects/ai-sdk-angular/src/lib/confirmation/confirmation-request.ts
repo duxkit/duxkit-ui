@@ -3,6 +3,9 @@ import { Confirmation } from './confirmation';
 
 @Component({
   selector: '[aiConfirmationRequest],ai-confirmation-request',
+  host: {
+    '[hidden]': '!visible()',
+  },
   template: `
     @if (visible()) {
       <ng-content />

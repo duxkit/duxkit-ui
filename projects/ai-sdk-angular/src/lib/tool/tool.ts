@@ -32,6 +32,8 @@ export class Tool {
   protected readonly classes = computed(() =>
     twMerge(
       'my-2 flex w-full max-w-full min-w-0 flex-col overflow-hidden rounded-lg border border-border bg-background',
+      '[&_ai-confirmation]:rounded-b-lg [&_ai-confirmation]:rounded-t-none [&_ai-confirmation]:border-x-0 [&_ai-confirmation]:border-b-0 [&_ai-confirmation]:border-t [&_ai-confirmation]:border-border [&_ai-confirmation]:bg-background [&_ai-confirmation]:px-3 [&_ai-confirmation]:py-2 [&_ai-confirmation]:text-muted-foreground',
+      '[&_[aiConfirmation]]:rounded-b-lg [&_[aiConfirmation]]:rounded-t-none [&_[aiConfirmation]]:border-x-0 [&_[aiConfirmation]]:border-b-0 [&_[aiConfirmation]]:border-t [&_[aiConfirmation]]:border-border [&_[aiConfirmation]]:bg-background [&_[aiConfirmation]]:px-3 [&_[aiConfirmation]]:py-2 [&_[aiConfirmation]]:text-muted-foreground',
       this.userClass(),
     ),
   );

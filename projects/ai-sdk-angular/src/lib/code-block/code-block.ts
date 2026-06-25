@@ -1,7 +1,7 @@
 import { DOCUMENT } from '@angular/common';
-import { Component, computed, inject, input, ViewEncapsulation } from '@angular/core';
+import { Component, computed, inject, input, signal, ViewEncapsulation } from '@angular/core';
 import { NgIcon, provideIcons } from '@ng-icons/core';
-import { lucideCopy, lucideDownload } from '@ng-icons/lucide';
+import { lucideCheck, lucideCopy, lucideDownload } from '@ng-icons/lucide';
 import { HlmButton } from 'ai-sdk-angular/helm/button';
 import { HlmButtonGroup } from 'ai-sdk-angular/helm/button-group';
 import { HlmIcon } from 'ai-sdk-angular/helm/icon';
@@ -31,7 +31,7 @@ const languageExtensions: Record<string, string> = {
 @Component({
   selector: 'ai-code-block',
   imports: [HlmButton, HlmButtonGroup, HlmIcon, NgIcon],
-  providers: [provideIcons({ lucideCopy, lucideDownload })],
+  providers: [provideIcons({ lucideCheck, lucideCopy, lucideDownload })],
   encapsulation: ViewEncapsulation.None,
   host: {
     '[class]': 'classes()',
@@ -66,11 +66,11 @@ const languageExtensions: Record<string, string> = {
           type="button"
           variant="ghost"
           size="icon-xs"
-          title="Copy code"
-          aria-label="Copy code"
+          [title]="copyLabel()"
+          [attr.aria-label]="copyLabel()"
           (click)="copy()"
         >
-          <ng-icon hlmIcon size="sm" name="lucideCopy" />
+          <ng-icon hlmIcon size="sm" [name]="copied() ? 'lucideCheck' : 'lucideCopy'" />
         </button>
       </div>
     </div>
@@ -94,7 +94,9 @@ export class CodeBlock {
   private readonly document = inject(DOCUMENT);
   private readonly markdownOptions = inject(AI_MARKDOWN_OPTIONS);
 
+  protected readonly copied = signal(false);
   protected readonly languageLabel = computed(() => this.language().trim().toLowerCase() || 'text');
+  protected readonly copyLabel = computed(() => (this.copied() ? 'Copied code' : 'Copy code'));
 
   protected readonly highlightedCode = computed(() =>
     renderHighlightedCode(this.code(), this.languageLabel(), this.markdownOptions),
@@ -114,6 +116,9 @@ export class CodeBlock {
 
   protected async copy(): Promise<void> {
     await globalThis.navigator?.clipboard?.writeText(this.code());
+
+    this.copied.set(true);
+    globalThis.setTimeout(() => this.copied.set(false), 1400);
   }
 
   protected download(): void {

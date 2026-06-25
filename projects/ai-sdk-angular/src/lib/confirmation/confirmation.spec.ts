@@ -105,8 +105,16 @@ describe('Confirmation', () => {
   it('renders approval request content and actions when approval is requested', () => {
     const element = fixture.nativeElement as HTMLElement;
     const confirmation = element.querySelector('ai-confirmation');
+    const request = element.querySelector('ai-confirmation-request');
+    const accepted = element.querySelector('ai-confirmation-accepted');
+    const rejected = element.querySelector('ai-confirmation-rejected');
+    const actions = element.querySelector('ai-confirmation-actions');
 
     expect(confirmation?.hasAttribute('hidden')).toBe(false);
+    expect(request?.hasAttribute('hidden')).toBe(false);
+    expect(accepted?.hasAttribute('hidden')).toBe(true);
+    expect(rejected?.hasAttribute('hidden')).toBe(true);
+    expect(actions?.hasAttribute('hidden')).toBe(false);
     expect(confirmation?.classList).toContain('border');
     expect(confirmation?.classList).toContain('custom-confirmation');
     expect(element.textContent).toContain('Approval required');
@@ -122,7 +130,15 @@ describe('Confirmation', () => {
     fixture.detectChanges();
 
     const element = fixture.nativeElement as HTMLElement;
+    const request = element.querySelector('ai-confirmation-request');
+    const accepted = element.querySelector('ai-confirmation-accepted');
+    const rejected = element.querySelector('ai-confirmation-rejected');
+    const actions = element.querySelector('ai-confirmation-actions');
 
+    expect(request?.hasAttribute('hidden')).toBe(true);
+    expect(accepted?.hasAttribute('hidden')).toBe(false);
+    expect(rejected?.hasAttribute('hidden')).toBe(true);
+    expect(actions?.hasAttribute('hidden')).toBe(true);
     expect(element.textContent).toContain('Approved');
     expect(element.textContent).toContain('Accepted');
     expect(element.textContent).not.toContain('Needs approval');
@@ -134,7 +150,15 @@ describe('Confirmation', () => {
     fixture.detectChanges();
 
     const element = fixture.nativeElement as HTMLElement;
+    const request = element.querySelector('ai-confirmation-request');
+    const accepted = element.querySelector('ai-confirmation-accepted');
+    const rejected = element.querySelector('ai-confirmation-rejected');
+    const actions = element.querySelector('ai-confirmation-actions');
 
+    expect(request?.hasAttribute('hidden')).toBe(true);
+    expect(accepted?.hasAttribute('hidden')).toBe(true);
+    expect(rejected?.hasAttribute('hidden')).toBe(false);
+    expect(actions?.hasAttribute('hidden')).toBe(true);
     expect(element.textContent).toContain('Rejected');
     expect(element.textContent).not.toContain('Needs approval');
     expect(element.textContent).not.toContain('Accepted');
