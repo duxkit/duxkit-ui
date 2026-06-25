@@ -3,6 +3,7 @@
  */
 
 export * from './lib/ai-sdk-angular';
+export * from './lib/chain-of-thought';
 export * from './lib/types';
 export * from './lib/code-block';
 export * from './lib/confirmation';
