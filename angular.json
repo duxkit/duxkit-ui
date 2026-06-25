@@ -38,6 +38,7 @@
         "storybook": {
           "builder": "@storybook/angular:start-storybook",
           "options": {
+            "browserTarget": "playground:build:development",
             "configDir": ".storybook",
             "tsConfig": "projects/ai-sdk-angular/tsconfig.storybook.json",
             "styles": ["projects/playground/src/styles.scss"],
@@ -49,6 +50,7 @@
         "build-storybook": {
           "builder": "@storybook/angular:build-storybook",
           "options": {
+            "browserTarget": "playground:build:development",
             "configDir": ".storybook",
             "tsConfig": "projects/ai-sdk-angular/tsconfig.storybook.json",
             "styles": ["projects/playground/src/styles.scss"],
