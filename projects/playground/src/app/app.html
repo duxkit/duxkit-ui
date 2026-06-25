@@ -34,6 +34,7 @@
                       <ai-chain-of-thought-step
                         [status]="reasoningStepStatus(lastMessage, lastPart)"
                         [icon]="reasoningStepIcon(lastMessage, lastPart)"
+                        collapsedMaxHeight="160px"
                         label="Thinking"
                       >
                         <ai-reasoning-content [markdown]="part.text" />

@@ -68,6 +68,23 @@ class StreamingHost {
   readonly isStreaming = signal(false);
 }
 
+@Component({
+  imports: [ChainOfThought, ChainOfThoughtContent, ChainOfThoughtStep, ChainOfThoughtTrigger],
+  template: `
+    <ai-chain-of-thought [expanded]="true">
+      <button aiChainOfThoughtTrigger></button>
+      <ai-chain-of-thought-content>
+        <ai-chain-of-thought-step collapsedMaxHeight="120px" label="Long step">
+          <p>Line one</p>
+          <p>Line two</p>
+          <p>Line three</p>
+        </ai-chain-of-thought-step>
+      </ai-chain-of-thought-content>
+    </ai-chain-of-thought>
+  `,
+})
+class ClampedStepHost {}
+
 describe('ChainOfThought', () => {
   let fixture: ComponentFixture<Host>;
 
@@ -140,5 +157,51 @@ describe('ChainOfThought', () => {
     expect(streamingFixture.nativeElement.textContent).toContain('Thought for 6 seconds');
 
     vi.useRealTimers();
+  });
+
+  it('can clamp long step content behind a show more control', async () => {
+    const scrollHeight = vi.spyOn(HTMLElement.prototype, 'scrollHeight', 'get');
+    const clientHeight = vi.spyOn(HTMLElement.prototype, 'clientHeight', 'get');
+
+    scrollHeight.mockReturnValue(300);
+    clientHeight.mockReturnValue(120);
+
+    const clampedFixture = TestBed.createComponent(ClampedStepHost);
+    clampedFixture.detectChanges();
+    await clampedFixture.whenStable();
+    await new Promise((resolve) => setTimeout(resolve, 0));
+    clampedFixture.detectChanges();
+    await clampedFixture.whenStable();
+
+    const element = clampedFixture.nativeElement as HTMLElement;
+    const clampedContent = element.querySelector<HTMLElement>('[style*="max-height"]');
+    const showMore = element.querySelector<HTMLButtonElement>(
+      'ai-chain-of-thought-step button[type="button"]',
+    );
+
+    expect(clampedContent?.style.maxHeight).toBe('120px');
+    expect(showMore).not.toBeNull();
+    expect(showMore?.textContent).toContain('Show more');
+
+    showMore?.click();
+    clampedFixture.detectChanges();
+    await clampedFixture.whenStable();
+
+    expect(clampedContent?.style.maxHeight).toBe('');
+
+    const showLess = element.querySelector<HTMLButtonElement>(
+      'ai-chain-of-thought-step button[type="button"]',
+    );
+
+    expect(showLess?.textContent).toContain('Show less');
+
+    showLess?.click();
+    clampedFixture.detectChanges();
+    await clampedFixture.whenStable();
+
+    expect(clampedContent?.style.maxHeight).toBe('120px');
+
+    scrollHeight.mockRestore();
+    clientHeight.mockRestore();
   });
 });

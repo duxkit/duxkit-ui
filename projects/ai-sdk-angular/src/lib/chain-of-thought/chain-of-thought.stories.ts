@@ -10,6 +10,15 @@ import {
   ChainOfThoughtTrigger,
 } from './';
 
+const longThought = [
+  'The model first separates the user request into intent, constraints, and current UI state.',
+  'It then checks whether the answer should be represented as normal message content, a tool step, or a reasoning step.',
+  'For a long internal trace, the component should keep the conversation readable by limiting the visible height.',
+  'The fade overlay indicates that more content exists without introducing a nested scroll region.',
+  'After the user expands the step, the full content remains inline so copy, selection, and normal document flow still work.',
+  'Consumers can choose the exact clamp height depending on their layout density and target device size.',
+].join(' ');
+
 const meta: Meta = {
   title: 'Components/Chain Of Thought',
   decorators: [
@@ -96,4 +105,34 @@ export const Collapsed: Story = {
   args: {
     expanded: false,
   },
+};
+
+export const ClampedStep: Story = {
+  render: (args) => ({
+    props: {
+      ...args,
+      longThought,
+    },
+    template: `
+      <ai-chain-of-thought
+        class="w-[560px]"
+        [expanded]="true"
+        [autoToggle]="false"
+      >
+        <button aiChainOfThoughtTrigger label="Thought for 12 seconds"></button>
+        <ai-chain-of-thought-content>
+          <ai-chain-of-thought-step
+            status="complete"
+            icon="lucideCircleCheck"
+            label="Reasoning"
+            description="Long reasoning can be collapsed to keep the message compact."
+            collapsedMaxHeight="120px"
+          >
+            <p class="m-0 leading-relaxed">{{ longThought }}</p>
+            <p class="mt-2 mb-0 leading-relaxed">{{ longThought }}</p>
+          </ai-chain-of-thought-step>
+        </ai-chain-of-thought-content>
+      </ai-chain-of-thought>
+    `,
+  }),
 };

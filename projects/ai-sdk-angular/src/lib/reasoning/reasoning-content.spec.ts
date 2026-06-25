@@ -43,6 +43,20 @@ class MarkdownHost {
   );
 }
 
+@Component({
+  imports: [Reasoning, ReasoningContent],
+  template: `
+    <ai-reasoning [isStreaming]="true">
+      <ai-reasoning-content collapsedMaxHeight="120px">
+        <p>Line one</p>
+        <p>Line two</p>
+        <p>Line three</p>
+      </ai-reasoning-content>
+    </ai-reasoning>
+  `,
+})
+class ClampedHost {}
+
 describe('ReasoningContent', () => {
   let fixture: ComponentFixture<Host>;
 
@@ -87,7 +101,7 @@ describe('ReasoningContent', () => {
     await markdownFixture.whenStable();
 
     const element = markdownFixture.nativeElement as HTMLElement;
-    const markdown = element.querySelector('ai-reasoning-content > div');
+    const markdown = element.querySelector('.ai-markdown');
     const strong = element.querySelector('strong');
     const script = element.querySelector('script');
     const image = element.querySelector('img');
@@ -103,5 +117,53 @@ describe('ReasoningContent', () => {
     expect(element.querySelector('ai-code-block .hljs-attr')?.textContent).toContain('status');
     expect(script).toBeNull();
     expect(image?.getAttribute('onerror')).toBeNull();
+  });
+
+  it('can clamp long reasoning content behind a show more control', async () => {
+    const scrollHeight = vi.spyOn(HTMLElement.prototype, 'scrollHeight', 'get');
+    const clientHeight = vi.spyOn(HTMLElement.prototype, 'clientHeight', 'get');
+
+    scrollHeight.mockReturnValue(300);
+    clientHeight.mockReturnValue(120);
+
+    await TestBed.resetTestingModule()
+      .configureTestingModule({
+        imports: [ClampedHost],
+      })
+      .compileComponents();
+
+    const clampedFixture = TestBed.createComponent(ClampedHost);
+    clampedFixture.detectChanges();
+    await clampedFixture.whenStable();
+    await new Promise((resolve) => setTimeout(resolve, 0));
+    clampedFixture.detectChanges();
+    await clampedFixture.whenStable();
+
+    const element = clampedFixture.nativeElement as HTMLElement;
+    const clampedContent = element.querySelector<HTMLElement>('[style*="max-height"]');
+    const showMore = element.querySelector<HTMLButtonElement>('button[type="button"]');
+
+    expect(clampedContent?.style.maxHeight).toBe('120px');
+    expect(showMore).not.toBeNull();
+    expect(showMore?.textContent).toContain('Show more');
+
+    showMore?.click();
+    clampedFixture.detectChanges();
+    await clampedFixture.whenStable();
+
+    expect(clampedContent?.style.maxHeight).toBe('');
+
+    const showLess = element.querySelector<HTMLButtonElement>('button[type="button"]');
+
+    expect(showLess?.textContent).toContain('Show less');
+
+    showLess?.click();
+    clampedFixture.detectChanges();
+    await clampedFixture.whenStable();
+
+    expect(clampedContent?.style.maxHeight).toBe('120px');
+
+    scrollHeight.mockRestore();
+    clientHeight.mockRestore();
   });
 });
