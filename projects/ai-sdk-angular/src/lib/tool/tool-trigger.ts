@@ -21,7 +21,7 @@ import { ToolStatus } from './tool-status';
         <div class="flex items-center gap-2">
           <ng-icon hlm size="sm" name="lucideWrench" />
           <span class="min-w-0 truncate font-medium">{{ tool.name() }}</span>
-          <ai-tool-status variant="icon" />
+          <ai-tool-status></ai-tool-status>
         </div>
         <div class="flex items-center">
           <ng-icon hlm size="sm" name="lucideChevronDown" [class.rotate-180]="expanded()" />
