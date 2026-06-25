@@ -1,7 +1,7 @@
 import 'dotenv/config';
 
 import { createOpenAICompatible } from '@ai-sdk/openai-compatible';
-import { convertToModelMessages, streamText } from 'ai';
+import { convertToModelMessages, jsonSchema, stepCountIs, streamText, tool } from 'ai';
 import express from 'express';
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import { dirname } from 'node:path';
@@ -14,14 +14,50 @@ const host = process.env.PLAYGROUND_API_HOST ?? '127.0.0.1';
 const baseURL = process.env.OLLAMA_BASE_URL ?? 'http://127.0.0.1:11434/v1';
 const modelId = process.env.OLLAMA_MODEL ?? 'qwen3:4b';
 const chatStorePath =
-  process.env.PLAYGROUND_CHAT_STORE ??
-  fileURLToPath(new URL('./chat-store.json', import.meta.url));
+  process.env.PLAYGROUND_CHAT_STORE ?? fileURLToPath(new URL('./chat-store.json', import.meta.url));
 
 const ollama = createOpenAICompatible({
   name: 'ollama',
   baseURL,
   apiKey: process.env.OLLAMA_API_KEY,
 });
+
+const tools = {
+  getWeather: tool({
+    description:
+      'Get deterministic test weather for a city. Use this when the user asks about weather or asks to test a tool call.',
+    inputSchema: jsonSchema({
+      type: 'object',
+      properties: {
+        city: {
+          type: 'string',
+          description: 'The city to get test weather for.',
+        },
+        unit: {
+          type: 'string',
+          enum: ['celsius', 'fahrenheit'],
+          description: 'The temperature unit to return.',
+        },
+      },
+      required: ['city'],
+      additionalProperties: false,
+    }),
+    execute: async ({ city, unit = 'celsius' }) => {
+      const normalizedCity = String(city).trim() || 'Unknown';
+      const celsius = 18 + (normalizedCity.length % 8);
+      const temperature = unit === 'fahrenheit' ? Math.round((celsius * 9) / 5 + 32) : celsius;
+
+      return {
+        city: normalizedCity,
+        unit,
+        temperature,
+        condition: 'partly cloudy',
+        source: 'playground-test-tool',
+        generatedAt: new Date().toISOString(),
+      };
+    },
+  }),
+};
 
 app.use(express.json({ limit: '1mb' }));
 
@@ -42,11 +78,20 @@ async function readPersistedMessages() {
 
 async function writePersistedMessages(messages) {
   await mkdir(dirname(chatStorePath), { recursive: true });
-  await writeFile(
-    chatStorePath,
-    JSON.stringify({ messages }, null, 2),
-    'utf8',
-  );
+  await writeFile(chatStorePath, JSON.stringify({ messages }, null, 2), 'utf8');
+}
+
+function getLatestUserText(messages) {
+  const latestMessage = messages.at(-1);
+
+  if (latestMessage?.role !== 'user' || !Array.isArray(latestMessage.parts)) {
+    return '';
+  }
+
+  return latestMessage.parts
+    .filter((part) => part.type === 'text')
+    .map((part) => part.text)
+    .join('\n');
 }
 
 app.get('/api/health', (_req, res) => {
@@ -81,11 +126,16 @@ app.post('/api/chat', async (req, res) => {
 
     await writePersistedMessages(messages);
 
+    const latestUserText = getLatestUserText(messages);
+    const shouldForceTool = /\b(force|test|use)\b[\s\S]*\btool\b/i.test(latestUserText);
     const result = streamText({
       model: ollama(modelId),
       system:
-        'You are helping test an Angular AI component library. Keep responses concise.',
+        'You are helping test an Angular AI component library. Keep responses concise. If the user asks to test tools or asks about weather, call the getWeather tool.',
       messages: await convertToModelMessages(messages),
+      tools,
+      toolChoice: shouldForceTool ? { type: 'tool', toolName: 'getWeather' } : 'auto',
+      stopWhen: stepCountIs(3),
     });
 
     const response = result.toUIMessageStreamResponse({
@@ -124,7 +174,5 @@ app.post('/api/chat', async (req, res) => {
 });
 
 app.listen(port, host, () => {
-  console.log(
-    `Playground API listening on http://${host}:${port} using ${modelId}`,
-  );
+  console.log(`Playground API listening on http://${host}:${port} using ${modelId}`);
 });

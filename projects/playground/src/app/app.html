@@ -32,6 +32,12 @@
               @if (part.type === 'text' && part.text.trim().length > 0) {
                 <ai-message-content [markdown]="part.text" />
               }
+              @if (isToolPart(part)) {
+                <ai-tool [part]="part">
+                  <button aiToolTrigger></button>
+                  <ai-tool-content />
+                </ai-tool>
+              }
             }
 
             @if (message.role === 'assistant' && lastMessage && chat.status === 'ready') {
@@ -59,6 +65,12 @@
         The local model request failed. Check that Ollama is running and the model is pulled.
       </p>
     }
+
+    <div class="example-actions">
+      <button type="button" (click)="useToolExample()" [disabled]="chat.status !== 'ready'">
+        Use tool example
+      </button>
+    </div>
 
     <form class="composer" (submit)="sendMessage(); $event.preventDefault()">
       <label class="sr-only" for="prompt">Message</label>

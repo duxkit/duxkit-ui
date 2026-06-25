@@ -98,6 +98,14 @@ h1 {
   line-height: 1.5;
 }
 
+.part-type {
+  display: inline-block;
+  margin: 4px 0;
+  color: #71717a;
+  font-size: 12px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+}
+
 .error {
   margin: 0;
   border: 1px solid #fecaca;
@@ -105,6 +113,34 @@ h1 {
   padding: 10px 12px;
   background: #fef2f2;
   color: #991b1b;
+}
+
+.example-actions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.example-actions button {
+  min-height: 36px;
+  border: 1px solid #d4d4d8;
+  border-radius: 8px;
+  background: #ffffff;
+  padding: 0 12px;
+  color: #3f3f46;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.example-actions button:disabled {
+  color: #a1a1aa;
+  cursor: not-allowed;
+}
+
+.example-actions button:focus-visible {
+  outline: 2px solid #0f766e;
+  outline-offset: 2px;
 }
 
 .composer {

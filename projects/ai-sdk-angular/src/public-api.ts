@@ -9,3 +9,4 @@ export * from './lib/conversation';
 export * from './lib/markdown';
 export * from './lib/message';
 export * from './lib/reasoning';
+export * from './lib/tool';

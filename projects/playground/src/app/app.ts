@@ -2,6 +2,7 @@ import { Component, computed, signal } from '@angular/core';
 import { Chat } from '@ai-sdk/angular';
 import type { UIMessage } from 'ai';
 import {
+  type AiToolPart,
   Conversation,
   ConversationContent,
   ConversationScrollAnchor,
@@ -14,7 +15,12 @@ import {
   Reasoning,
   ReasoningContent,
   ReasoningTrigger,
+  Tool,
+  ToolContent,
+  ToolTrigger,
 } from 'ai-sdk-angular';
+
+type MessagePart = UIMessage['parts'][number];
 
 @Component({
   selector: 'app-root',
@@ -31,6 +37,9 @@ import {
     Reasoning,
     ReasoningContent,
     ReasoningTrigger,
+    Tool,
+    ToolContent,
+    ToolTrigger,
   ],
   templateUrl: './app.html',
   styleUrl: './app.scss',
@@ -66,6 +75,14 @@ export class App {
 
   protected setMessageFeedback(messageId: string, feedback: 'up' | 'down'): void {
     this.messageFeedback.update((current) => ({ ...current, [messageId]: feedback }));
+  }
+
+  protected useToolExample(): void {
+    this.prompt.set('Use the getWeather tool for London in celsius, then summarize the result.');
+  }
+
+  protected isToolPart(part: MessagePart): part is AiToolPart {
+    return part.type === 'dynamic-tool' || part.type.startsWith('tool-');
   }
 
   private async loadPersistedMessages(): Promise<void> {
