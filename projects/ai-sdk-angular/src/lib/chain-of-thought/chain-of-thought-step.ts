@@ -106,11 +106,13 @@ export class ChainOfThoughtStep implements AfterViewInit, OnDestroy {
   public readonly description = input<string | undefined>();
   public readonly status = input<ChainOfThoughtStepStatus>('complete');
   public readonly collapsedMaxHeight = input<number | string | undefined>();
+  public readonly pinToBottom = input(false);
   public readonly showMoreLabel = input('Show more');
   public readonly showLessLabel = input('Show less');
   public readonly userClass = input<string | undefined>(undefined, { alias: 'class' });
   private readonly clampedContent = viewChild<ElementRef<HTMLElement>>('clampedContent');
   private resizeObserver: ResizeObserver | undefined;
+  private mutationObserver: MutationObserver | undefined;
 
   protected readonly expanded = signal(false);
   protected readonly hasOverflow = signal(false);
@@ -142,8 +144,9 @@ export class ChainOfThoughtStep implements AfterViewInit, OnDestroy {
     effect(() => {
       this.collapsedMaxHeight();
       this.expanded();
+      this.pinToBottom();
 
-      queueMicrotask(() => this.measureOverflow());
+      queueMicrotask(() => this.syncClampState());
     });
   }
 
@@ -155,15 +158,25 @@ export class ChainOfThoughtStep implements AfterViewInit, OnDestroy {
     }
 
     if (typeof ResizeObserver !== 'undefined') {
-      this.resizeObserver = new ResizeObserver(() => this.measureOverflow());
+      this.resizeObserver = new ResizeObserver(() => this.syncClampState());
       this.resizeObserver.observe(content);
     }
 
-    queueMicrotask(() => this.measureOverflow());
+    if (typeof MutationObserver !== 'undefined') {
+      this.mutationObserver = new MutationObserver(() => this.syncClampState());
+      this.mutationObserver.observe(content, {
+        childList: true,
+        characterData: true,
+        subtree: true,
+      });
+    }
+
+    queueMicrotask(() => this.syncClampState());
   }
 
   ngOnDestroy(): void {
     this.resizeObserver?.disconnect();
+    this.mutationObserver?.disconnect();
   }
 
   protected expandContent(): void {
@@ -174,7 +187,7 @@ export class ChainOfThoughtStep implements AfterViewInit, OnDestroy {
     this.expanded.set(false);
   }
 
-  private measureOverflow(): void {
+  private syncClampState(): void {
     const content = this.clampedContent()?.nativeElement;
 
     if (content === undefined || this.collapsedMaxHeight() === undefined) {
@@ -190,6 +203,10 @@ export class ChainOfThoughtStep implements AfterViewInit, OnDestroy {
     }
 
     this.hasOverflow.set(content.scrollHeight > content.clientHeight + 1);
+
+    if (this.pinToBottom() && this.isClamped()) {
+      content.scrollTop = content.scrollHeight;
+    }
   }
 
   private formatMaxHeight(value: number | string | undefined): string | null {

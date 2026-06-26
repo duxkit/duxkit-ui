@@ -20,9 +20,14 @@
         }
 
         @for (message of chat.messages; track message.id; let lastMessage = $last) {
-          <ai-message [from]="message.role">
+          <ai-message
+            class="group"
+            [from]="message.role"
+            [attr.tabindex]="message.role === 'user' ? 0 : null"
+          >
             @if (message.role === 'assistant' && hasChainOfThought(message)) {
               <ai-chain-of-thought
+                class="mb-2"
                 [expanded]="chainOfThoughtExpanded(message, lastMessage)"
                 [autoToggle]="false"
                 [isStreaming]="lastMessage && chat.status === 'streaming'"
@@ -34,6 +39,7 @@
                       <ai-chain-of-thought-step
                         [status]="reasoningStepStatus(lastMessage, lastPart)"
                         [icon]="reasoningStepIcon(lastMessage, lastPart)"
+                        [pinToBottom]="lastMessage && lastPart && chat.status === 'streaming'"
                         collapsedMaxHeight="160px"
                         label="Thinking"
                       >
@@ -88,6 +94,14 @@
               @if (part.type === 'text' && part.text.trim().length > 0) {
                 <ai-message-content [markdown]="part.text" />
               }
+            }
+
+            @if (message.role === 'user') {
+              <ai-message-actions
+                class="invisible group-hover:visible group-focus:visible group-focus-within:visible"
+              >
+                <ai-message-actions-copy />
+              </ai-message-actions>
             }
 
             @if (message.role === 'assistant' && lastMessage && chat.status === 'ready') {

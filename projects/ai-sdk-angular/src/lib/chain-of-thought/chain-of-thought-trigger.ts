@@ -18,7 +18,7 @@ import { ChainOfThought } from './chain-of-thought';
   template: `
     <ng-content>
       <ng-icon hlm size="sm" name="lucideBrain" />
-      <span class="min-w-0 flex-1 truncate text-left">{{ triggerLabel() }}</span>
+      <span class="min-w-0 truncate text-left">{{ triggerLabel() }}</span>
       <ng-icon
         hlm
         size="sm"

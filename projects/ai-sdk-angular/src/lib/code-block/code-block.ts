@@ -6,7 +6,7 @@ import { HlmButton } from 'ai-sdk-angular/helm/button';
 import { HlmButtonGroup } from 'ai-sdk-angular/helm/button-group';
 import { HlmIcon } from 'ai-sdk-angular/helm/icon';
 import { twMerge } from 'tailwind-merge';
-import { AI_MARKDOWN_OPTIONS, markdownStyles, renderHighlightedCode } from '../markdown';
+import { AI_MARKDOWN_OPTIONS, renderHighlightedCode } from '../markdown';
 
 const languageExtensions: Record<string, string> = {
   bash: 'sh',
@@ -40,7 +40,7 @@ const languageExtensions: Record<string, string> = {
     '[style.content-visibility]': '"auto"',
     '[style.contain-intrinsic-size]': '"auto 200px"',
   },
-  styles: [markdownStyles],
+  styleUrl: '../markdown.scss',
   template: `
     <div
       class="ai-code-block-header"

@@ -86,7 +86,7 @@ export class ReasoningTrigger {
 
   protected readonly classes = computed(() =>
     twMerge(
-      'flex w-full items-center gap-2 text-muted-foreground text-sm transition-colors hover:text-foreground',
+      'flex items-center gap-2 text-muted-foreground text-sm transition-colors hover:text-foreground',
       this.userClass(),
     ),
   );

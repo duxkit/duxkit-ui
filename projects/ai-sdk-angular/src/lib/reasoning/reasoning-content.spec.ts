@@ -47,7 +47,7 @@ class MarkdownHost {
   imports: [Reasoning, ReasoningContent],
   template: `
     <ai-reasoning [isStreaming]="true">
-      <ai-reasoning-content collapsedMaxHeight="120px">
+      <ai-reasoning-content collapsedMaxHeight="120px" [pinToBottom]="true">
         <p>Line one</p>
         <p>Line two</p>
         <p>Line three</p>
@@ -144,6 +144,7 @@ describe('ReasoningContent', () => {
     const showMore = element.querySelector<HTMLButtonElement>('button[type="button"]');
 
     expect(clampedContent?.style.maxHeight).toBe('120px');
+    expect(clampedContent?.scrollTop).toBe(300);
     expect(showMore).not.toBeNull();
     expect(showMore?.textContent).toContain('Show more');
 

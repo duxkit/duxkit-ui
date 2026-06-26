@@ -74,7 +74,7 @@ class StreamingHost {
     <ai-chain-of-thought [expanded]="true">
       <button aiChainOfThoughtTrigger></button>
       <ai-chain-of-thought-content>
-        <ai-chain-of-thought-step collapsedMaxHeight="120px" label="Long step">
+        <ai-chain-of-thought-step collapsedMaxHeight="120px" [pinToBottom]="true" label="Long step">
           <p>Line one</p>
           <p>Line two</p>
           <p>Line three</p>
@@ -180,6 +180,7 @@ describe('ChainOfThought', () => {
     );
 
     expect(clampedContent?.style.maxHeight).toBe('120px');
+    expect(clampedContent?.scrollTop).toBe(300);
     expect(showMore).not.toBeNull();
     expect(showMore?.textContent).toContain('Show more');
 

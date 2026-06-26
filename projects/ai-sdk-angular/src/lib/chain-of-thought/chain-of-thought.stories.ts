@@ -136,3 +136,35 @@ export const ClampedStep: Story = {
     `,
   }),
 };
+
+export const PinnedClampedStep: Story = {
+  render: (args) => ({
+    props: {
+      ...args,
+      longThought,
+    },
+    template: `
+      <ai-chain-of-thought
+        class="w-[560px]"
+        [expanded]="true"
+        [autoToggle]="false"
+        [isStreaming]="true"
+      >
+        <button aiChainOfThoughtTrigger></button>
+        <ai-chain-of-thought-content>
+          <ai-chain-of-thought-step
+            status="active"
+            icon="lucideLoaderCircle"
+            label="Streaming reasoning"
+            description="When pinned, the clamped viewport follows the newest generated text."
+            collapsedMaxHeight="120px"
+            [pinToBottom]="true"
+          >
+            <p class="m-0 leading-relaxed">{{ longThought }}</p>
+            <p class="mt-2 mb-0 leading-relaxed">{{ longThought }}</p>
+          </ai-chain-of-thought-step>
+        </ai-chain-of-thought-content>
+      </ai-chain-of-thought>
+    `,
+  }),
+};

@@ -13,7 +13,6 @@ import { twMerge } from 'tailwind-merge';
 import {
   AI_MARKDOWN_OPTIONS,
   markdownContentClasses,
-  markdownStyles,
   parseMarkdownBlocks,
 } from '../markdown';
 import { CodeBlock } from '../code-block';
@@ -44,7 +43,7 @@ export type MessageContentVariants = VariantProps<typeof messageContentVariants>
   host: {
     '[class]': '_classes()',
   },
-  styles: [markdownStyles],
+  styleUrl: '../markdown.scss',
   template: `
     @if (markdown() !== undefined) {
       <div [class]="markdownClasses">
