@@ -1,57 +1,201 @@
-# Angular AI SDK Kit
+# DuxKit AI
 
-Angular AI UI primitives built on the Vercel AI SDK and Spartan UI.
+Angular AI UI primitives built on the Vercel AI SDK, Angular signals, Spartan UI, Tailwind CSS, and Nx.
 
-This package is set up as a normal Angular library with Spartan Helm generated as package secondary entrypoints. The first component work should build on these generated Helm exports instead of copying ad-hoc button/input/avatar code into each AI component.
+This repository is an Nx workspace containing the publishable component library, a local playground, and a starter marketing/docs site.
+
+## Workspace
+
+```text
+projects/
+  duxkit-ai/   # publishable Angular library
+  playground/       # local app for testing chat, tools, reasoning, and streaming UI
+  www/              # marketing/docs site
+```
+
+Nx project names:
+
+```bash
+pnpm nx show projects
+```
+
+Expected projects:
+
+```text
+duxkit-ai
+playground
+www
+```
 
 ## Stack
 
 - Angular 22
+- Nx 23
 - `@ai-sdk/angular` and `ai`
 - Spartan `@spartan-ng/brain`
-- Spartan Helm generated entrypoints
+- Spartan Helm generated secondary entrypoints
 - Tailwind CSS v4
 - `@tailwindcss/postcss`
+- Storybook 10
 - Vitest through the Angular test builder
 
-## Node
+## Node And Install
 
-Use the pinned Node version before running Angular or Spartan commands:
+Use the pinned Node version before running workspace commands:
 
 ```bash
 nvm use
+pnpm install
 ```
 
-If the host shell overrides `node`, use:
+The repo currently expects Node `24.15.0`, from `.nvmrc`.
+
+If a host shell overrides `node`, use:
 
 ```bash
 unset npm_config_prefix
 source ~/.nvm/nvm.sh
-export PATH="$(dirname $(nvm which 24.15.0)):$PATH"
+export PATH="$(dirname "$(nvm which 24.15.0)"):$PATH"
 ```
+
+## Common Commands
+
+Run the playground:
+
+```bash
+pnpm start:playground
+```
+
+This starts both the local Express API and the Angular playground. Use `pnpm start` only when you want the Angular playground dev server without the API process.
+
+Run the marketing/docs site:
+
+```bash
+pnpm start:www
+```
+
+Run Storybook:
+
+```bash
+pnpm storybook
+```
+
+Default local ports:
+
+```text
+playground Angular app: http://localhost:4200
+playground API:         http://localhost:8787
+www Angular app:        http://localhost:4200
+storybook:              http://localhost:6006
+```
+
+Build everything:
+
+```bash
+pnpm build
+```
+
+Build individual projects:
+
+```bash
+pnpm build:lib
+pnpm build:playground
+pnpm build:www
+pnpm build:storybook
+```
+
+Run tests:
+
+```bash
+pnpm test:ci
+```
+
+Inspect the Nx graph:
+
+```bash
+pnpm nx graph
+pnpm nx graph --file=tmp/nx-graph.json
+```
+
+Run a direct Nx target:
+
+```bash
+pnpm nx build duxkit-ai
+pnpm nx serve playground
+pnpm nx serve www
+pnpm nx run duxkit-ai:storybook
+```
+
+## Build Notes
+
+`playground` imports from the package name:
+
+```ts
+import { Conversation, Message, MessageContent } from 'duxkit-ai';
+```
+
+That is intentional. The playground should exercise the library like a consumer would. The `playground` Nx project has an implicit dependency on `duxkit-ai`, so workspace builds build the library before the playground.
+
+Library output is written to:
+
+```text
+dist/duxkit-ai
+```
+
+App outputs are written to:
+
+```text
+dist/playground
+dist/www
+```
+
+Storybook output is written to:
+
+```text
+dist/storybook/duxkit-ai
+```
+
+Current non-blocking warnings you may see:
+
+- The playground production bundle is over its warning budget.
+- Storybook emits CommonJS and asset-size warnings.
+- Some Nx, Storybook, or Spartan peer ranges may lag Angular 22 even when builds pass.
 
 ## Library Entrypoints
 
 Primary package:
 
 ```ts
-import { AiChatStatus, AiMessage, AiMessagePart } from 'ai-sdk-angular';
+import {
+  ChainOfThought,
+  Conversation,
+  Message,
+  MessageContent,
+  ReasoningContent,
+  Tool,
+} from 'duxkit-ai';
 ```
 
 Generated Spartan Helm entrypoints:
 
 ```ts
-import { HlmButton } from 'ai-sdk-angular/helm/button';
-import { HlmInput } from 'ai-sdk-angular/helm/input';
-import { HlmTextarea } from 'ai-sdk-angular/helm/textarea';
-import { HlmAvatar } from 'ai-sdk-angular/helm/avatar';
-import { HlmTooltip } from 'ai-sdk-angular/helm/tooltip';
-import { provideSpartanHlm } from 'ai-sdk-angular/helm/utils';
+import { HlmButton } from 'duxkit-ai/helm/button';
+import { HlmInput } from 'duxkit-ai/helm/input';
+import { HlmTextarea } from 'duxkit-ai/helm/textarea';
+import { HlmAvatar } from 'duxkit-ai/helm/avatar';
+import { HlmTooltip } from 'duxkit-ai/helm/tooltip';
+import { provideSpartanHlm } from 'duxkit-ai/helm/utils';
 ```
 
-## Spartan Setup
+The public API surface lives in:
 
-The playground is initialized with the Spartan Tailwind preset and zinc theme in:
+```text
+projects/duxkit-ai/src/public-api.ts
+```
+
+## Spartan And Tailwind Setup
+
+The playground is initialized with the Spartan Tailwind preset and theme in:
 
 ```text
 projects/playground/src/styles.scss
@@ -84,7 +228,7 @@ The Spartan preset already imports `tw-animate-css` and the Angular CDK overlay 
 The Spartan CLI is configured by `components.json` to generate Helm entrypoints under:
 
 ```text
-projects/ai-sdk-angular/helm
+projects/duxkit-ai/helm
 ```
 
 Generate only the primitives the AI components actually need:
@@ -106,16 +250,6 @@ If the generated primitive should be published, add an `ng-package.json` beside 
   }
 }
 ```
-
-## Commands
-
-```bash
-pnpm build:lib
-pnpm build:playground
-pnpm test:ci
-```
-
-`pnpm build:lib` should emit the primary package plus the Helm secondary entrypoints under `dist/ai-sdk-angular`.
 
 ## Playground With Ollama
 
@@ -144,3 +278,35 @@ OLLAMA_MODEL=llama3.2 pnpm start:playground
 ```
 
 The Angular app calls `/api/chat`; `projects/playground/proxy.conf.json` forwards that to the Express server on port `8787`.
+
+## Website
+
+The `www` app is the starter marketing/docs site.
+
+```bash
+pnpm start:www
+pnpm build:www
+```
+
+Source files:
+
+```text
+projects/www/src/app
+```
+
+## Before Committing
+
+Run:
+
+```bash
+pnpm build
+pnpm test:ci
+pnpm build:storybook
+```
+
+For a faster library-only check:
+
+```bash
+pnpm build:lib
+pnpm nx test duxkit-ai -- --watch=false
+```

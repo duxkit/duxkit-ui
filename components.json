@@ -1,6 +1,6 @@
 {
-  "componentsPath": "projects/ai-sdk-angular/helm",
+  "componentsPath": "projects/duxkit-ai/helm",
   "buildable": false,
   "generateAs": "library",
-  "importAlias": "ai-sdk-angular/helm"
+  "importAlias": "duxkit-ai/helm"
 }

@@ -1,0 +1,37 @@
+{
+  "$schema": "./node_modules/nx/schemas/nx-schema.json",
+  "targetDefaults": {
+    "build": {
+      "cache": true,
+      "dependsOn": ["^build"],
+      "inputs": ["production", "^production"]
+    },
+    "test": {
+      "cache": true,
+      "inputs": ["default", "^production"]
+    },
+    "build-storybook": {
+      "cache": true
+    },
+    "@angular/build:application": {
+      "cache": true,
+      "dependsOn": ["^build"],
+      "inputs": ["production", "^production"]
+    }
+  },
+  "defaultBase": "master",
+  "namedInputs": {
+    "sharedGlobals": [],
+    "default": ["{projectRoot}/**/*", "sharedGlobals"],
+    "production": ["default"]
+  },
+  "generators": {
+    "@nx/angular:application": {
+      "e2eTestRunner": "none",
+      "linter": "none",
+      "style": "scss",
+      "unitTestRunner": "none"
+    }
+  },
+  "analytics": false
+}

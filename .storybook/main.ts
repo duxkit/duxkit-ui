@@ -1,7 +1,7 @@
 import type { StorybookConfig } from '@storybook/angular';
 
 const config: StorybookConfig = {
-  stories: ['../projects/ai-sdk-angular/src/lib/**/*.stories.ts'],
+  stories: ['../projects/duxkit-ai/src/lib/**/*.stories.ts'],
   addons: ['@storybook/addon-docs', '@storybook/addon-a11y'],
   framework: {
     name: '@storybook/angular',

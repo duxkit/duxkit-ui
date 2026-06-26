@@ -1,0 +1,82 @@
+{
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "name": "playground",
+  "projectType": "application",
+  "implicitDependencies": [
+    "duxkit-ai"
+  ],
+  "generators": {
+    "@schematics/angular:component": {
+      "style": "scss"
+    }
+  },
+  "sourceRoot": "projects/playground/src",
+  "prefix": "app",
+  "targets": {
+    "build": {
+      "executor": "@angular/build:application",
+      "options": {
+        "browser": "projects/playground/src/main.ts",
+        "tsConfig": "projects/playground/tsconfig.app.json",
+        "inlineStyleLanguage": "scss",
+        "assets": [
+          {
+            "glob": "**/*",
+            "input": "projects/playground/public"
+          }
+        ],
+        "styles": [
+          "projects/playground/src/styles.scss"
+        ],
+        "allowedCommonJsDependencies": [
+          "@vercel/oidc"
+        ],
+        "outputPath": "dist/playground"
+      },
+      "configurations": {
+        "production": {
+          "budgets": [
+            {
+              "type": "initial",
+              "maximumWarning": "800kB",
+              "maximumError": "1.2MB"
+            },
+            {
+              "type": "anyComponentStyle",
+              "maximumWarning": "4kB",
+              "maximumError": "8kB"
+            }
+          ],
+          "outputHashing": "all"
+        },
+        "development": {
+          "optimization": false,
+          "extractLicenses": false,
+          "sourceMap": true
+        }
+      },
+      "defaultConfiguration": "production",
+      "outputs": [
+        "{options.outputPath}"
+      ]
+    },
+    "serve": {
+      "executor": "@angular/build:dev-server",
+      "options": {
+        "proxyConfig": "projects/playground/proxy.conf.json"
+      },
+      "configurations": {
+        "production": {
+          "buildTarget": "playground:build:production"
+        },
+        "development": {
+          "buildTarget": "playground:build:development"
+        }
+      },
+      "defaultConfiguration": "development"
+    },
+    "test": {
+      "executor": "@angular/build:unit-test"
+    }
+  }
+}

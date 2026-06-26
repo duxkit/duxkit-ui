@@ -2,17 +2,17 @@
   "compileOnSave": false,
   "compilerOptions": {
     "paths": {
-      "ai-sdk-angular": ["./dist/ai-sdk-angular"],
-      "ai-sdk-angular/helm/button": ["./projects/ai-sdk-angular/helm/button/src/index.ts"],
-      "ai-sdk-angular/helm/button-group": [
-        "./projects/ai-sdk-angular/helm/button-group/src/index.ts"
+      "duxkit-ai": ["./dist/duxkit-ai"],
+      "duxkit-ai/helm/button": ["./projects/duxkit-ai/helm/button/src/index.ts"],
+      "duxkit-ai/helm/button-group": [
+        "./projects/duxkit-ai/helm/button-group/src/index.ts"
       ],
-      "ai-sdk-angular/helm/utils": ["./projects/ai-sdk-angular/helm/utils/src/index.ts"],
-      "ai-sdk-angular/helm/textarea": ["./projects/ai-sdk-angular/helm/textarea/src/index.ts"],
-      "ai-sdk-angular/helm/avatar": ["./projects/ai-sdk-angular/helm/avatar/src/index.ts"],
-      "ai-sdk-angular/helm/tooltip": ["./projects/ai-sdk-angular/helm/tooltip/src/index.ts"],
-      "ai-sdk-angular/helm/input": ["./projects/ai-sdk-angular/helm/input/src/index.ts"],
-      "ai-sdk-angular/helm/icon": ["./projects/ai-sdk-angular/helm/icon/src/index.ts"]
+      "duxkit-ai/helm/utils": ["./projects/duxkit-ai/helm/utils/src/index.ts"],
+      "duxkit-ai/helm/textarea": ["./projects/duxkit-ai/helm/textarea/src/index.ts"],
+      "duxkit-ai/helm/avatar": ["./projects/duxkit-ai/helm/avatar/src/index.ts"],
+      "duxkit-ai/helm/tooltip": ["./projects/duxkit-ai/helm/tooltip/src/index.ts"],
+      "duxkit-ai/helm/input": ["./projects/duxkit-ai/helm/input/src/index.ts"],
+      "duxkit-ai/helm/icon": ["./projects/duxkit-ai/helm/icon/src/index.ts"]
     },
     "noImplicitOverride": true,
     "noPropertyAccessFromIndexSignature": true,
@@ -33,16 +33,19 @@
   "files": [],
   "references": [
     {
-      "path": "./projects/ai-sdk-angular/tsconfig.lib.json"
+      "path": "./projects/duxkit-ai/tsconfig.lib.json"
     },
     {
-      "path": "./projects/ai-sdk-angular/tsconfig.spec.json"
+      "path": "./projects/duxkit-ai/tsconfig.spec.json"
     },
     {
       "path": "./projects/playground/tsconfig.app.json"
     },
     {
       "path": "./projects/playground/tsconfig.spec.json"
+    },
+    {
+      "path": "./projects/www/tsconfig.app.json"
     }
   ]
 }

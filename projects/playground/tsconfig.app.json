@@ -6,8 +6,8 @@
     "outDir": "../../out-tsc/app",
     "types": [],
     "paths": {
-      "ai-sdk-angular": ["../../dist/ai-sdk-angular", "./dist/ai-sdk-angular"],
-      "ai-sdk-angular/helm/*": ["../../dist/ai-sdk-angular/helm/*", "./dist/ai-sdk-angular/helm/*"]
+      "duxkit-ai": ["../../dist/duxkit-ai", "./dist/duxkit-ai"],
+      "duxkit-ai/helm/*": ["../../dist/duxkit-ai/helm/*", "./dist/duxkit-ai/helm/*"]
     }
   },
   "include": ["src/**/*.ts"],

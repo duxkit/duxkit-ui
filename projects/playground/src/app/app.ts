@@ -30,7 +30,7 @@ import {
   Tool,
   ToolContent,
   ToolTrigger,
-} from 'ai-sdk-angular';
+} from 'duxkit-ai';
 
 type MessagePart = UIMessage['parts'][number];
 
@@ -109,7 +109,7 @@ export class App {
   protected chainOfThoughtExpanded(message: UIMessage, lastMessage: boolean): boolean {
     return (
       (lastMessage && this.chat.status === 'streaming') ||
-      message.parts.some((part) => this.isToolPart(part) && part.state === 'approval-requested')
+      message.parts.some((part) => this.isApprovalRequestedToolPart(part))
     );
   }
 
@@ -217,6 +217,12 @@ export class App {
 
   protected isToolPart(part: MessagePart): part is AiToolPart {
     return part.type === 'dynamic-tool' || part.type.startsWith('tool-');
+  }
+
+  protected isApprovalRequestedToolPart(
+    part: MessagePart,
+  ): part is AiToolPart & { state: 'approval-requested' } {
+    return this.isToolPart(part) && part.state === 'approval-requested';
   }
 
   protected respondToToolApproval(part: AiToolPart, approved: boolean): void {

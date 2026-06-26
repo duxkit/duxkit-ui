@@ -2,7 +2,7 @@
 module.exports = {
   content: [
     './projects/playground/src/**/*.{html,ts}',
-    './projects/ai-sdk-angular/src/**/*.{html,ts}',
-    './projects/ai-sdk-angular/helm/**/*.{html,ts}',
+    './projects/duxkit-ai/src/**/*.{html,ts}',
+    './projects/duxkit-ai/helm/**/*.{html,ts}',
   ],
 };

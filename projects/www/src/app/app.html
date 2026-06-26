@@ -1,0 +1,86 @@
+<main class="site-shell">
+  <header class="site-header">
+    <a class="brand" href="/" aria-label="DuxKit AI home">
+      <span class="brand-mark" aria-hidden="true">AI</span>
+      <span>DuxKit AI</span>
+    </a>
+
+    <nav aria-label="Primary navigation">
+      <a href="#components">Components</a>
+      <a href="#docs">Docs</a>
+      <a href="#playground">Playground</a>
+    </nav>
+  </header>
+
+  <section class="hero" aria-labelledby="hero-title">
+    <div class="hero-copy">
+      <p class="eyebrow">Angular components for AI apps</p>
+      <h1 id="hero-title">Build chat, reasoning, tools, and approvals with Angular-native primitives.</h1>
+      <p class="lede">
+        A component library shaped around the AI SDK, Angular signals, Spartan primitives, and real
+        streaming application states.
+      </p>
+
+      <div class="actions">
+        <a class="button primary" href="#docs">Read the docs</a>
+        <a class="button" href="#playground">Open playground</a>
+      </div>
+    </div>
+
+    <div class="preview" aria-label="Component preview">
+      <div class="preview-toolbar">
+        <span></span>
+        <span></span>
+        <span></span>
+      </div>
+      <div class="preview-message assistant">
+        <p>Thinking through tool permissions...</p>
+        <div class="preview-step">
+          <span class="dot"></span>
+          <div>
+            <strong>Chain of thought</strong>
+            <p>Search results, task steps, and tool confirmations stay inspectable.</p>
+          </div>
+        </div>
+      </div>
+      <div class="preview-message user">
+        <p>Show me the sources and let me approve the tool.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="components" class="section">
+    <p class="eyebrow">Component surface</p>
+    <div class="component-grid">
+      <article>
+        <h2>Messages</h2>
+        <p>Markdown, actions, feedback, and copy behavior built around AI SDK message parts.</p>
+      </article>
+      <article>
+        <h2>Reasoning</h2>
+        <p>Simple reasoning blocks and richer chain-of-thought timelines for streamed thinking.</p>
+      </article>
+      <article>
+        <h2>Tools</h2>
+        <p>Tool calls, status badges, collapsible payloads, and approval confirmation flows.</p>
+      </article>
+    </div>
+  </section>
+
+  <section id="docs" class="section split">
+    <div>
+      <p class="eyebrow">Docs-ready workspace</p>
+      <h2>One repo for library, playground, and website.</h2>
+    </div>
+    <pre><code>pnpm build:lib
+pnpm start:playground
+pnpm start:www</code></pre>
+  </section>
+
+  <section id="playground" class="section">
+    <p class="eyebrow">Manual testing</p>
+    <h2>The playground remains the place to test live local models, tools, and streaming UI.</h2>
+  </section>
+</main>
+
+<router-outlet />
