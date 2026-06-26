@@ -16,11 +16,11 @@ import { lucideBrain, lucideChevronDown } from '@ng-icons/lucide';
     '(click)': 'reasoning.disableAutoToggle()',
   },
   template: `
-    <ng-content>
-      <ng-icon hlm size="sm" name="lucideBrain" />
-      <span [class.ai-reasoning-trigger-label-shimmer]="reasoning.isStreaming()">{{ label() }}</span>
-      <ng-icon hlm size="sm" name="lucideChevronDown" [class.rotate-180]="expanded()" />
-    </ng-content>
+    <ng-icon hlm size="sm" name="lucideBrain" />
+    <span [class.ai-reasoning-trigger-label-shimmer]="reasoning.isStreaming()">
+      <ng-content>{{ triggerLabel() }}</ng-content>
+    </span>
+    <ng-icon hlm size="sm" name="lucideChevronDown" [class.rotate-180]="expanded()" />
   `,
   styles: `
     .ai-reasoning-trigger-label-shimmer {
@@ -64,7 +64,7 @@ export class ReasoningTrigger {
 
   protected readonly expanded = this.collapsible.expanded;
 
-  protected readonly label = computed(() => {
+  protected readonly triggerLabel = computed(() => {
     if (this.reasoning.isStreaming()) {
       return 'Thinking...';
     }

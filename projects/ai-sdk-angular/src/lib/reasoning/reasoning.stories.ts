@@ -59,7 +59,7 @@ export const Clamped: Story = {
     props: args,
     template: `
       <ai-reasoning class="w-[560px]" [isStreaming]="false" [expanded]="true">
-        <button aiReasoningTrigger label="Thought for 14 seconds"></button>
+        <button aiReasoningTrigger>Thought for 14 seconds</button>
         <ai-reasoning-content [markdown]="markdown" collapsedMaxHeight="140px" />
       </ai-reasoning>
     `,

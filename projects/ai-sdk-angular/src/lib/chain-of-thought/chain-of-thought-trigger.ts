@@ -16,21 +16,20 @@ import { ChainOfThought } from './chain-of-thought';
     '(click)': 'chainOfThought.disableAutoToggle()',
   },
   template: `
-    <ng-content>
-      <ng-icon hlm size="sm" name="lucideBrain" />
-      <span class="min-w-0 truncate text-left">{{ triggerLabel() }}</span>
-      <ng-icon
-        hlm
-        size="sm"
-        name="lucideChevronDown"
-        class="transition-transform"
-        [class.rotate-180]="expanded()"
-      />
-    </ng-content>
+    <ng-icon hlm size="sm" name="lucideBrain" />
+    <span class="min-w-0 truncate text-left">
+      <ng-content>{{ triggerLabel() }}</ng-content>
+    </span>
+    <ng-icon
+      hlm
+      size="sm"
+      name="lucideChevronDown"
+      class="transition-transform"
+      [class.rotate-180]="expanded()"
+    />
   `,
 })
 export class ChainOfThoughtTrigger {
-  public readonly label = input<string | undefined>();
   public readonly userClass = input<string | undefined>(undefined, { alias: 'class' });
 
   protected readonly chainOfThought = inject(ChainOfThought);
@@ -38,12 +37,6 @@ export class ChainOfThoughtTrigger {
 
   protected readonly expanded = this.collapsible.expanded;
   protected readonly triggerLabel = computed(() => {
-    const label = this.label();
-
-    if (label !== undefined) {
-      return label;
-    }
-
     if (this.chainOfThought.isStreaming()) {
       return 'Thinking...';
     }

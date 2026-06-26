@@ -23,7 +23,7 @@ import {
   ],
   template: `
     <ai-chain-of-thought class="custom-chain" [expanded]="expanded()">
-      <button aiChainOfThoughtTrigger class="custom-trigger" label="Thinking trace"></button>
+      <button aiChainOfThoughtTrigger class="custom-trigger">Thinking trace</button>
 
       <ai-chain-of-thought-content class="custom-content">
         <ai-chain-of-thought-step

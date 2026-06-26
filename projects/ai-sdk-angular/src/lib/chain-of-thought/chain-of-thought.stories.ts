@@ -119,7 +119,7 @@ export const ClampedStep: Story = {
         [expanded]="true"
         [autoToggle]="false"
       >
-        <button aiChainOfThoughtTrigger label="Thought for 12 seconds"></button>
+        <button aiChainOfThoughtTrigger>Thought for 12 seconds</button>
         <ai-chain-of-thought-content>
           <ai-chain-of-thought-step
             status="complete"
