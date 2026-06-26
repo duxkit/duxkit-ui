@@ -7,6 +7,7 @@ import {
   ConfirmationRequest,
   ConfirmationTitle,
 } from '../confirmation';
+import { HlmButton } from 'duxkit-ai/helm/button';
 import type { AiToolPart } from './tool';
 import { Tool, ToolContent, ToolStatus, ToolTrigger } from './';
 
@@ -50,6 +51,7 @@ const meta: Meta = {
         ConfirmationActions,
         ConfirmationRequest,
         ConfirmationTitle,
+        HlmButton,
         Tool,
         ToolTrigger,
         ToolContent,
@@ -72,8 +74,8 @@ const meta: Meta = {
             <ai-confirmation-title />
             <p class="m-0 leading-relaxed">Allow this tool to run with the generated input?</p>
             <ai-confirmation-actions>
-              <button aiConfirmationAction variant="outline">Deny</button>
-              <button aiConfirmationAction>Allow</button>
+              <button aiConfirmationAction hlmBtn variant="outline">Deny</button>
+              <button aiConfirmationAction hlmBtn>Allow</button>
             </ai-confirmation-actions>
           </ai-confirmation-request>
         </ai-confirmation>

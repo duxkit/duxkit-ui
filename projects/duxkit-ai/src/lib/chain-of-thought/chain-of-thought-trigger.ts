@@ -2,13 +2,12 @@ import { Component, computed, inject, input } from '@angular/core';
 import { BrnCollapsible, BrnCollapsibleTrigger } from '@spartan-ng/brain/collapsible';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { lucideBrain, lucideChevronDown } from '@ng-icons/lucide';
-import { HlmIcon } from 'duxkit-ai/helm/icon';
 import { twMerge } from 'tailwind-merge';
 import { ChainOfThought } from './chain-of-thought';
 
 @Component({
   selector: 'button[aiChainOfThoughtTrigger],ai-chain-of-thought-trigger',
-  imports: [HlmIcon, NgIcon],
+  imports: [NgIcon],
   providers: [provideIcons({ lucideBrain, lucideChevronDown })],
   hostDirectives: [{ directive: BrnCollapsibleTrigger, inputs: ['type'] }],
   host: {
@@ -16,15 +15,14 @@ import { ChainOfThought } from './chain-of-thought';
     '(click)': 'chainOfThought.disableAutoToggle()',
   },
   template: `
-    <ng-icon hlm size="sm" name="lucideBrain" />
+    <ng-icon name="lucideBrain" style="--ng-icon__size: 16px" />
     <span class="min-w-0 truncate text-left">
       <ng-content>{{ triggerLabel() }}</ng-content>
     </span>
     <ng-icon
-      hlm
-      size="sm"
       name="lucideChevronDown"
       class="transition-transform"
+      style="--ng-icon__size: 16px"
       [class.rotate-180]="expanded()"
     />
   `,

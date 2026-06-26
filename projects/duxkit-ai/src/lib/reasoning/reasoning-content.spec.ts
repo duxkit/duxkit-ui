@@ -145,6 +145,8 @@ describe('ReasoningContent', () => {
 
     expect(clampedContent?.style.maxHeight).toBe('120px');
     expect(clampedContent?.style.getPropertyValue('mask-image')).toContain('linear-gradient');
+    expect(clampedContent?.style.getPropertyValue('mask-image')).toContain('black 70%');
+    expect(clampedContent?.style.getPropertyValue('mask-image')).toContain('transparent');
     expect(clampedContent?.scrollTop).toBe(300);
     expect(showMore).not.toBeNull();
     expect(showMore?.textContent).toContain('Show more');

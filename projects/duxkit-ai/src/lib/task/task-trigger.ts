@@ -2,13 +2,12 @@ import { Component, computed, inject, input } from '@angular/core';
 import { BrnCollapsible, BrnCollapsibleTrigger } from '@spartan-ng/brain/collapsible';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { lucideChevronDown, lucideSearch } from '@ng-icons/lucide';
-import { HlmIcon } from 'duxkit-ai/helm/icon';
 import { twMerge } from 'tailwind-merge';
 import { Task } from './task';
 
 @Component({
   selector: 'button[aiTaskTrigger],ai-task-trigger',
-  imports: [HlmIcon, NgIcon],
+  imports: [NgIcon],
   providers: [provideIcons({ lucideChevronDown, lucideSearch })],
   hostDirectives: [{ directive: BrnCollapsibleTrigger, inputs: ['type'] }],
   host: {
@@ -16,15 +15,14 @@ import { Task } from './task';
     '(click)': 'task.disableAutoToggle()',
   },
   template: `
-    <ng-icon hlm size="sm" name="lucideSearch" />
+    <ng-icon name="lucideSearch" style="--ng-icon__size: 16px" />
     <span class="min-w-0 truncate text-sm">
       <ng-content />
     </span>
     <ng-icon
-      hlm
-      size="sm"
       name="lucideChevronDown"
       class="transition-transform"
+      style="--ng-icon__size: 16px"
       [class.rotate-180]="expanded()"
     />
   `,

@@ -1,5 +1,14 @@
 import type { Meta, StoryObj } from '@storybook/angular';
 import { moduleMetadata } from '@storybook/angular';
+import { HlmButtonDirective } from '@spartan-ng/ui-button-helm';
+import {
+  Confirmation,
+  ConfirmationAction,
+  ConfirmationActions,
+  ConfirmationRequest,
+  ConfirmationTitle,
+} from '../confirmation';
+import type { AiToolPart } from '../tool';
 import {
   ChainOfThought,
   ChainOfThoughtContent,
@@ -19,6 +28,18 @@ const longThought = [
   'Consumers can choose the exact clamp height depending on their layout density and target device size.',
 ].join(' ');
 
+const approvalPart: AiToolPart = {
+  type: 'tool-updateNotes',
+  toolCallId: 'call-notes-1',
+  state: 'approval-requested',
+  input: {
+    note: 'Add the selected restaurant and location to the user notes.',
+  },
+  approval: {
+    id: 'approval-notes-1',
+  },
+};
+
 const meta: Meta = {
   title: 'Components/Chain Of Thought',
   decorators: [
@@ -31,6 +52,12 @@ const meta: Meta = {
         ChainOfThoughtSearchResults,
         ChainOfThoughtStep,
         ChainOfThoughtTrigger,
+        Confirmation,
+        ConfirmationAction,
+        ConfirmationActions,
+        ConfirmationRequest,
+        ConfirmationTitle,
+        HlmButtonDirective,
       ],
     }),
   ],
@@ -48,7 +75,10 @@ const meta: Meta = {
     isStreaming: false,
   },
   render: (args) => ({
-    props: args,
+    props: {
+      ...args,
+      approvalPart,
+    },
     template: `
       <ai-chain-of-thought
         class="w-[560px]"
@@ -76,6 +106,26 @@ const meta: Meta = {
               <span aiChainOfThoughtSearchResult>Angular signals</span>
               <span aiChainOfThoughtSearchResult>Spartan collapsible</span>
             </ai-chain-of-thought-search-results>
+          </ai-chain-of-thought-step>
+
+          <ai-chain-of-thought-step
+            status="active"
+            icon="lucideCircleDashed"
+            label="Request permission"
+            description="Ask before running the tool that changes user data."
+          >
+            <ai-confirmation [part]="approvalPart">
+              <ai-confirmation-request>
+                <ai-confirmation-title />
+                <p class="my-2 text-muted-foreground">
+                  Allow this tool to add the selected place to notes?
+                </p>
+                <ai-confirmation-actions>
+                  <button aiConfirmationAction hlmBtn variant="outline">Deny</button>
+                  <button aiConfirmationAction hlmBtn>Allow</button>
+                </ai-confirmation-actions>
+              </ai-confirmation-request>
+            </ai-confirmation>
           </ai-chain-of-thought-step>
 
           <ai-chain-of-thought-step

@@ -80,7 +80,7 @@ const inputAvailablePart: ConfirmationToolPart = {
       <ai-confirmation-rejected>Rejected</ai-confirmation-rejected>
       <ai-confirmation-actions class="custom-actions">
         <button aiConfirmationAction>Approve</button>
-        <button aiConfirmationAction variant="outline">Reject</button>
+        <button aiConfirmationAction>Reject</button>
       </ai-confirmation-actions>
     </ai-confirmation>
   `,

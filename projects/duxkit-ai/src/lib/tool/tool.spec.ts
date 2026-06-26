@@ -89,7 +89,7 @@ class CustomTriggerHost {
         <ai-confirmation-request>
           <ai-confirmation-title />
           <ai-confirmation-actions>
-            <button aiConfirmationAction variant="outline">Deny</button>
+            <button aiConfirmationAction>Deny</button>
             <button aiConfirmationAction>Allow</button>
           </ai-confirmation-actions>
         </ai-confirmation-request>

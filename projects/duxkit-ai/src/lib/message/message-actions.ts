@@ -10,11 +10,8 @@ import {
 } from '@angular/core';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { lucideCheck, lucideCopy, lucideThumbsDown, lucideThumbsUp } from '@ng-icons/lucide';
-import { HlmButton } from 'duxkit-ai/helm/button';
-import { HlmButtonGroup } from 'duxkit-ai/helm/button-group';
-import { HlmIcon } from 'duxkit-ai/helm/icon';
-import { classes } from 'duxkit-ai/helm/utils';
 import { cva, type VariantProps } from 'class-variance-authority';
+import { twMerge } from 'tailwind-merge';
 import { Message } from './message';
 
 export const messageActionsVariants = cva(
@@ -47,6 +44,9 @@ const feedbackButtonClasses = cva('', {
   },
 });
 
+const messageActionButtonClasses =
+  'inline-flex size-6 items-center justify-center rounded-md border-0 bg-transparent p-0 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground disabled:pointer-events-none disabled:opacity-50';
+
 const feedbackIconStyles = `
   .ai-message-actions-feedback-icon-active svg path:first-child {
     fill: currentColor;
@@ -55,9 +55,10 @@ const feedbackIconStyles = `
 
 @Directive({
   selector: 'ai-message-actions,[aiMessageActions]',
-  hostDirectives: [{ directive: HlmButtonGroup, inputs: ['orientation'] }],
   host: {
     'aria-label': 'Message actions',
+    role: 'group',
+    '[class]': 'classes()',
   },
 })
 export class MessageActions {
@@ -65,32 +66,30 @@ export class MessageActions {
 
   private readonly message = inject(Message);
 
-  constructor() {
-    classes(() => [
+  protected readonly classes = computed(() =>
+    twMerge(
       messageActionsVariants({
         from: this.message.from(),
       }),
       this.userClass(),
-    ]);
-  }
+    ),
+  );
 }
 
 @Component({
   selector: 'ai-message-actions-copy',
-  imports: [HlmButton, HlmIcon, NgIcon],
+  imports: [NgIcon],
   providers: [provideIcons({ lucideCheck, lucideCopy })],
   template: `
     <button
-      hlmBtn
       type="button"
-      variant="ghost"
-      size="icon-xs"
+      [class]="buttonClasses"
       [disabled]="!canCopy()"
       [title]="label()"
       [attr.aria-label]="label()"
       (click)="copy()"
     >
-      <ng-icon hlmIcon size="sm" [name]="copied() ? 'lucideCheck' : 'lucideCopy'" />
+      <ng-icon [name]="copied() ? 'lucideCheck' : 'lucideCopy'" style="--ng-icon__size: 16px" />
     </button>
   `,
 })
@@ -101,6 +100,7 @@ export class MessageActionsCopy {
   private readonly message = inject(Message);
 
   protected readonly copied = signal(false);
+  protected readonly buttonClasses = messageActionButtonClasses;
   protected readonly copyText = computed(() => this.text() ?? this.message.copyText());
   protected readonly canCopy = computed(() => this.copyText().trim().length > 0);
   protected readonly label = computed(() => (this.copied() ? 'Copied message' : 'Copy message'));
@@ -122,16 +122,13 @@ export class MessageActionsCopy {
 
 @Component({
   selector: 'ai-message-actions-thumbs-up',
-  imports: [HlmButton, HlmIcon, NgIcon],
+  imports: [NgIcon],
   providers: [provideIcons({ lucideThumbsUp })],
   encapsulation: ViewEncapsulation.None,
   styles: [feedbackIconStyles],
   template: `
     <button
-      hlmBtn
       type="button"
-      variant="ghost"
-      size="icon-xs"
       [class]="classes()"
       title="Thumbs up"
       aria-label="Thumbs up"
@@ -139,9 +136,8 @@ export class MessageActionsCopy {
       (click)="thumbsUp.emit()"
     >
       <ng-icon
-        hlmIcon
-        size="sm"
         name="lucideThumbsUp"
+        style="--ng-icon__size: 16px"
         [class.ai-message-actions-feedback-icon-active]="active()"
       />
     </button>
@@ -151,21 +147,20 @@ export class MessageActionsThumbsUp {
   public readonly active = input(false);
   public readonly thumbsUp = output<void>();
 
-  protected readonly classes = computed(() => feedbackButtonClasses({ active: this.active() }));
+  protected readonly classes = computed(() =>
+    twMerge(messageActionButtonClasses, feedbackButtonClasses({ active: this.active() })),
+  );
 }
 
 @Component({
   selector: 'ai-message-actions-thumbs-down',
-  imports: [HlmButton, HlmIcon, NgIcon],
+  imports: [NgIcon],
   providers: [provideIcons({ lucideThumbsDown })],
   encapsulation: ViewEncapsulation.None,
   styles: [feedbackIconStyles],
   template: `
     <button
-      hlmBtn
       type="button"
-      variant="ghost"
-      size="icon-xs"
       [class]="classes()"
       title="Thumbs down"
       aria-label="Thumbs down"
@@ -173,9 +168,8 @@ export class MessageActionsThumbsUp {
       (click)="thumbsDown.emit()"
     >
       <ng-icon
-        hlmIcon
-        size="sm"
         name="lucideThumbsDown"
+        style="--ng-icon__size: 16px"
         [class.ai-message-actions-feedback-icon-active]="active()"
       />
     </button>
@@ -185,5 +179,7 @@ export class MessageActionsThumbsDown {
   public readonly active = input(false);
   public readonly thumbsDown = output<void>();
 
-  protected readonly classes = computed(() => feedbackButtonClasses({ active: this.active() }));
+  protected readonly classes = computed(() =>
+    twMerge(messageActionButtonClasses, feedbackButtonClasses({ active: this.active() })),
+  );
 }

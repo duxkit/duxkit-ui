@@ -114,11 +114,7 @@ export class ReasoningContent implements AfterViewInit, OnDestroy {
       return null;
     }
 
-    if (this.pinToBottom()) {
-      return 'linear-gradient(to bottom, transparent, black 3rem)';
-    }
-
-    return 'linear-gradient(to bottom, black calc(100% - 3rem), transparent)';
+    return 'linear-gradient(to bottom, black 0%, black 70%, transparent 100%)';
   });
 
   constructor() {

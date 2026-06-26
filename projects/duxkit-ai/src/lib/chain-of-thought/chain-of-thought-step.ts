@@ -19,7 +19,6 @@ import {
   lucideLoaderCircle,
   lucideSearch,
 } from '@ng-icons/lucide';
-import { HlmIcon } from 'duxkit-ai/helm/icon';
 import { twMerge } from 'tailwind-merge';
 
 export type ChainOfThoughtStepStatus = 'complete' | 'active' | 'pending';
@@ -32,7 +31,7 @@ const statusClasses: Record<ChainOfThoughtStepStatus, string> = {
 
 @Component({
   selector: '[aiChainOfThoughtStep],ai-chain-of-thought-step',
-  imports: [HlmIcon, NgIcon],
+  imports: [NgIcon],
   providers: [
     provideIcons({
       lucideCircleCheck,
@@ -50,7 +49,7 @@ const statusClasses: Record<ChainOfThoughtStepStatus, string> = {
   },
   template: `
     <div class="relative mt-0.5 shrink-0">
-      <ng-icon hlm size="sm" [name]="icon()" [class.animate-spin]="spinning()" />
+      <ng-icon [name]="icon()" style="--ng-icon__size: 16px" [class.animate-spin]="spinning()" />
       <div class="absolute top-7 bottom-0 left-1/2 -mx-px w-px bg-border"></div>
     </div>
 
@@ -138,11 +137,7 @@ export class ChainOfThoughtStep implements AfterViewInit, OnDestroy {
       return null;
     }
 
-    if (this.pinToBottom()) {
-      return 'linear-gradient(to bottom, transparent, black 3rem)';
-    }
-
-    return 'linear-gradient(to bottom, black calc(100% - 3rem), transparent)';
+    return 'linear-gradient(to bottom, black 0%, black 70%, transparent 100%)';
   });
 
   protected readonly classes = computed(() =>

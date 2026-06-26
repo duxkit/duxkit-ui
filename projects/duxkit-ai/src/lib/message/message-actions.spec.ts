@@ -87,12 +87,12 @@ describe('MessageActions', () => {
     await fixture.whenStable();
   });
 
-  it('applies button group defaults and preserves projected custom actions', () => {
+  it('applies actions wrapper defaults and preserves projected custom actions', () => {
     const element = fixture.nativeElement as HTMLElement;
     const actions = element.querySelector('ai-message-actions');
     const customAction = element.querySelector('.custom-action');
 
-    expect(actions?.classList).toContain('spartan-button-group');
+    expect(actions?.getAttribute('role')).toBe('group');
     expect(actions?.classList).toContain('mr-auto');
     expect(actions?.classList).toContain('custom-actions');
     expect(customAction?.textContent).toContain('Custom action');

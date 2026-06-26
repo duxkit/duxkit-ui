@@ -6,7 +6,6 @@ import {
   lucideCircleDashed,
   lucideCircleX,
 } from '@ng-icons/lucide';
-import { HlmIcon } from 'duxkit-ai/helm/icon';
 import { twMerge } from 'tailwind-merge';
 import { Tool } from './tool';
 
@@ -14,7 +13,7 @@ export type ToolStatusVariant = 'badge' | 'icon';
 
 @Component({
   selector: '[aiToolStatus],ai-tool-status',
-  imports: [HlmIcon, NgIcon],
+  imports: [NgIcon],
   providers: [
     provideIcons({
       lucideAlertCircle,
@@ -32,7 +31,7 @@ export type ToolStatusVariant = 'badge' | 'icon';
   },
   template: `
     @if (variant() === 'icon') {
-      <ng-icon hlm size="sm" [name]="iconName()" />
+      <ng-icon [name]="iconName()" style="--ng-icon__size: 16px" />
     } @else {
       {{ tool.statusLabel() }}
     }

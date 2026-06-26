@@ -31,6 +31,7 @@ import {
   ToolContent,
   ToolTrigger,
 } from 'duxkit-ai';
+import { HlmButton } from 'duxkit-ai/helm/button';
 
 type MessagePart = UIMessage['parts'][number];
 
@@ -55,6 +56,7 @@ type MessagePart = UIMessage['parts'][number];
     ConfirmationActions,
     ConfirmationRequest,
     ConfirmationTitle,
+    HlmButton,
     ReasoningContent,
     Tool,
     ToolContent,

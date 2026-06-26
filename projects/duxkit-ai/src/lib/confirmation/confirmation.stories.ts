@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/angular';
 import { moduleMetadata } from '@storybook/angular';
+import { HlmButton } from 'duxkit-ai/helm/button';
 import type { AiToolPart } from '../tool';
 import {
   Confirmation,
@@ -56,6 +57,7 @@ const meta: Meta = {
         ConfirmationRejected,
         ConfirmationRequest,
         ConfirmationTitle,
+        HlmButton,
       ],
     }),
   ],
@@ -73,8 +75,8 @@ const meta: Meta = {
             Allow this tool to run with the generated input?
           </p>
           <ai-confirmation-actions>
-            <button aiConfirmationAction variant="outline">Deny</button>
-            <button aiConfirmationAction>Allow</button>
+            <button aiConfirmationAction hlmBtn variant="outline">Deny</button>
+            <button aiConfirmationAction hlmBtn>Allow</button>
           </ai-confirmation-actions>
         </ai-confirmation-request>
         <ai-confirmation-accepted>

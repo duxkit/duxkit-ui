@@ -2,9 +2,6 @@ import { DOCUMENT } from '@angular/common';
 import { Component, computed, inject, input, signal, ViewEncapsulation } from '@angular/core';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { lucideCheck, lucideCopy, lucideDownload } from '@ng-icons/lucide';
-import { HlmButton } from 'duxkit-ai/helm/button';
-import { HlmButtonGroup } from 'duxkit-ai/helm/button-group';
-import { HlmIcon } from 'duxkit-ai/helm/icon';
 import { twMerge } from 'tailwind-merge';
 import { AI_MARKDOWN_OPTIONS, renderHighlightedCode } from '../markdown';
 
@@ -30,7 +27,7 @@ const languageExtensions: Record<string, string> = {
 
 @Component({
   selector: 'ai-code-block',
-  imports: [HlmButton, HlmButtonGroup, HlmIcon, NgIcon],
+  imports: [NgIcon],
   providers: [provideIcons({ lucideCheck, lucideCopy, lucideDownload })],
   encapsulation: ViewEncapsulation.None,
   host: {
@@ -49,28 +46,24 @@ const languageExtensions: Record<string, string> = {
     >
       <span class="ai-code-block-language">{{ languageLabel() }}</span>
 
-      <div hlmButtonGroup class="ai-code-block-actions" aria-label="Code block actions">
+      <div class="ai-code-block-actions" role="group" aria-label="Code block actions">
         <button
-          hlmBtn
           type="button"
-          variant="ghost"
-          size="icon-xs"
+          class="ai-code-block-action"
           title="Download file"
           aria-label="Download code"
           (click)="download()"
         >
-          <ng-icon hlmIcon size="sm" name="lucideDownload" />
+          <ng-icon name="lucideDownload" style="--ng-icon__size: 16px" />
         </button>
         <button
-          hlmBtn
           type="button"
-          variant="ghost"
-          size="icon-xs"
+          class="ai-code-block-action"
           [title]="copyLabel()"
           [attr.aria-label]="copyLabel()"
           (click)="copy()"
         >
-          <ng-icon hlmIcon size="sm" [name]="copied() ? 'lucideCheck' : 'lucideCopy'" />
+          <ng-icon [name]="copied() ? 'lucideCheck' : 'lucideCopy'" style="--ng-icon__size: 16px" />
         </button>
       </div>
     </div>
