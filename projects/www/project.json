@@ -5,6 +5,9 @@
   "prefix": "app",
   "sourceRoot": "projects/www/src",
   "tags": [],
+  "implicitDependencies": [
+    "duxkit-ai"
+  ],
   "targets": {
     "build": {
       "executor": "@angular/build:application",
@@ -32,8 +35,8 @@
           "budgets": [
             {
               "type": "initial",
-              "maximumWarning": "500kb",
-              "maximumError": "1mb"
+              "maximumWarning": "1mb",
+              "maximumError": "1.1mb"
             },
             {
               "type": "anyComponentStyle",

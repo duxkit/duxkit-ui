@@ -14,6 +14,7 @@ import {
   lucideCircleCheck,
   lucideCircleDashed,
   lucideDot,
+  lucideGlobe,
   lucideImage,
   lucideLoaderCircle,
   lucideSearch,
@@ -37,6 +38,7 @@ const statusClasses: Record<ChainOfThoughtStepStatus, string> = {
       lucideCircleCheck,
       lucideCircleDashed,
       lucideDot,
+      lucideGlobe,
       lucideImage,
       lucideLoaderCircle,
       lucideSearch,
@@ -67,14 +69,14 @@ const statusClasses: Record<ChainOfThoughtStepStatus, string> = {
           class="min-w-0"
           [class.overflow-hidden]="isClamped()"
           [style.max-height]="contentMaxHeight()"
+          [style.mask-image]="contentMaskImage()"
+          [style.-webkit-mask-image]="contentMaskImage()"
         >
           <ng-content />
         </div>
 
         @if (showClampOverlay()) {
-          <div
-            class="pointer-events-none absolute inset-x-0 bottom-0 flex justify-center bg-gradient-to-t from-background via-background/80 to-transparent pt-12 pb-1"
-          >
+          <div class="pointer-events-none absolute inset-x-0 bottom-0 flex justify-center pt-12 pb-1">
             <button
               type="button"
               class="pointer-events-auto rounded-md border border-border bg-background/90 px-2.5 py-1 font-medium text-muted-foreground text-xs shadow-sm transition-colors hover:text-foreground"
@@ -130,6 +132,17 @@ export class ChainOfThoughtStep implements AfterViewInit, OnDestroy {
     }
 
     return this.formatMaxHeight(this.collapsedMaxHeight());
+  });
+  protected readonly contentMaskImage = computed(() => {
+    if (!this.showClampOverlay()) {
+      return null;
+    }
+
+    if (this.pinToBottom()) {
+      return 'linear-gradient(to bottom, transparent, black 3rem)';
+    }
+
+    return 'linear-gradient(to bottom, black calc(100% - 3rem), transparent)';
   });
 
   protected readonly classes = computed(() =>

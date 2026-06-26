@@ -4,6 +4,7 @@ import { NgIcon, provideIcons } from '@ng-icons/core';
 import { lucideChevronDown, lucideSearch } from '@ng-icons/lucide';
 import { HlmIcon } from 'duxkit-ai/helm/icon';
 import { twMerge } from 'tailwind-merge';
+import { Task } from './task';
 
 @Component({
   selector: 'button[aiTaskTrigger],ai-task-trigger',
@@ -12,6 +13,7 @@ import { twMerge } from 'tailwind-merge';
   hostDirectives: [{ directive: BrnCollapsibleTrigger, inputs: ['type'] }],
   host: {
     '[class]': 'classes()',
+    '(click)': 'task.disableAutoToggle()',
   },
   template: `
     <ng-icon hlm size="sm" name="lucideSearch" />
@@ -30,6 +32,7 @@ import { twMerge } from 'tailwind-merge';
 export class TaskTrigger {
   public readonly userClass = input<string | undefined>(undefined, { alias: 'class' });
 
+  protected readonly task = inject(Task);
   private readonly collapsible = inject(BrnCollapsible);
 
   protected readonly expanded = this.collapsible.expanded;

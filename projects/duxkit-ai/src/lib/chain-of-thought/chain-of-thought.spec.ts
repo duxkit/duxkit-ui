@@ -180,6 +180,7 @@ describe('ChainOfThought', () => {
     );
 
     expect(clampedContent?.style.maxHeight).toBe('120px');
+    expect(clampedContent?.style.getPropertyValue('mask-image')).toContain('linear-gradient');
     expect(clampedContent?.scrollTop).toBe(300);
     expect(showMore).not.toBeNull();
     expect(showMore?.textContent).toContain('Show more');
@@ -189,6 +190,7 @@ describe('ChainOfThought', () => {
     await clampedFixture.whenStable();
 
     expect(clampedContent?.style.maxHeight).toBe('');
+    expect(clampedContent?.style.getPropertyValue('mask-image')).toBe('');
 
     const showLess = element.querySelector<HTMLButtonElement>(
       'ai-chain-of-thought-step button[type="button"]',
@@ -201,6 +203,7 @@ describe('ChainOfThought', () => {
     await clampedFixture.whenStable();
 
     expect(clampedContent?.style.maxHeight).toBe('120px');
+    expect(clampedContent?.style.getPropertyValue('mask-image')).toContain('linear-gradient');
 
     scrollHeight.mockRestore();
     clientHeight.mockRestore();

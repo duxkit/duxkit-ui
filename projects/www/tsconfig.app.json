@@ -2,7 +2,11 @@
   "extends": "./tsconfig.json",
   "compilerOptions": {
     "outDir": "../../dist/out-tsc",
-    "types": []
+    "types": [],
+    "paths": {
+      "duxkit-ai": ["../../dist/duxkit-ai", "./dist/duxkit-ai"],
+      "duxkit-ai/helm/*": ["../../dist/duxkit-ai/helm/*", "./dist/duxkit-ai/helm/*"]
+    }
   },
   "include": ["src/**/*.ts"],
   "exclude": [

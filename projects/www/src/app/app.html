@@ -1,85 +1,302 @@
 <main class="site-shell">
-  <header class="site-header">
-    <a class="brand" href="/" aria-label="DuxKit AI home">
-      <span class="brand-mark" aria-hidden="true">AI</span>
-      <span>DuxKit AI</span>
-    </a>
+  <header class="site-header w-full flex justify-center p-2" aria-label="Site header">
+    <div class="flex gap-7 items-center w-full max-w-6xl mx-auto justify-center">
+      <a class="brand" href="/" aria-label="DuxKit AI home">
+        <span class="brand-mark" aria-hidden="true">ng</span>
+        <span class="brand-name">DuxKit AI</span>
+      </a>
 
-    <nav aria-label="Primary navigation">
-      <a href="#components">Components</a>
-      <a href="#docs">Docs</a>
-      <a href="#playground">Playground</a>
-    </nav>
+      <nav class="primary-nav" aria-label="Primary navigation">
+        <a href="#primitives">Primitives</a>
+        <a href="#examples">Examples</a>
+        <a href="#docs">Docs</a>
+      </nav>
+
+      <div class="nav-actions" aria-label="Account actions">
+        <a class="nav-link" href="#github">GitHub</a>
+        <a hlmBtn class="nav-button" href="#docs" size="sm" variant="outline">Docs</a>
+      </div>
+    </div>
   </header>
 
   <section class="hero" aria-labelledby="hero-title">
     <div class="hero-copy">
-      <p class="eyebrow">Angular components for AI apps</p>
-      <h1 id="hero-title">Build chat, reasoning, tools, and approvals with Angular-native primitives.</h1>
+      <h1 id="hero-title">AI primitives for Angular</h1>
+
       <p class="lede">
-        A component library shaped around the AI SDK, Angular signals, Spartan primitives, and real
-        streaming application states.
+        Compose chat, reasoning, tools, and confirmations with Angular-native UI primitives.
       </p>
 
-      <div class="actions">
-        <a class="button primary" href="#docs">Read the docs</a>
-        <a class="button" href="#playground">Open playground</a>
+      <div class="hero-actions" aria-label="Hero actions">
+        <button
+          hlmBtn
+          class="install-command"
+          type="button"
+          variant="outline"
+          size="lg"
+          [attr.aria-label]="installCopyLabel()"
+          [title]="installCopyLabel()"
+          (click)="copyInstallCommand()"
+        >
+          <span aria-hidden="true">$</span>
+          <code>{{ installCommand }}</code>
+          <ng-icon
+            hlmIcon
+            size="sm"
+            [name]="installCommandCopied() ? 'lucideCheck' : 'lucideCopy'"
+            aria-hidden="true"
+          />
+        </button>
+
+        <a hlmBtn href="#docs">Read docs</a>
       </div>
     </div>
 
-    <div class="preview" aria-label="Component preview">
-      <div class="preview-toolbar">
-        <span></span>
-        <span></span>
-        <span></span>
-      </div>
-      <div class="preview-message assistant">
-        <p>Thinking through tool permissions...</p>
-        <div class="preview-step">
-          <span class="dot"></span>
-          <div>
-            <strong>Chain of thought</strong>
-            <p>Search results, task steps, and tool confirmations stay inspectable.</p>
-          </div>
-        </div>
-      </div>
-      <div class="preview-message user">
-        <p>Show me the sources and let me approve the tool.</p>
+    <div class="conversation-perspective" aria-label="Angular AI primitive preview">
+      <div class="conversation-plane h-[32rem] px-5 border-border border-gray-200  border rounded-xl">
+        <ai-conversation [stickToBottom]="'auto'">
+          <ai-conversation-content
+            class="[scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+            aria-live="polite"
+          >
+            @if (demoStage() >= 1) {
+              <ai-message from="user" class="mt-3" animate.enter="message-enter-right">
+                <ai-message-content
+                  markdown="Can you help me plan a quiet weekend in Lisbon? I want a nice hotel, good food, and no tourist traps."
+                />
+              </ai-message>
+            }
+
+            @if (assistantText().length > 0) {
+              <ai-message from="assistant" animate.enter="message-enter-left">
+                <ai-message-content [markdown]="assistantText()" />
+
+                @if (demoStage() >= 2) {
+                  <ai-chain-of-thought [isStreaming]="demoStage() < 7">
+                    <button aiChainOfThoughtTrigger></button>
+                    <ai-chain-of-thought-content>
+                      @if (demoStage() >= 3) {
+                        <ai-chain-of-thought-step
+                          status="complete"
+                          icon="lucideCircleCheck"
+                          label="Understand the trip"
+                          description="Quiet Lisbon weekend, good food, nice hotel, fewer tourist traps."
+                        />
+                      }
+
+                      @if (reasoningText().length > 0) {
+                        <ai-chain-of-thought-step
+                          [status]="planStepStatus()"
+                          [collapsedMaxHeight]="100"
+                          [icon]="
+                            planStepStatus() === 'active' ? 'lucideLoaderCircle' : 'lucideCircleCheck'
+                          "
+                          label="Compare neighborhoods"
+                          description="Favor calm areas with restaurants and refundable stays."
+                        >
+                          <ai-reasoning-content [markdown]="reasoningText()" />
+                        </ai-chain-of-thought-step>
+                      }
+
+                      @if (demoStage() >= 5) {
+                        <ai-chain-of-thought-step
+                          [status]="approvalStepStatus()"
+                          [icon]="
+                            approvalStepStatus() === 'active'
+                              ? 'lucideLoaderCircle'
+                              : 'lucideCircleCheck'
+                          "
+                          label="Ask before booking"
+                          description="Get permission before placing a hotel hold."
+                        >
+                          <ai-tool [part]="approvalToolPart()">
+                            <button aiToolTrigger></button>
+
+                            @if (demoStage() >= 6) {
+                              <ai-tool-content />
+
+                              @if (demoStage() < 7) {
+                                <ai-confirmation [part]="approvalToolPart()">
+                                  <ai-confirmation-request>
+                                    <ai-confirmation-title />
+                                    <p class="confirmation-copy">
+                                      Allow the assistant to place a refundable 15-minute hold on this hotel?
+                                    </p>
+                                    <ai-confirmation-actions>
+                                      <button aiConfirmationAction variant="outline">Not now</button>
+                                      <button aiConfirmationAction>Hold room</button>
+                                    </ai-confirmation-actions>
+                                  </ai-confirmation-request>
+                                </ai-confirmation>
+                              }
+                            }
+                          </ai-tool>
+                        </ai-chain-of-thought-step>
+                      }
+                    </ai-chain-of-thought-content>
+                  </ai-chain-of-thought>
+                }
+              </ai-message>
+            }
+
+            @if (finalAssistantText().length > 0) {
+              <ai-message from="assistant" animate.enter="message-enter-left">
+                <ai-message-content [markdown]="finalAssistantText()" />
+              </ai-message>
+            }
+
+            @if (demoStage() >= 8) {
+              <ai-message from="user" animate.enter="message-enter-right">
+                <ai-message-content markdown="Great. Can you also find somewhere nearby for dinner?" />
+              </ai-message>
+            }
+
+            @if (demoStage() >= 9) {
+              <ai-message from="assistant" animate.enter="message-enter-left">
+                <ai-chain-of-thought [isStreaming]="demoStage() < 14">
+                  <button aiChainOfThoughtTrigger></button>
+                  <ai-chain-of-thought-content>
+                    <ai-chain-of-thought-step
+                      [status]="dinnerSearchStepStatus()"
+                      [icon]="
+                        dinnerSearchStepStatus() === 'active'
+                          ? 'lucideLoaderCircle'
+                          : 'lucideGlobe'
+                      "
+                      label="Search nearby dinner spots"
+                      description="Find relaxed restaurants near Principe Real."
+                    >
+                      <ai-chain-of-thought-search-results>
+                        @if (demoStage() >= 10) {
+                          <span aiChainOfThoughtSearchResult animate.enter="message-enter-left">
+                            Taberna Rua das Flores
+                          </span>
+                        }
+                        @if (demoStage() >= 11) {
+                          <span aiChainOfThoughtSearchResult animate.enter="message-enter-left">
+                            Prado
+                          </span>
+                        }
+                        @if (demoStage() >= 12) {
+                          <span aiChainOfThoughtSearchResult animate.enter="message-enter-left">
+                            O Velho Eurico
+                          </span>
+                        }
+                      </ai-chain-of-thought-search-results>
+                    </ai-chain-of-thought-step>
+
+                    @if (demoStage() >= 13) {
+                      <ai-chain-of-thought-step
+                        [status]="dinnerFilterStepStatus()"
+                        [icon]="
+                          dinnerFilterStepStatus() === 'active'
+                            ? 'lucideLoaderCircle'
+                            : 'lucideCircleCheck'
+                        "
+                        label="Filter for the brief"
+                        description="Prefer local food, later seating, and a quieter room."
+                      />
+                    }
+                  </ai-chain-of-thought-content>
+                </ai-chain-of-thought>
+
+                @if (dinnerAssistantText().length > 0) {
+                  <ai-message-content [markdown]="dinnerAssistantText()" />
+                }
+              </ai-message>
+            }
+
+            @if (demoStage() >= 15) {
+              <ai-message from="user" animate.enter="message-enter-right">
+                <ai-message-content markdown="What should I order if I want something traditional?" />
+              </ai-message>
+            }
+
+            @if (demoStage() >= 16) {
+              <ai-message from="assistant" animate.enter="message-enter-left">
+                <ai-chain-of-thought [isStreaming]="demoStage() < 17">
+                  <button aiChainOfThoughtTrigger></button>
+                  <ai-chain-of-thought-content>
+                    <ai-chain-of-thought-step
+                      [status]="foodImageStepStatus()"
+                      [icon]="
+                        foodImageStepStatus() === 'active'
+                          ? 'lucideLoaderCircle'
+                          : 'lucideCircleCheck'
+                      "
+                      label="Pick a local dish"
+                      description="Choose something Portuguese and easy to explain."
+                    >
+                      <ai-chain-of-thought-image
+                        caption="Pastéis de nata by fw42, CC BY 2.0."
+                      >
+                        <img
+                          src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/16/Pastel_de_nata_%2818616473070%29.jpg/960px-Pastel_de_nata_%2818616473070%29.jpg"
+                          width="960"
+                          height="640"
+                          alt="Pastéis de nata on a bakery tray"
+                          class="h-40 w-full rounded-md object-cover"
+                        />
+                      </ai-chain-of-thought-image>
+                    </ai-chain-of-thought-step>
+                  </ai-chain-of-thought-content>
+                </ai-chain-of-thought>
+
+                @if (foodAssistantText().length > 0) {
+                  <ai-message-content [markdown]="foodAssistantText()" />
+                }
+              </ai-message>
+            }
+
+            @if (demoStage() >= 19) {
+              <ai-message from="user" animate.enter="message-enter-right">
+                <ai-message-content markdown="looks great, add the location and resurants into my notes" />
+              </ai-message>
+            }
+
+            @if (demoStage() >= 20) {
+              <ai-message from="assistant" animate.enter="message-enter-left">
+                <ai-task [isStreaming]="demoStage() < 24">
+                  <button aiTaskTrigger>Update travel notes</button>
+                  <ai-task-content>
+                    @if (demoStage() >= 21) {
+                      <div aiTaskItem animate.enter="message-enter-left">
+                        Searched for
+                        <span aiTaskItemFile>lisbon_2026.docx</span>
+                      </div>
+                    }
+
+                    @if (demoStage() >= 22) {
+                      <div aiTaskItem animate.enter="message-enter-left">
+                        Added dinner picks into
+                        <span aiTaskItemFile>lisbon_2026.docx</span>
+                      </div>
+                    }
+
+                    @if (demoStage() >= 23) {
+                      <div aiTaskItem animate.enter="message-enter-left">
+                        Added order ideas into
+                        <span aiTaskItemFile>lisbon_2026.docx</span>
+                      </div>
+                    }
+                  </ai-task-content>
+                </ai-task>
+
+                @if (notesAssistantText().length > 0) {
+                  <ai-message-content [markdown]="notesAssistantText()" />
+                }
+              </ai-message>
+            }
+
+            <div aiConversationScrollAnchor></div>
+          </ai-conversation-content>
+        </ai-conversation>
       </div>
     </div>
   </section>
 
-  <section id="components" class="section">
-    <p class="eyebrow">Component surface</p>
-    <div class="component-grid">
-      <article>
-        <h2>Messages</h2>
-        <p>Markdown, actions, feedback, and copy behavior built around AI SDK message parts.</p>
-      </article>
-      <article>
-        <h2>Reasoning</h2>
-        <p>Simple reasoning blocks and richer chain-of-thought timelines for streamed thinking.</p>
-      </article>
-      <article>
-        <h2>Tools</h2>
-        <p>Tool calls, status badges, collapsible payloads, and approval confirmation flows.</p>
-      </article>
-    </div>
-  </section>
-
-  <section id="docs" class="section split">
-    <div>
-      <p class="eyebrow">Docs-ready workspace</p>
-      <h2>One repo for library, playground, and website.</h2>
-    </div>
-    <pre><code>pnpm build:lib
-pnpm start:playground
-pnpm start:www</code></pre>
-  </section>
-
-  <section id="playground" class="section">
-    <p class="eyebrow">Manual testing</p>
-    <h2>The playground remains the place to test live local models, tools, and streaming UI.</h2>
+  <section id="primitives" class="next-section" aria-labelledby="next-title">
+    <h2 id="next-title">An AI interface is a set of primitives</h2>
   </section>
 </main>
 
