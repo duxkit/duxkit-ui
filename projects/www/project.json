@@ -6,7 +6,8 @@
   "sourceRoot": "projects/www/src",
   "tags": [],
   "implicitDependencies": [
-    "duxkit-ai"
+    "duxkit-ai",
+    "ui"
   ],
   "targets": {
     "build": {

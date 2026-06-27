@@ -3,7 +3,8 @@
   "name": "playground",
   "projectType": "application",
   "implicitDependencies": [
-    "duxkit-ai"
+    "duxkit-ai",
+    "ui"
   ],
   "generators": {
     "@schematics/angular:component": {

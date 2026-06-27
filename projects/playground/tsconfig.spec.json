@@ -4,10 +4,13 @@
   "extends": "../../tsconfig.json",
   "compilerOptions": {
     "outDir": "../../out-tsc/spec",
+    "rootDir": "../..",
     "types": ["vitest/globals"],
     "paths": {
-      "duxkit-ai": ["../../dist/duxkit-ai", "./dist/duxkit-ai"],
-      "duxkit-ai/helm/*": ["../../dist/duxkit-ai/helm/*", "./dist/duxkit-ai/helm/*"]
+      "@duxkit/ui/helm/button": ["../ui/helm/button/src/index.ts"],
+      "@duxkit/ui/helm/icon": ["../ui/helm/icon/src/index.ts"],
+      "@duxkit/ui/helm/utils": ["../ui/helm/utils/src/index.ts"],
+      "duxkit-ai": ["../../dist/duxkit-ai", "./dist/duxkit-ai"]
     }
   },
   "include": ["src/**/*.d.ts", "src/**/*.spec.ts"]

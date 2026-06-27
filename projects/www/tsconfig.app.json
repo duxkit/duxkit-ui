@@ -2,10 +2,13 @@
   "extends": "./tsconfig.json",
   "compilerOptions": {
     "outDir": "../../dist/out-tsc",
+    "rootDir": "../..",
     "types": [],
     "paths": {
-      "duxkit-ai": ["../../dist/duxkit-ai", "./dist/duxkit-ai"],
-      "duxkit-ai/helm/*": ["../../dist/duxkit-ai/helm/*", "./dist/duxkit-ai/helm/*"]
+      "@duxkit/ui/helm/button": ["../ui/helm/button/src/index.ts"],
+      "@duxkit/ui/helm/icon": ["../ui/helm/icon/src/index.ts"],
+      "@duxkit/ui/helm/utils": ["../ui/helm/utils/src/index.ts"],
+      "duxkit-ai": ["../../dist/duxkit-ai", "./dist/duxkit-ai"]
     }
   },
   "include": ["src/**/*.ts"],

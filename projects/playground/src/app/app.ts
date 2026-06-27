@@ -31,7 +31,7 @@ import {
   ToolContent,
   ToolTrigger,
 } from 'duxkit-ai';
-import { HlmButton } from 'duxkit-ai/helm/button';
+import { HlmButton } from '@duxkit/ui/helm/button';
 
 type MessagePart = UIMessage['parts'][number];
 

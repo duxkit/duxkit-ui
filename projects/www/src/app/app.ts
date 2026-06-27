@@ -31,8 +31,8 @@ import {
   ToolContent,
   ToolTrigger,
 } from 'duxkit-ai';
-import { HlmButton } from 'duxkit-ai/helm/button';
-import { HlmIcon } from 'duxkit-ai/helm/icon';
+import { HlmButton } from '@duxkit/ui/helm/button';
+import { HlmIcon } from '@duxkit/ui/helm/icon';
 
 interface DemoQueueStep {
   readonly wait: number;
