@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/angular';
 import { moduleMetadata } from '@storybook/angular';
-import { HlmButton } from 'duxkit-ai/helm/button';
+import { HlmButtonDirective } from '@spartan-ng/ui-button-helm';
 import type { AiToolPart } from '../tool';
 import {
   Confirmation,
@@ -57,7 +57,7 @@ const meta: Meta = {
         ConfirmationRejected,
         ConfirmationRequest,
         ConfirmationTitle,
-        HlmButton,
+        HlmButtonDirective,
       ],
     }),
   ],

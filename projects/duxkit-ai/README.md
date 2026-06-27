@@ -1,6 +1,6 @@
 # duxkit-ai
 
-Angular AI UI library using `@ai-sdk/angular`, `ai`, and Spartan Helm.
+Angular AI UI library using `@ai-sdk/angular`, `ai`, and Spartan.
 
 Build from the workspace root:
 
@@ -8,13 +8,8 @@ Build from the workspace root:
 pnpm build:lib
 ```
 
-The package exposes the primary `duxkit-ai` entrypoint plus generated Helm secondary entrypoints:
+The package exposes the primary `duxkit-ai` entrypoint.
 
-- `duxkit-ai/helm/button`
-- `duxkit-ai/helm/input`
-- `duxkit-ai/helm/textarea`
-- `duxkit-ai/helm/avatar`
-- `duxkit-ai/helm/tooltip`
-- `duxkit-ai/helm/utils`
+Generated Spartan HLM primitives are private workspace UI code and are not published by `duxkit-ai`.
 
 Consumers must provide the peer dependencies listed in `package.json`, configure `@tailwindcss/postcss`, and include the Spartan Tailwind preset in their app styles.

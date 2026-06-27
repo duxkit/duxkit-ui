@@ -176,16 +176,15 @@ import {
 } from 'duxkit-ai';
 ```
 
-Generated Spartan Helm entrypoints:
+Private app UI primitives:
 
 ```ts
-import { HlmButton } from 'duxkit-ai/helm/button';
-import { HlmInput } from 'duxkit-ai/helm/input';
-import { HlmTextarea } from 'duxkit-ai/helm/textarea';
-import { HlmAvatar } from 'duxkit-ai/helm/avatar';
-import { HlmTooltip } from 'duxkit-ai/helm/tooltip';
-import { provideSpartanHlm } from 'duxkit-ai/helm/utils';
+import { HlmButton } from '@duxkit/ui/helm/button';
+import { HlmTabs } from '@duxkit/ui/helm/tabs';
+import { HlmNavigationMenu } from '@duxkit/ui/helm/navigation-menu';
 ```
+
+These imports are for workspace apps only. They are not part of the published `duxkit-ai` package.
 
 The public API surface lives in:
 
@@ -228,27 +227,15 @@ The Spartan preset already imports `tw-animate-css` and the Angular CDK overlay 
 The Spartan CLI is configured by `components.json` to generate Helm entrypoints under:
 
 ```text
-projects/duxkit-ai/helm
+projects/ui/helm
 ```
 
-Generate only the primitives the AI components actually need:
+Generate only the primitives the workspace apps actually need:
 
 ```bash
-pnpm exec ng g @spartan-ng/cli:ui button --interactive=false
-pnpm exec ng g @spartan-ng/cli:ui input --interactive=false
-pnpm exec ng g @spartan-ng/cli:ui textarea --interactive=false
-pnpm exec ng g @spartan-ng/cli:ui avatar --interactive=false
-pnpm exec ng g @spartan-ng/cli:ui tooltip --interactive=false
-```
-
-If the generated primitive should be published, add an `ng-package.json` beside it with:
-
-```json
-{
-  "lib": {
-    "entryFile": "src/index.ts"
-  }
-}
+pnpm exec nx g @spartan-ng/cli:ui navigation-menu --interactive=false
+pnpm exec nx g @spartan-ng/cli:ui button --interactive=false
+pnpm exec nx g @spartan-ng/cli:ui tabs --interactive=false
 ```
 
 ## Playground With Ollama
