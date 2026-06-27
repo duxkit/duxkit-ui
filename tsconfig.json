@@ -12,7 +12,8 @@
       "duxkit-ai/helm/avatar": ["./projects/duxkit-ai/helm/avatar/src/index.ts"],
       "duxkit-ai/helm/tooltip": ["./projects/duxkit-ai/helm/tooltip/src/index.ts"],
       "duxkit-ai/helm/input": ["./projects/duxkit-ai/helm/input/src/index.ts"],
-      "duxkit-ai/helm/icon": ["./projects/duxkit-ai/helm/icon/src/index.ts"]
+      "duxkit-ai/helm/icon": ["./projects/duxkit-ai/helm/icon/src/index.ts"],
+      "@duxkit/ui": ["./projects/ui/src/index.ts"]
     },
     "noImplicitOverride": true,
     "noPropertyAccessFromIndexSignature": true,
@@ -46,6 +47,9 @@
     },
     {
       "path": "./projects/www/tsconfig.app.json"
+    },
+    {
+      "path": "./projects/ui/tsconfig.lib.json"
     }
   ]
 }
