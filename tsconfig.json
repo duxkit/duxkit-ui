@@ -3,17 +3,14 @@
   "compilerOptions": {
     "paths": {
       "duxkit-ai": ["./dist/duxkit-ai"],
-      "duxkit-ai/helm/button": ["./projects/duxkit-ai/helm/button/src/index.ts"],
-      "duxkit-ai/helm/button-group": [
-        "./projects/duxkit-ai/helm/button-group/src/index.ts"
+      "@duxkit/ui": ["./projects/ui/src/index.ts"],
+      "@duxkit/ui/helm/button": ["./projects/ui/helm/button/src/index.ts"],
+      "@duxkit/ui/helm/icon": ["./projects/ui/helm/icon/src/index.ts"],
+      "@duxkit/ui/helm/navigation-menu": [
+        "./projects/ui/helm/navigation-menu/src/index.ts"
       ],
-      "duxkit-ai/helm/utils": ["./projects/duxkit-ai/helm/utils/src/index.ts"],
-      "duxkit-ai/helm/textarea": ["./projects/duxkit-ai/helm/textarea/src/index.ts"],
-      "duxkit-ai/helm/avatar": ["./projects/duxkit-ai/helm/avatar/src/index.ts"],
-      "duxkit-ai/helm/tooltip": ["./projects/duxkit-ai/helm/tooltip/src/index.ts"],
-      "duxkit-ai/helm/input": ["./projects/duxkit-ai/helm/input/src/index.ts"],
-      "duxkit-ai/helm/icon": ["./projects/duxkit-ai/helm/icon/src/index.ts"],
-      "@duxkit/ui": ["./projects/ui/src/index.ts"]
+      "@duxkit/ui/helm/tabs": ["./projects/ui/helm/tabs/src/index.ts"],
+      "@duxkit/ui/helm/utils": ["./projects/ui/helm/utils/src/index.ts"]
     },
     "noImplicitOverride": true,
     "noPropertyAccessFromIndexSignature": true,

@@ -5,5 +5,6 @@ module.exports = {
     './projects/playground/src/**/*.{html,ts}',
     './projects/duxkit-ai/src/**/*.{html,ts}',
     './projects/duxkit-ai/helm/**/*.{html,ts}',
+    './projects/ui/helm/**/*.{html,ts}',
   ],
 };
