@@ -1,8 +1,6 @@
 .conversation-perspective {
   position: relative;
   isolation: isolate;
-  perspective: 1500px;
-  perspective-origin: 44% 46%;
 }
 
 .conversation-perspective::before {
@@ -12,11 +10,8 @@
 .conversation-plane {
   position: relative;
   overflow: hidden;
-  transform: rotateX(7deg) rotateY(-20deg) rotateZ(1deg) translate3d(0, 0, 0);
-  transform-origin: center;
-  transform-style: preserve-3d;
-  box-shadow: inset 0 1px 0 rgb(255 255 255 / 92%);
-  backface-visibility: hidden;
+  border-radius: 0 0 8px 8px;
+  background: #ffffff;
 }
 
 .conversation-plane::before {
@@ -50,20 +45,10 @@
   }
 }
 
-@media (max-width: 900px) {
-  .conversation-perspective {
-    perspective-origin: 50% 50%;
-  }
-
-  .conversation-plane {
-    transform: rotateX(4deg) rotateY(-5deg) rotateZ(0.5deg);
-  }
-}
-
 @media (prefers-reduced-motion: reduce) {
-  .conversation-plane,
-  .conversation-perspective::before {
-    transform: none;
+  .message-enter-left,
+  .message-enter-right {
+    animation: none;
   }
 }
 

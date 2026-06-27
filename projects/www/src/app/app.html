@@ -3,13 +3,15 @@
 
   <section class="hero" aria-labelledby="hero-title">
     <div class="hero-copy">
-      <h1 id="hero-title">AI primitives for Angular</h1>
+      <h1 id="hero-title">Duxkit UI</h1>
 
       <p class="lede">
-        Compose chat, reasoning, tools, and confirmations with Angular-native UI primitives.
+        A component library and private registry for building AI-native Angular applications faster.
       </p>
 
       <div class="hero-actions" aria-label="Hero actions">
+        <a hlmBtn class="primary-button" href="#primitives">Explore Components</a>
+
         <button
           hlmBtn
           class="install-command"
@@ -29,13 +31,39 @@
             aria-hidden="true"
           />
         </button>
-
-        <a hlmBtn href="#docs">Read docs</a>
       </div>
     </div>
+  </section>
 
-    <div class="conversation-perspective" aria-label="Angular AI primitive preview">
-      <div class="conversation-plane h-[32rem] px-5 border-border border-gray-200  border rounded-xl">
+  <section class="feature-strip" aria-label="Highlights">
+    <article>
+      <h2>Fully Composable</h2>
+      <p>Every primitive is a focused building block. Compose chat, reasoning, tools, and confirmations exactly where you need them.</p>
+    </article>
+    <article>
+      <h2>Angular Native</h2>
+      <p>Standalone components, signals, strict templates, and predictable APIs built for modern Angular applications.</p>
+    </article>
+    <article>
+      <h2>Spartan Foundation</h2>
+      <p>Styled with generated HLM primitives so your private UI layer stays aligned across docs, playground, and product surfaces.</p>
+    </article>
+  </section>
+
+  <section id="primitives" class="showcase-section" aria-labelledby="showcase-title">
+    <div class="section-heading">
+      <h2 id="showcase-title">Components to build anything</h2>
+      <p>Mix and match primitives to build chat experiences, workflows, IDEs, voice agents, and approval flows.</p>
+    </div>
+
+    <div class="component-board">
+      <article class="component-card component-card-wide" aria-labelledby="conversation-preview-title">
+        <div class="card-heading">
+          <h3 id="conversation-preview-title">Conversation</h3>
+          <span>Streaming</span>
+        </div>
+        <div class="conversation-perspective" aria-label="Angular AI primitive preview">
+      <div class="conversation-plane h-[32rem] px-5 border-border border-gray-200 border rounded-xl">
         <ai-conversation [stickToBottom]="'auto'">
           <ai-conversation-content
             class="[scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
@@ -275,10 +303,43 @@
         </ai-conversation>
       </div>
     </div>
-  </section>
+      </article>
 
-  <section id="primitives" class="next-section" aria-labelledby="next-title">
-    <h2 id="next-title">An AI interface is a set of primitives</h2>
+      <article class="component-card workflow-card">
+        <div class="card-heading">
+          <h3>Workflow</h3>
+          <span>Agent tasks</span>
+        </div>
+        <div class="workflow-list">
+          <div>
+            <strong>Plan Lisbon weekend</strong>
+            <span>Neighborhood, hotel, dinner</span>
+          </div>
+          <div>
+            <strong>Request approval</strong>
+            <span>Hold room only after consent</span>
+          </div>
+          <div>
+            <strong>Update notes</strong>
+            <span>Write back selected details</span>
+          </div>
+        </div>
+      </article>
+
+      <article class="component-card prompt-card">
+        <div class="card-heading">
+          <h3>Prompt Input</h3>
+          <span>Composable</span>
+        </div>
+        <div class="prompt-box">
+          <p>Plan, search, build anything</p>
+          <div class="prompt-actions">
+            <span>GPT-4o</span>
+            <button type="button" aria-label="Submit prompt">↵</button>
+          </div>
+        </div>
+      </article>
+    </div>
   </section>
 </main>
 
