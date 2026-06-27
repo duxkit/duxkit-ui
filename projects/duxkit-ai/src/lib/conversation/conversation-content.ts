@@ -98,7 +98,7 @@ export class ConversationContent {
     }
 
     requestAnimationFrame(() => {
-      anchor.scrollIntoView({ behavior: 'smooth' });
+      this.scrollContainerToBottom('smooth');
     });
   }
 
@@ -110,8 +110,20 @@ export class ConversationContent {
     }
 
     requestAnimationFrame(() => {
-      anchor.scrollIntoView({ behavior: 'smooth' });
+      this.scrollContainerToBottom('smooth');
     });
+  }
+
+  private scrollContainerToBottom(behavior: ScrollBehavior): void {
+    const container = this.elementRef.nativeElement;
+    const top = container.scrollHeight;
+
+    if (typeof container.scrollTo === 'function') {
+      container.scrollTo({ top, behavior });
+      return;
+    }
+
+    container.scrollTop = top;
   }
 
   isAtBottom(): boolean {

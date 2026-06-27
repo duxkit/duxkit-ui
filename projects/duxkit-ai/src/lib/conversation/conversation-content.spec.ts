@@ -36,6 +36,7 @@ describe('ConversationContent', () => {
   let originalMutationObserver: typeof MutationObserver;
   let originalRequestAnimationFrame: typeof requestAnimationFrame;
   let originalScrollIntoView: typeof HTMLElement.prototype.scrollIntoView | undefined;
+  let originalScrollTo: typeof HTMLElement.prototype.scrollTo | undefined;
   let mutationObservers: TestMutationObserver[];
 
   class TestResizeObserver {
@@ -62,6 +63,7 @@ describe('ConversationContent', () => {
     originalMutationObserver = globalThis.MutationObserver;
     originalRequestAnimationFrame = globalThis.requestAnimationFrame;
     originalScrollIntoView = HTMLElement.prototype.scrollIntoView;
+    originalScrollTo = HTMLElement.prototype.scrollTo;
     mutationObservers = [];
     globalThis.ResizeObserver = TestResizeObserver as unknown as typeof ResizeObserver;
     globalThis.MutationObserver = class extends TestMutationObserver {
@@ -101,6 +103,13 @@ describe('ConversationContent', () => {
         HTMLElement.prototype as { scrollIntoView?: typeof HTMLElement.prototype.scrollIntoView }
       ).scrollIntoView;
     }
+
+    if (originalScrollTo) {
+      HTMLElement.prototype.scrollTo = originalScrollTo;
+    } else {
+      delete (HTMLElement.prototype as { scrollTo?: typeof HTMLElement.prototype.scrollTo })
+        .scrollTo;
+    }
   });
 
   it('matches element usage', () => {
@@ -120,9 +129,11 @@ describe('ConversationContent', () => {
     expect(element.classList).not.toContain('grow');
   });
 
-  it('forces scroll when a user message is added after the user intentionally scrolled up', async () => {
+  it('forces container scroll when a user message is added after the user intentionally scrolled up', async () => {
     const scrollIntoView = vi.fn();
+    const scrollTo = vi.fn();
     HTMLElement.prototype.scrollIntoView = scrollIntoView;
+    HTMLElement.prototype.scrollTo = scrollTo;
 
     await TestBed.resetTestingModule()
       .configureTestingModule({
@@ -134,6 +145,10 @@ describe('ConversationContent', () => {
     messagesFixture.detectChanges();
     await messagesFixture.whenStable();
 
+    const content = messagesFixture.nativeElement.querySelector(
+      'ai-conversation-content',
+    ) as HTMLElement;
+
     scrollIntoView.mockClear();
     messagesFixture.componentInstance.content().autoScroll = false;
     appendMessage(messagesFixture, 'assistant');
@@ -141,12 +156,14 @@ describe('ConversationContent', () => {
     await messagesFixture.whenStable();
 
     expect(scrollIntoView).not.toHaveBeenCalled();
+    scrollTo.mockClear();
 
     appendMessage(messagesFixture, 'user');
     mutationObservers.forEach((observer) => observer.trigger());
     await messagesFixture.whenStable();
 
-    expect(scrollIntoView).toHaveBeenCalledWith({ behavior: 'smooth', block: 'end' });
+    expect(scrollIntoView).not.toHaveBeenCalled();
+    expect(scrollTo).toHaveBeenCalledWith({ top: content.scrollHeight, behavior: 'smooth' });
     expect(messagesFixture.componentInstance.content().autoScroll).toBe(true);
   });
 });
