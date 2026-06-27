@@ -1,5 +1,4 @@
 import { Component } from '@angular/core';
-import { HlmButton } from '@duxkit/ui/helm/button';
 import { HlmNavigationMenuImports } from '@duxkit/ui/helm/navigation-menu';
 
 interface HeaderNavItem {
@@ -9,10 +8,10 @@ interface HeaderNavItem {
 
 @Component({
   selector: 'app-header',
-  imports: [HlmButton, HlmNavigationMenuImports],
+  imports: [HlmNavigationMenuImports],
   template: `
     <header class="site-header w-full flex justify-center p-2" aria-label="Site header">
-      <div class="flex gap-7 items-center w-full max-w-6xl mx-auto justify-center">
+      <div class="flex gap-7 items-center w-full max-w-6xl mx-auto justify-between">
         <a class="brand" href="/" aria-label="Duxkit UI home">
           <svg class="brand-mark" viewBox="0 0 64 64" aria-hidden="true" focusable="false">
             <path
@@ -39,7 +38,6 @@ interface HeaderNavItem {
 
         <div class="nav-actions" aria-label="Account actions">
           <a class="nav-link" href="#github">GitHub</a>
-          <a hlmBtn class="nav-button" href="#docs" size="sm" variant="outline">Docs</a>
         </div>
       </div>
     </header>
