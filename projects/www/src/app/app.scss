@@ -3,6 +3,11 @@
   isolation: isolate;
 }
 
+.component-board-perspective {
+  transform: perspective(700px) translateX(-250px) rotateX(10deg) rotateY(-5deg) rotateZ(1deg);
+  transform-origin: center top;
+}
+
 .conversation-perspective::before {
   content: none;
 }
@@ -10,8 +15,9 @@
 .conversation-plane {
   position: relative;
   overflow: hidden;
-  border-radius: 0 0 8px 8px;
-  background: #ffffff;
+  border-radius: inherit;
+  background: var(--background);
+  color: var(--foreground);
 }
 
 .conversation-plane::before {
