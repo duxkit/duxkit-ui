@@ -34,7 +34,7 @@ interface HeaderNavItem {
         </nav>
 
         <div class="nav-actions" aria-label="Account actions">
-          <a hlmNavigationMenuLink class="nav-link" href="#github">GitHub</a>
+          <a class="nav-link" href="#github">GitHub</a>
           <a hlmBtn class="nav-button" href="#docs" size="sm" variant="outline">Docs</a>
         </div>
       </div>
