@@ -33,6 +33,7 @@ import {
 } from 'duxkit-ai';
 import { HlmButton } from '@duxkit/ui/helm/button';
 import { HlmIcon } from '@duxkit/ui/helm/icon';
+import { HeaderComponent } from './header.component';
 
 interface DemoQueueStep {
   readonly wait: number;
@@ -59,6 +60,7 @@ interface DemoQueueStep {
     ConversationScrollAnchor,
     HlmButton,
     HlmIcon,
+    HeaderComponent,
     Message,
     MessageContent,
     NgIcon,
