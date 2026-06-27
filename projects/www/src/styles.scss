@@ -113,24 +113,24 @@ body {
 }
 
 .brand {
-  gap: 12px;
+  gap: 10px;
   color: inherit;
   font-size: 14px;
-  font-weight: 650;
+  font-weight: 700;
   text-decoration: none;
 }
 
 .brand-mark {
-  width: 24px;
-  height: 24px;
-  display: grid;
-  place-items: center;
-  border: 1px solid #171717;
-  border-radius: 5px;
+  width: 30px;
+  height: 30px;
+  display: block;
   color: #171717;
-  font-size: 11px;
-  font-weight: 750;
-  letter-spacing: -0.03em;
+  fill: currentColor;
+  flex: 0 0 auto;
+}
+
+.brand-name {
+  letter-spacing: 0;
 }
 
 .primary-nav {
@@ -343,7 +343,6 @@ h1 {
   }
 
   .brand-mark {
-    border-color: #f5f5f1;
     color: #f5f5f1;
   }
 
