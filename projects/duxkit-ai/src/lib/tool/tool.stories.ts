@@ -7,7 +7,7 @@ import {
   ConfirmationRequest,
   ConfirmationTitle,
 } from '../confirmation';
-import { HlmButtonDirective } from '@spartan-ng/ui-button-helm';
+import { HlmButton } from '@duxkit/ui/helm/button';
 import type { AiToolPart } from './tool';
 import { Tool, ToolContent, ToolStatus, ToolTrigger } from './';
 
@@ -51,7 +51,7 @@ const meta: Meta = {
         ConfirmationActions,
         ConfirmationRequest,
         ConfirmationTitle,
-        HlmButtonDirective,
+        HlmButton,
         Tool,
         ToolTrigger,
         ToolContent,
