@@ -40,7 +40,9 @@ export type ToolStatusVariant = 'badge' | 'icon';
 export class ToolStatus {
   protected readonly tool = inject(Tool);
 
+  /** Presentation style for the tool status indicator. */
   public readonly variant = input<ToolStatusVariant>('badge');
+  /** Additional classes merged onto the tool status element. */
   public readonly userClass = input<string | undefined>(undefined, { alias: 'class' });
 
   protected readonly ariaLabel = computed(() => `Tool status: ${this.tool.statusLabel()}`);

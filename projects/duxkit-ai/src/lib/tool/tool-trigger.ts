@@ -38,6 +38,7 @@ export class ToolTrigger {
   protected readonly tool = inject(Tool);
   private readonly collapsible = inject(BrnCollapsible);
 
+  /** Additional classes merged onto the tool trigger button. */
   readonly userClass = input<string | undefined>(undefined, { alias: 'class' });
 
   protected readonly expanded = this.collapsible.expanded;

@@ -281,6 +281,44 @@ Source files:
 projects/www/src/app
 ```
 
+## Docs And Metadata
+
+When adding a new component to the docs, follow:
+
+```text
+docs/adding-component-docs.md
+```
+
+The docs registry, examples, previews, and generated API metadata are checked in under:
+
+```text
+projects/www/src/app/docs
+projects/www/src/app/docs/component-api-metadata.generated.ts
+```
+
+When changing component APIs, regenerate `component-api-metadata.generated.ts` and verify the docs search index:
+
+```bash
+pnpm docs:generate-metadata
+pnpm exec vitest run projects/www/src/app/docs/docs-search.spec.ts --environment jsdom
+```
+
+Input and output descriptions in the API tables are generated from JSDoc comments on the source `input()` and `output()` properties.
+
+Run the docs site locally or build it with:
+
+```bash
+pnpm start:www
+pnpm build:www
+```
+
+Storybook examples are separate from the `www` docs pages:
+
+```bash
+pnpm storybook
+pnpm build:storybook
+```
+
 ## Before Committing
 
 Run:

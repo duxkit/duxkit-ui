@@ -1,0 +1,173 @@
+<section class="hero" aria-labelledby="hero-title">
+  <div class="hero-copy">
+    <h1
+      id="hero-title"
+      class="text-balance text-center font-semibold text-[40px]! leading-[1.1] tracking-tight sm:text-5xl! lg:font-semibold xl:text-6xl!"
+    >
+      Duxkit UI
+    </h1>
+
+    <p class="lede">Angular primitives for teams building with Vercel's AI SDK and SpartanNG.</p>
+
+    <div class="hero-actions" aria-label="Hero actions">
+      <a hlmBtn class="primary-button" href="#primitives">Explore Components</a>
+
+      <button
+        hlmBtn
+        class="install-command"
+        type="button"
+        variant="outline"
+        size="lg"
+        [attr.aria-label]="installCopyLabel()"
+        [title]="installCopyLabel()"
+        (click)="copyInstallCommand()"
+      >
+        <span aria-hidden="true">$</span>
+        <code>{{ installCommand }}</code>
+        <ng-icon
+          hlmIcon
+          size="sm"
+          [name]="installCommandCopied() ? 'lucideCheck' : 'lucideCopy'"
+          aria-hidden="true"
+        />
+      </button>
+    </div>
+  </div>
+</section>
+
+<section class="feature-strip" aria-label="Highlights">
+  <article>
+    <h2>AI SDK Ready</h2>
+    <p>
+      Render conversations, reasoning, tools, tasks, and approvals from the same interaction
+      patterns used by Vercel's AI SDK.
+    </p>
+  </article>
+  <article>
+    <h2>Angular Native</h2>
+    <p>
+      Standalone components, signals, strict templates, and predictable APIs for modern Angular
+      applications.
+    </p>
+  </article>
+  <article>
+    <h2>SpartanNG Foundation</h2>
+    <p>
+      Built to sit beside SpartanNG and HLM primitives, so your AI components inherit the same
+      design language as the rest of your app.
+    </p>
+  </article>
+</section>
+
+<section id="primitives" class="showcase-section w-full" aria-labelledby="showcase-title">
+  <div class="text-center gap-4 mx-auto max-w-xl! flex flex-col items-center justify-center w-full">
+    <h2
+      id="showcase-title"
+      class="font-semibold text-xl tracking-tight sm:text-2xl md:text-3xl lg:text-[40px]"
+    >
+      AI SDK components for Angular
+    </h2>
+    <p>
+      Compose Vercel AI SDK responses with SpartanNG-friendly primitives for chat, workflows, IDEs,
+      voice agents, and approval flows.
+    </p>
+  </div>
+
+  <div
+    class="component-board component-board-perspective"
+    aria-label="AI primitive component previews"
+  >
+    <article class="component-card component-card-wide" aria-label="Mocked conversation preview">
+      <div class="conversation-plane static-conversation-plane">
+        <ai-conversation [stickToBottom]="false">
+          <ai-conversation-content aria-live="polite">
+            <ai-message from="user" class="mt-3">
+              <ai-message-content
+                markdown="We need a changelog page for the SDK docs. Can you outline the first pass?"
+              />
+            </ai-message>
+
+            <ai-message from="assistant">
+              <ai-message-content
+                markdown="Yes. I’d start with release groups, migration notes, and a compact list of breaking changes."
+              />
+            </ai-message>
+
+            <ai-message from="user">
+              <ai-message-content
+                markdown="Keep it useful for Angular teams upgrading between minor versions."
+              />
+            </ai-message>
+
+            <ai-message from="assistant">
+              <ai-message-content
+                markdown="Then each release should call out template changes, signal API updates, dependency ranges, and one copyable upgrade command."
+              />
+            </ai-message>
+
+            <div aiConversationScrollAnchor></div>
+          </ai-conversation-content>
+        </ai-conversation>
+      </div>
+    </article>
+
+    <article
+      class="component-card primitive-preview-card"
+      aria-label="Open chain of thought preview"
+    >
+      <div class="primitive-preview-body">
+        <ai-chain-of-thought [autoToggle]="false" [expanded]="true" [isStreaming]="false">
+          <button aiChainOfThoughtTrigger>Reviewed docs structure</button>
+          <ai-chain-of-thought-content>
+            <ai-chain-of-thought-step
+              status="complete"
+              icon="lucideCircleCheck"
+              label="Identify release surfaces"
+              description="Docs, package exports, Angular peer versions, and migrations."
+            >
+              <ai-reasoning-content
+                markdown="Group notes by what teams need to act on first: breaking changes, migration commands, and examples that changed."
+              />
+            </ai-chain-of-thought-step>
+
+            <ai-chain-of-thought-step
+              status="complete"
+              icon="lucideSearch"
+              label="Check supporting pages"
+              description="Find references that need matching copy."
+            >
+              <ai-chain-of-thought-search-results>
+                <span aiChainOfThoughtSearchResult>Installation</span>
+                <span aiChainOfThoughtSearchResult>Components</span>
+                <span aiChainOfThoughtSearchResult>Playground</span>
+              </ai-chain-of-thought-search-results>
+            </ai-chain-of-thought-step>
+          </ai-chain-of-thought-content>
+        </ai-chain-of-thought>
+      </div>
+    </article>
+
+    <article class="component-card primitive-preview-card" aria-label="Static task preview">
+      <div class="primitive-preview-body">
+        <ai-task [autoToggle]="false" [expanded]="true" [isStreaming]="false">
+          <button aiTaskTrigger>Prepare changelog draft</button>
+          <ai-task-content>
+            <div aiTaskItem>Read release notes from <span aiTaskItemFile>CHANGELOG.md</span></div>
+            <div aiTaskItem>Mapped API changes in <span aiTaskItemFile>public-api.ts</span></div>
+            <div aiTaskItem>Added upgrade copy to <span aiTaskItemFile>docs/releases.md</span></div>
+          </ai-task-content>
+        </ai-task>
+
+        <ai-tool [part]="databaseToolPart" [expanded]="true">
+          <button aiToolTrigger></button>
+          <ai-tool-content>
+            <pre
+              class="m-0 max-w-full overflow-auto p-3 text-xs leading-relaxed"
+              [textContent]="databaseToolInput"
+            ></pre>
+          </ai-tool-content>
+        </ai-tool>
+      </div>
+    </article>
+  </div>
+</section>

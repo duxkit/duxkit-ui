@@ -18,7 +18,9 @@ interface MessageCopyTextEntry {
   },
 })
 export class Message {
+  /** Role used to style and identify the message in the conversation. */
   public readonly from = input.required<UIMessage['role']>();
+  /** Additional classes merged onto the message root element. */
   public readonly userClass = input<string | undefined>(undefined, {
     alias: 'class',
   });

@@ -64,6 +64,7 @@ export class ReasoningTrigger {
   protected readonly reasoning = inject(Reasoning);
   private readonly collapsible = inject(BrnCollapsible);
 
+  /** Additional classes merged onto the reasoning trigger button. */
   readonly userClass = input<string | undefined>(undefined, { alias: 'class' });
 
   protected readonly expanded = this.collapsible.expanded;

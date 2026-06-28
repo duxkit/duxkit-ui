@@ -55,3 +55,9 @@ You are an expert in TypeScript, Angular, and scalable web application developme
 - Use the `providedIn: 'root'` option for singleton services
 - Prefer the `@Service` decorator over `@Injectable({providedIn: 'root'})` for new singleton services (Angular v22+)
 - Use the `inject()` function instead of constructor injection
+
+## Repo Agent Skills
+
+Repo-local skills live under `docs/agent-skills`.
+
+- When adding a new `duxkit-ai` primitive to the `www` docs, or updating docs after a primitive API change, read `docs/agent-skills/add-primitive-docs/SKILL.md` before editing.

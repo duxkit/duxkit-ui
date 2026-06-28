@@ -28,6 +28,7 @@ import { Task } from './task';
   `,
 })
 export class TaskTrigger {
+  /** Additional classes merged onto the task trigger button. */
   public readonly userClass = input<string | undefined>(undefined, { alias: 'class' });
 
   protected readonly task = inject(Task);

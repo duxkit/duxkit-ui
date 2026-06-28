@@ -25,6 +25,7 @@ export class ConversationContent {
   autoScroll = true;
 
   readonly anchor = contentChild(ConversationScrollAnchor);
+  /** Additional classes merged onto the scrollable conversation content element. */
   readonly userClass = input<string | undefined>(undefined, { alias: 'class' });
   protected readonly classes = computed(() =>
     twMerge('min-h-0 min-w-0 grow overflow-y-auto overscroll-contain', this.userClass()),

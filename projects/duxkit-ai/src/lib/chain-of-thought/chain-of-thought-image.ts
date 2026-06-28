@@ -19,7 +19,9 @@ import { twMerge } from 'tailwind-merge';
   `,
 })
 export class ChainOfThoughtImage {
+  /** Optional caption rendered below the image content. */
   public readonly caption = input<string | undefined>();
+  /** Additional classes merged onto the image wrapper element. */
   public readonly userClass = input<string | undefined>(undefined, { alias: 'class' });
 
   protected readonly classes = computed(() => twMerge('mt-2 space-y-2', this.userClass()));

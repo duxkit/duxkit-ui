@@ -30,6 +30,15 @@ describe('docs table of contents', () => {
       'ChainOfThoughtSearchResults',
       'ChainOfThoughtStep',
     ]);
+    expect(apiSection?.items?.map((item) => item.id)).toEqual([
+      'api-chain-of-thought',
+      'api-chain-of-thought-content',
+      'api-chain-of-thought-trigger',
+      'api-chain-of-thought-image',
+      'api-chain-of-thought-search-result',
+      'api-chain-of-thought-search-results',
+      'api-chain-of-thought-step',
+    ]);
     expect(toc.filter((item) => item.items !== undefined).map((item) => item.id)).toEqual(['api']);
   });
 
@@ -41,4 +50,5 @@ describe('docs table of contents', () => {
       'api-prompt-input-select-trigger',
     );
   });
+
 });

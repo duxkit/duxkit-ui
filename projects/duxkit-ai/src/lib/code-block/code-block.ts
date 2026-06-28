@@ -80,8 +80,11 @@ const languageExtensions: Record<string, string> = {
   `,
 })
 export class CodeBlock {
+  /** Code string to render, copy, and download. */
   public readonly code = input.required<string>();
+  /** Language identifier used for syntax highlighting and file extension detection. */
   public readonly language = input<string>('text');
+  /** Additional classes merged onto the code block root element. */
   public readonly userClass = input<string | undefined>(undefined, { alias: 'class' });
 
   private readonly document = inject(DOCUMENT);

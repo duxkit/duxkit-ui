@@ -81,11 +81,17 @@ import { CodeBlock } from '../code-block';
   `,
 })
 export class ReasoningContent implements AfterViewInit, OnDestroy {
+  /** Markdown source rendered inside the reasoning panel. */
   public readonly markdown = input<string | undefined>();
+  /** Maximum collapsed content height before the show more control appears. */
   public readonly collapsedMaxHeight = input<number | string | undefined>();
+  /** Keeps the reasoning content scrolled to the bottom when new content is appended. */
   public readonly pinToBottom = input(false);
+  /** Accessible label for the control that expands clipped reasoning content. */
   public readonly showMoreLabel = input('Show more');
+  /** Accessible label for the control that collapses clipped reasoning content. */
   public readonly showLessLabel = input('Show less');
+  /** Additional classes merged onto the reasoning content element. */
   public readonly userClass = input<string | undefined>(undefined, { alias: 'class' });
   protected readonly markdownClasses = reasoningMarkdownContentClasses;
   private readonly markdownOptions = inject(AI_MARKDOWN_OPTIONS);

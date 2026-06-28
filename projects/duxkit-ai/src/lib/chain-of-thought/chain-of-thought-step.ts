@@ -75,7 +75,9 @@ const statusClasses: Record<ChainOfThoughtStepStatus, string> = {
         </div>
 
         @if (showClampOverlay()) {
-          <div class="pointer-events-none absolute inset-x-0 bottom-0 flex justify-center pt-12 pb-1">
+          <div
+            class="pointer-events-none absolute inset-x-0 bottom-0 flex justify-center pt-12 pb-1"
+          >
             <button
               type="button"
               class="pointer-events-auto rounded-md border border-border bg-background/90 px-2.5 py-1 font-medium text-muted-foreground text-xs shadow-sm transition-colors hover:text-foreground"
@@ -102,14 +104,23 @@ const statusClasses: Record<ChainOfThoughtStepStatus, string> = {
   `,
 })
 export class ChainOfThoughtStep implements AfterViewInit, OnDestroy {
+  /** Lucide icon name shown beside the step. */
   public readonly icon = input('lucideDot');
+  /** Primary step label. */
   public readonly label = input<string | undefined>();
+  /** Secondary text shown below the step label. */
   public readonly description = input<string | undefined>();
+  /** Visual status used to style the step marker. */
   public readonly status = input<ChainOfThoughtStepStatus>('complete');
+  /** Maximum collapsed content height before the show more control appears. */
   public readonly collapsedMaxHeight = input<number | string | undefined>();
+  /** Keeps step content scrolled to the bottom when new content is appended. */
   public readonly pinToBottom = input(false);
+  /** Accessible label for the control that expands clipped step content. */
   public readonly showMoreLabel = input('Show more');
+  /** Accessible label for the control that collapses clipped step content. */
   public readonly showLessLabel = input('Show less');
+  /** Additional classes merged onto the step root element. */
   public readonly userClass = input<string | undefined>(undefined, { alias: 'class' });
   private readonly clampedContent = viewChild<ElementRef<HTMLElement>>('clampedContent');
   private resizeObserver: ResizeObserver | undefined;

@@ -21,7 +21,9 @@ export type AiToolPart = ToolUIPart | DynamicToolUIPart;
   },
 })
 export class Tool {
+  /** AI SDK tool part used to derive the tool name, state, and JSON payload. */
   public readonly part = input.required<AiToolPart>();
+  /** Additional classes merged onto the tool root element. */
   public readonly userClass = input<string | undefined>(undefined, { alias: 'class' });
 
   public readonly name = computed(() => getToolName(this.part()));

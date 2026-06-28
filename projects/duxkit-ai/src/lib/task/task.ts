@@ -16,8 +16,11 @@ import { twMerge } from 'tailwind-merge';
   },
 })
 export class Task {
+  /** Automatically expands while task activity is streaming and collapses when it finishes. */
   public readonly autoToggle = input<boolean>(true);
+  /** Whether task activity is currently streaming. */
   public readonly isStreaming = input<boolean | undefined>();
+  /** Additional classes merged onto the task root element. */
   public readonly userClass = input<string | undefined>(undefined, { alias: 'class' });
 
   private readonly collapsible = inject(BrnCollapsible);

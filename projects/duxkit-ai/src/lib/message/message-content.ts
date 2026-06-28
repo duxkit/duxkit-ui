@@ -10,11 +10,7 @@ import {
 import { cva, type VariantProps } from 'class-variance-authority';
 import { clsx } from 'clsx';
 import { twMerge } from 'tailwind-merge';
-import {
-  AI_MARKDOWN_OPTIONS,
-  markdownContentClasses,
-  parseMarkdownBlocks,
-} from '../markdown';
+import { AI_MARKDOWN_OPTIONS, markdownContentClasses, parseMarkdownBlocks } from '../markdown';
 import { CodeBlock } from '../code-block';
 import { Message } from './message';
 
@@ -61,7 +57,9 @@ export type MessageContentVariants = VariantProps<typeof messageContentVariants>
   `,
 })
 export class MessageContent {
+  /** Markdown source rendered as rich message content. */
   public readonly markdown = input<string | undefined>();
+  /** Additional classes merged onto the message content element. */
   public readonly userClass = input<string | undefined>(undefined, {
     alias: 'class',
   });
@@ -99,6 +97,7 @@ export class MessageContent {
         messageContentVariants({
           from: this._from(),
         }),
+        this.markdown() !== undefined && 'w-full',
         this.userClass(),
       ),
     );

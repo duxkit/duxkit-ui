@@ -1,0 +1,8 @@
+{
+  "name": "input",
+  "$schema": "../../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "projects/ui/helm/input/src",
+  "prefix": "hlm",
+  "projectType": "library",
+  "tags": []
+}

@@ -11,6 +11,7 @@ import { Confirmation } from './confirmation';
 })
 export class ConfirmationTitle {
   protected readonly confirmation = inject(Confirmation);
+  /** Additional classes merged onto the confirmation title element. */
   public readonly userClass = input<string | undefined>(undefined, { alias: 'class' });
   protected readonly classes = computed(() => twMerge('inline text-foreground', this.userClass()));
 }

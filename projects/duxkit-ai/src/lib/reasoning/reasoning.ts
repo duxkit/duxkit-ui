@@ -16,8 +16,11 @@ import { BrnCollapsible } from '@spartan-ng/brain/collapsible';
   },
 })
 export class Reasoning {
+  /** Automatically expands while reasoning is streaming and collapses when it finishes. */
   public readonly autoToggle = input<boolean>(true);
+  /** Whether reasoning content is currently streaming. */
   public readonly isStreaming = input<boolean>(false);
+  /** Additional classes merged onto the reasoning root element. */
   public readonly userClass = input<string | undefined>(undefined, { alias: 'class' });
   protected readonly classes = computed(() => twMerge('flex flex-col', this.userClass()));
 

@@ -62,6 +62,7 @@ const feedbackIconStyles = `
   },
 })
 export class MessageActions {
+  /** Additional classes merged onto the message actions group. */
   public readonly userClass = input<string | undefined>(undefined, { alias: 'class' });
 
   private readonly message = inject(Message);
@@ -94,7 +95,9 @@ export class MessageActions {
   `,
 })
 export class MessageActionsCopy {
+  /** Text copied by the action; falls back to registered message content when omitted. */
   public readonly text = input<string | undefined>();
+  /** Emits the copied text after a successful copy action. */
   public readonly copiedChange = output<string>();
 
   private readonly message = inject(Message);
@@ -144,7 +147,9 @@ export class MessageActionsCopy {
   `,
 })
 export class MessageActionsThumbsUp {
+  /** Whether the thumbs up action is currently selected. */
   public readonly active = input(false);
+  /** Emits when the thumbs up action is pressed. */
   public readonly thumbsUp = output<void>();
 
   protected readonly classes = computed(() =>
@@ -176,7 +181,9 @@ export class MessageActionsThumbsUp {
   `,
 })
 export class MessageActionsThumbsDown {
+  /** Whether the thumbs down action is currently selected. */
   public readonly active = input(false);
+  /** Emits when the thumbs down action is pressed. */
   public readonly thumbsDown = output<void>();
 
   protected readonly classes = computed(() =>

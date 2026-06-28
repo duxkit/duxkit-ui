@@ -15,6 +15,7 @@ import { twMerge } from 'tailwind-merge';
   `,
 })
 export class TaskContent {
+  /** Additional classes merged onto the collapsible task content region. */
   public readonly userClass = input<string | undefined>(undefined, { alias: 'class' });
 
   protected readonly classes = computed(() =>

@@ -9,6 +9,7 @@ import { twMerge } from 'tailwind-merge';
   template: '<ng-content />',
 })
 export class ChainOfThoughtSearchResult {
+  /** Additional classes merged onto the search result token element. */
   public readonly userClass = input<string | undefined>(undefined, { alias: 'class' });
 
   protected readonly classes = computed(() =>

@@ -11,6 +11,7 @@ import { twMerge } from 'tailwind-merge';
   template: '<ng-content />',
 })
 export class ChainOfThoughtContent {
+  /** Additional classes merged onto the collapsible chain-of-thought content region. */
   public readonly userClass = input<string | undefined>(undefined, { alias: 'class' });
 
   protected readonly classes = computed(() =>

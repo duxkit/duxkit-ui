@@ -16,8 +16,11 @@ import { twMerge } from 'tailwind-merge';
   },
 })
 export class ChainOfThought {
+  /** Automatically expands while chain-of-thought work is streaming and collapses when it finishes. */
   public readonly autoToggle = input<boolean>(true);
+  /** Whether chain-of-thought work is currently streaming. */
   public readonly isStreaming = input<boolean>(false);
+  /** Additional classes merged onto the chain-of-thought root element. */
   public readonly userClass = input<string | undefined>(undefined, { alias: 'class' });
 
   private readonly collapsible = inject(BrnCollapsible);

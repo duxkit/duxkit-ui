@@ -16,6 +16,7 @@ import { Confirmation } from './confirmation';
 })
 export class ConfirmationActions {
   private readonly confirmation = inject(Confirmation);
+  /** Additional classes merged onto the confirmation actions container. */
   public readonly userClass = input<string | undefined>(undefined, { alias: 'class' });
   protected readonly visible = computed(() => this.confirmation.state() === 'approval-requested');
   protected readonly classes = computed(() =>

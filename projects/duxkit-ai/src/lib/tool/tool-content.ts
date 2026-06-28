@@ -17,6 +17,7 @@ import { Tool } from './tool';
 })
 export class ToolContent {
   protected readonly tool = inject(Tool);
+  /** Additional classes merged onto the collapsible tool content region. */
   public readonly userClass = input<string | undefined>(undefined, { alias: 'class' });
 
   protected readonly classes = computed(() =>

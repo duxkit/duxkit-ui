@@ -5,11 +5,16 @@
       "duxkit-ai": ["./dist/duxkit-ai"],
       "@duxkit/ui": ["./projects/ui/src/index.ts"],
       "@duxkit/ui/helm/button": ["./projects/ui/helm/button/src/index.ts"],
+      "@duxkit/ui/helm/command": ["./projects/ui/helm/command/src/index.ts"],
+      "@duxkit/ui/helm/dialog": ["./projects/ui/helm/dialog/src/index.ts"],
       "@duxkit/ui/helm/icon": ["./projects/ui/helm/icon/src/index.ts"],
+      "@duxkit/ui/helm/input": ["./projects/ui/helm/input/src/index.ts"],
+      "@duxkit/ui/helm/input-group": ["./projects/ui/helm/input-group/src/index.ts"],
       "@duxkit/ui/helm/navigation-menu": [
         "./projects/ui/helm/navigation-menu/src/index.ts"
       ],
       "@duxkit/ui/helm/tabs": ["./projects/ui/helm/tabs/src/index.ts"],
+      "@duxkit/ui/helm/textarea": ["./projects/ui/helm/textarea/src/index.ts"],
       "@duxkit/ui/helm/utils": ["./projects/ui/helm/utils/src/index.ts"]
     },
     "noImplicitOverride": true,

@@ -33,3 +33,9 @@ export function apiSymbolHeadingId(symbolName: string): string {
     .replace(/([A-Z])([A-Z][a-z])/g, '$1-$2')
     .toLowerCase()}`;
 }
+
+export function flattenDocsTableOfContentsItems(
+  items: readonly DocsTableOfContentsItem[],
+): readonly DocsTableOfContentsItem[] {
+  return items.flatMap((item) => (item.items ? [item, ...item.items] : [item]));
+}

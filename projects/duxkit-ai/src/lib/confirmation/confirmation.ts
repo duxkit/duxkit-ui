@@ -13,7 +13,9 @@ import type { ConfirmationToolPart } from './confirmation.types';
   template: '<ng-content />',
 })
 export class Confirmation {
+  /** AI SDK tool part containing approval state and confirmation metadata. */
   public readonly part = input.required<ConfirmationToolPart>();
+  /** Additional classes merged onto the confirmation root element. */
   public readonly userClass = input<string | undefined>(undefined, { alias: 'class' });
 
   public readonly approval = computed(() => this.part().approval);

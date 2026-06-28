@@ -9,6 +9,7 @@ import { twMerge } from 'tailwind-merge';
   template: '<ng-content />',
 })
 export class TaskItemFile {
+  /** Additional classes merged onto the highlighted task file element. */
   public readonly userClass = input<string | undefined>(undefined, { alias: 'class' });
 
   protected readonly classes = computed(() =>

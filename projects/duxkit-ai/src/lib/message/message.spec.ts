@@ -131,7 +131,10 @@ describe('Message', () => {
     await markdownFixture.whenStable();
 
     const element = markdownFixture.nativeElement as HTMLElement;
+    const content = element.querySelector('ai-message-content');
 
+    expect(content?.classList).toContain('w-full');
+    expect(content?.classList).not.toContain('w-fit');
     expect(element.querySelector('strong')?.textContent).toBe('Assistant');
     expect(element.querySelector('li')?.textContent).toBe('item');
     expect(element.querySelector('table')).not.toBeNull();

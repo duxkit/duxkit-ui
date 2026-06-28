@@ -28,6 +28,7 @@ import { ChainOfThought } from './chain-of-thought';
   `,
 })
 export class ChainOfThoughtTrigger {
+  /** Additional classes merged onto the chain-of-thought trigger button. */
   public readonly userClass = input<string | undefined>(undefined, { alias: 'class' });
 
   protected readonly chainOfThought = inject(ChainOfThought);
