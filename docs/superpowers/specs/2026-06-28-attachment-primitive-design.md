@@ -23,10 +23,10 @@ The primitive does not upload files, mutate AI SDK messages directly, or manage 
 ```html
 <ai-attachments variant="grid">
   @for (attachment of attachments; track attachment.id) {
-    <ai-attachment [data]="attachment" (removed)="removeAttachment(attachment.id)">
-      <ai-attachment-preview />
-      <button aiAttachmentRemove></button>
-    </ai-attachment>
+  <ai-attachment [data]="attachment" (removed)="removeAttachment(attachment.id)">
+    <ai-attachment-preview />
+    <button aiAttachmentRemove></button>
+  </ai-attachment>
   }
 </ai-attachments>
 ```
@@ -41,6 +41,7 @@ The implementation follows existing `duxkit-ai` primitive patterns:
 - Use small standalone Angular directives/components with `input()`, `output()`, `computed()`, and `inject()`.
 - Merge default Tailwind classes with consumer classes using `twMerge`.
 - Use host bindings in the decorator `host` object.
+- Use SpartanNG Brain primitives for interaction behavior where available. Inline previews use `BrnHoverCard`, `BrnHoverCardTrigger`, and `BrnHoverCardContent`.
 - Export everything from the folder barrel and `projects/duxkit-ai/src/public-api.ts`.
 
 The root `Attachment` exposes computed fields:
@@ -51,7 +52,7 @@ The root `Attachment` exposes computed fields:
 - `url`: available only for `FileUIPart`.
 - `removeLabel`, `previewLabel`, and `descriptionLabel` for accessible child labels.
 
-`AttachmentPreview` uses the injected root and parent layout to render the correct default preview. Images use the actual `FileUIPart.url`; other kinds use lucide icons. Inline mode wraps the visible badge in a hover/focus group and renders a small preview card for images and metadata.
+`AttachmentPreview` uses the injected root and parent layout to render the correct default preview. Images use the actual `FileUIPart.url`; other kinds use lucide icons. Inline mode wraps the visible badge in a SpartanNG Brain hover card trigger and renders a small preview card for images and metadata.
 
 ## Testing
 
@@ -80,7 +81,7 @@ The docs addition follows `docs/agent-skills/add-primitive-docs/SKILL.md`:
 Run:
 
 ```bash
-pnpm exec vitest run projects/duxkit-ai/src/lib/attachment/attachment.spec.ts --environment jsdom
+pnpm exec nx test duxkit-ai -- --watch=false
 pnpm docs:generate-metadata
 pnpm exec vitest run projects/www/src/app/docs/docs-search.spec.ts --environment jsdom
 pnpm test:ci

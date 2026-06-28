@@ -252,6 +252,116 @@ export const componentApiMetadata = {
       },
     ],
   },
+  attachment: {
+    selectors: [
+      '[aiAttachment]',
+      'ai-attachment',
+      '[aiAttachmentPreview]',
+      'ai-attachment-preview',
+      'button[aiAttachmentRemove]',
+      'ai-attachment-remove',
+      '[aiAttachments]',
+      'ai-attachments',
+    ],
+    exports: ['Attachment', 'AttachmentPreview', 'AttachmentRemove', 'Attachments'],
+    inputs: ['data', 'class', 'ariaLabel', 'variant'],
+    outputs: ['removed'],
+    sourcePaths: [
+      'projects/duxkit-ai/src/lib/attachment/attachment.ts',
+      'projects/duxkit-ai/src/lib/attachment/attachment-preview.ts',
+      'projects/duxkit-ai/src/lib/attachment/attachment-remove.ts',
+      'projects/duxkit-ai/src/lib/attachment/attachments.ts',
+    ],
+    symbols: [
+      {
+        name: 'Attachment',
+        selectors: ['[aiAttachment]', 'ai-attachment'],
+        inputs: [
+          {
+            name: 'data',
+            type: 'AiAttachmentPart',
+            defaultValue: '-',
+            required: true,
+            description: 'AI SDK file or source-document part rendered by this attachment.',
+          },
+          {
+            name: 'class',
+            type: 'string | undefined',
+            defaultValue: 'undefined',
+            required: false,
+            description: 'Additional classes merged onto the attachment root element.',
+          },
+        ],
+        outputs: [
+          {
+            name: 'removed',
+            type: 'AiAttachmentPart',
+            description: 'Emits the current attachment part when the remove control is pressed.',
+          },
+        ],
+        sourcePath: 'projects/duxkit-ai/src/lib/attachment/attachment.ts',
+      },
+      {
+        name: 'AttachmentPreview',
+        selectors: ['[aiAttachmentPreview]', 'ai-attachment-preview'],
+        inputs: [
+          {
+            name: 'class',
+            type: 'string | undefined',
+            defaultValue: 'undefined',
+            required: false,
+            description: 'Additional classes merged onto the attachment preview element.',
+          },
+        ],
+        outputs: [],
+        sourcePath: 'projects/duxkit-ai/src/lib/attachment/attachment-preview.ts',
+      },
+      {
+        name: 'AttachmentRemove',
+        selectors: ['button[aiAttachmentRemove]', 'ai-attachment-remove'],
+        inputs: [
+          {
+            name: 'ariaLabel',
+            type: 'string | undefined',
+            defaultValue: 'undefined',
+            required: false,
+            description: 'Accessible label for the remove button.',
+          },
+          {
+            name: 'class',
+            type: 'string | undefined',
+            defaultValue: 'undefined',
+            required: false,
+            description: 'Additional classes merged onto the attachment remove control.',
+          },
+        ],
+        outputs: [],
+        sourcePath: 'projects/duxkit-ai/src/lib/attachment/attachment-remove.ts',
+      },
+      {
+        name: 'Attachments',
+        selectors: ['[aiAttachments]', 'ai-attachments'],
+        inputs: [
+          {
+            name: 'variant',
+            type: 'AttachmentsVariant',
+            defaultValue: "'grid'",
+            required: false,
+            description: 'Display layout used by projected attachment items.',
+          },
+          {
+            name: 'class',
+            type: 'string | undefined',
+            defaultValue: 'undefined',
+            required: false,
+            description: 'Additional classes merged onto the attachment collection.',
+          },
+        ],
+        outputs: [],
+        sourcePath: 'projects/duxkit-ai/src/lib/attachment/attachments.ts',
+      },
+    ],
+  },
   'chain-of-thought': {
     selectors: [
       '[aiChainOfThought]',

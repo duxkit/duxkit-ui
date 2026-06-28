@@ -16,6 +16,11 @@ export const componentDocs = [
     description: 'Role-aware message primitives for user, assistant, and system output.',
   },
   {
+    slug: 'attachment',
+    title: 'Attachment',
+    description: 'Composable file and source-document previews for AI SDK message parts.',
+  },
+  {
     slug: 'chain-of-thought',
     title: 'Chain of Thought',
     description: 'Expandable reasoning and progress steps for AI work.',

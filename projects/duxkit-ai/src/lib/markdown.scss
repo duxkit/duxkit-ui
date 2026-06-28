@@ -1446,7 +1446,7 @@ ai-message-content .ai-markdown.markdown-body,
 }
 
 .ai-markdown-reasoning.markdown-body {
-  color: var(--fgColor-muted);
+  color: var(--muted-foreground, var(--fgColor-muted));
 }
 
 .ai-markdown-reasoning.markdown-body :where(p, li, blockquote, ul, ol) {
@@ -1454,7 +1454,7 @@ ai-message-content .ai-markdown.markdown-body,
 }
 
 .ai-markdown-reasoning.markdown-body :where(strong, h1, h2, h3, h4, h5, h6) {
-  color: var(--fgColor-default);
+  color: var(--foreground, var(--fgColor-default));
 }
 
 .ai-markdown.markdown-body ul {

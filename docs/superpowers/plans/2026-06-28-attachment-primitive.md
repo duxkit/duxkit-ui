@@ -6,7 +6,7 @@
 
 **Architecture:** Add a focused `attachment` primitive folder containing collection, root, preview, remove, and type/helper files. The root directive derives attachment state from `FileUIPart | SourceDocumentUIPart` and projected child primitives consume that state by injection. Docs, Storybook, and generated metadata follow the existing `duxkit-ai` primitive workflow.
 
-**Tech Stack:** Angular 22 standalone directives/components, signals, AI SDK `ai` package types, `@ng-icons/lucide`, Tailwind CSS, `tailwind-merge`, Vitest/jsdom, Nx.
+**Tech Stack:** Angular 22 standalone directives/components, signals, AI SDK `ai` package types, SpartanNG Brain hover-card directives, `@ng-icons/lucide`, Tailwind CSS, `tailwind-merge`, Vitest/jsdom, Nx.
 
 ---
 
@@ -15,7 +15,7 @@
 - Create `projects/duxkit-ai/src/lib/attachment/attachment.types.ts` for public attachment types and pure helper functions.
 - Create `projects/duxkit-ai/src/lib/attachment/attachments.ts` for the layout collection.
 - Create `projects/duxkit-ai/src/lib/attachment/attachment.ts` for the stateful root.
-- Create `projects/duxkit-ai/src/lib/attachment/attachment-preview.ts` for default visual rendering.
+- Create `projects/duxkit-ai/src/lib/attachment/attachment-preview.ts` for default visual rendering and inline hover cards via `@spartan-ng/brain/hover-card`.
 - Create `projects/duxkit-ai/src/lib/attachment/attachment-remove.ts` for remove behavior.
 - Create `projects/duxkit-ai/src/lib/attachment/index.ts` for local exports.
 - Create `projects/duxkit-ai/src/lib/attachment/attachment.spec.ts` for behavior and accessibility tests.
@@ -29,6 +29,7 @@
 ### Task 1: Failing Primitive Tests
 
 **Files:**
+
 - Create: `projects/duxkit-ai/src/lib/attachment/attachment.spec.ts`
 
 - [ ] **Step 1: Write failing tests**
@@ -40,7 +41,7 @@ Add tests that import the not-yet-created attachment primitives and verify varia
 Run:
 
 ```bash
-pnpm exec vitest run projects/duxkit-ai/src/lib/attachment/attachment.spec.ts --environment jsdom
+pnpm exec nx test duxkit-ai -- --watch=false
 ```
 
 Expected: FAIL because the `attachment` primitive files do not exist yet.
@@ -48,6 +49,7 @@ Expected: FAIL because the `attachment` primitive files do not exist yet.
 ### Task 2: Minimal Primitive Implementation
 
 **Files:**
+
 - Create: `projects/duxkit-ai/src/lib/attachment/attachment.types.ts`
 - Create: `projects/duxkit-ai/src/lib/attachment/attachments.ts`
 - Create: `projects/duxkit-ai/src/lib/attachment/attachment.ts`
@@ -66,14 +68,14 @@ Add `Attachments` with a `variant` input and `Attachment` with `data`, `removed`
 
 - [ ] **Step 3: Implement preview and remove primitives**
 
-Add default preview rendering for image, video, audio, document, and source attachments. Add a remove button directive/component that emits through the root and provides a default accessible label.
+Add default preview rendering for image, video, audio, document, and source attachments. Use `BrnHoverCard`, `BrnHoverCardTrigger`, and `BrnHoverCardContent` for inline hover/focus previews. Add a remove button directive/component that emits through the root and provides a default accessible label.
 
 - [ ] **Step 4: Run test to verify it passes**
 
 Run:
 
 ```bash
-pnpm exec vitest run projects/duxkit-ai/src/lib/attachment/attachment.spec.ts --environment jsdom
+pnpm exec nx test duxkit-ai -- --watch=false
 ```
 
 Expected: PASS.
@@ -81,6 +83,7 @@ Expected: PASS.
 ### Task 3: Storybook And Docs
 
 **Files:**
+
 - Create: `projects/duxkit-ai/src/lib/attachment/attachment.stories.ts`
 - Modify: `projects/www/src/app/docs/component-docs.registry.ts`
 - Modify: `projects/www/src/app/docs/component-doc.page.ts`
@@ -112,6 +115,7 @@ Expected: generated API metadata includes the new attachment symbols.
 ### Task 4: Verification
 
 **Files:**
+
 - Check all changed files.
 
 - [ ] **Step 1: Run targeted tests**
@@ -119,7 +123,7 @@ Expected: generated API metadata includes the new attachment symbols.
 Run:
 
 ```bash
-pnpm exec vitest run projects/duxkit-ai/src/lib/attachment/attachment.spec.ts --environment jsdom
+pnpm exec nx test duxkit-ai -- --watch=false
 pnpm exec vitest run projects/www/src/app/docs/docs-search.spec.ts --environment jsdom
 ```
 

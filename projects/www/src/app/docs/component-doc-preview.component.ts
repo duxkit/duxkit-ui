@@ -1,7 +1,13 @@
 import { Component, input } from '@angular/core';
 import { HlmButton } from '@duxkit/ui/helm/button';
 import {
+  Attachment,
+  type AiAttachmentPart,
   type AiToolPart,
+  AttachmentPreview,
+  AttachmentRemove,
+  Attachments,
+  type AttachmentsVariant,
   ChainOfThought,
   ChainOfThoughtContent,
   ChainOfThoughtImage,
@@ -64,6 +70,14 @@ export const componentPreviewSnippets: Record<ComponentDocSlug, string> = {
     </ai-message-actions>
   </ai-message>
 </div>`,
+  attachment: `<ai-attachments class="w-[640px]" variant="grid">
+  @for (attachment of attachmentParts; track attachmentKey(attachment)) {
+    <ai-attachment [data]="attachment">
+      <ai-attachment-preview />
+      <button aiAttachmentRemove hlmBtn variant="ghost" size="icon-sm"></button>
+    </ai-attachment>
+  }
+</ai-attachments>`,
   'chain-of-thought': `<ai-chain-of-thought class="w-[560px]" [expanded]="true" [autoToggle]="false" [isStreaming]="false">
   <button aiChainOfThoughtTrigger></button>
   <ai-chain-of-thought-content>
@@ -168,9 +182,34 @@ export const componentPreviewSnippets: Record<ComponentDocSlug, string> = {
   'code-block': `<ai-code-block language="ts" [code]="codeBlockCode" />`,
 };
 
+export const attachmentPreviewSnippets: Record<AttachmentsVariant, string> = {
+  grid: componentPreviewSnippets.attachment,
+  inline: `<ai-attachments class="w-[640px]" variant="inline">
+  @for (attachment of attachmentParts; track attachmentKey(attachment)) {
+    <ai-attachment [data]="attachment">
+      <ai-attachment-preview>
+        <button aiAttachmentRemove hlmBtn variant="ghost" size="icon-xs"></button>
+      </ai-attachment-preview>
+    </ai-attachment>
+  }
+</ai-attachments>`,
+  list: `<ai-attachments class="w-[640px]" variant="list">
+  @for (attachment of attachmentParts; track attachmentKey(attachment)) {
+    <ai-attachment [data]="attachment">
+      <ai-attachment-preview />
+      <button aiAttachmentRemove hlmBtn variant="ghost" size="icon-sm"></button>
+    </ai-attachment>
+  }
+</ai-attachments>`,
+};
+
 @Component({
   selector: 'app-component-doc-preview',
   imports: [
+    Attachment,
+    AttachmentPreview,
+    AttachmentRemove,
+    Attachments,
     ChainOfThought,
     ChainOfThoughtContent,
     ChainOfThoughtImage,
@@ -237,6 +276,23 @@ export const componentPreviewSnippets: Record<ComponentDocSlug, string> = {
             </ai-message-actions>
           </ai-message>
         </div>
+      }
+
+      @case ('attachment') {
+        <ai-attachments class="w-[640px]" [variant]="attachmentVariant()">
+          @for (attachment of attachmentParts; track attachmentKey(attachment)) {
+            <ai-attachment [data]="attachment">
+              @if (attachmentVariant() === 'inline') {
+                <ai-attachment-preview>
+                  <button aiAttachmentRemove hlmBtn variant="ghost" size="icon-xs"></button>
+                </ai-attachment-preview>
+              } @else {
+                <ai-attachment-preview />
+                <button aiAttachmentRemove hlmBtn variant="ghost" size="icon-sm"></button>
+              }
+            </ai-attachment>
+          }
+        </ai-attachments>
       }
 
       @case ('chain-of-thought') {
@@ -382,6 +438,7 @@ export const componentPreviewSnippets: Record<ComponentDocSlug, string> = {
 })
 export class ComponentDocPreview {
   public readonly slug = input.required<ComponentDocSlug>();
+  public readonly attachmentVariant = input<AttachmentsVariant>('grid');
 
   protected readonly assistantMessage =
     'London is partly cloudy today. I can call the weather tool if you want a deterministic test result.';
@@ -403,6 +460,46 @@ export class ComponentDocPreview {
 export class ExampleCounter {
   protected readonly count = signal(0);
 }`;
+
+  protected readonly attachmentParts: readonly AiAttachmentPart[] = [
+    {
+      type: 'file',
+      mediaType: 'image/jpeg',
+      filename: 'mountain-landscape.jpg',
+      url: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?auto=format&fit=crop&w=640&q=80',
+    },
+    {
+      type: 'file',
+      mediaType: 'application/pdf',
+      filename: 'quarterly-report.pdf',
+      url: 'https://example.com/quarterly-report.pdf',
+    },
+    {
+      type: 'file',
+      mediaType: 'video/mp4',
+      filename: 'product-demo.mp4',
+      url: 'https://example.com/product-demo.mp4',
+    },
+    {
+      type: 'source-document',
+      sourceId: 'react-docs',
+      mediaType: 'text/html',
+      title: 'React Documentation',
+      filename: 'react-documentation.html',
+    },
+    {
+      type: 'file',
+      mediaType: 'audio/mpeg',
+      filename: 'podcast-episode.mp3',
+      url: 'https://example.com/podcast-episode.mp3',
+    },
+  ];
+
+  protected attachmentKey(attachment: AiAttachmentPart): string {
+    return attachment.type === 'file'
+      ? (attachment.filename ?? attachment.url)
+      : attachment.sourceId;
+  }
 
   protected readonly weatherToolPart: AiToolPart = {
     type: 'tool-getWeather',

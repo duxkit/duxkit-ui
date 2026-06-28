@@ -6,7 +6,11 @@ import {
   componentApiMetadata,
   type ComponentApiSymbolMetadata,
 } from './component-api-metadata.generated';
-import { ComponentDocPreview, componentPreviewSnippets } from './component-doc-preview.component';
+import {
+  attachmentPreviewSnippets,
+  ComponentDocPreview,
+  componentPreviewSnippets,
+} from './component-doc-preview.component';
 import { DocsCodeTabs } from './docs-code-tabs.component';
 import { DocsTableOfContents } from './docs-table-of-contents.component';
 import { apiSymbolHeadingId, buildComponentDocsTableOfContents } from './docs-table-of-contents';
@@ -16,6 +20,8 @@ const componentImports: Record<ComponentDocSlug, string> = {
   conversation:
     "import { Conversation, ConversationContent, ConversationScrollAnchor } from 'duxkit-ai';",
   message: "import { Message, MessageContent } from 'duxkit-ai';",
+  attachment:
+    "import { Attachment, AttachmentPreview, AttachmentRemove, Attachments } from 'duxkit-ai';",
   'chain-of-thought':
     "import { ChainOfThought, ChainOfThoughtContent, ChainOfThoughtStep, ChainOfThoughtTrigger } from 'duxkit-ai';",
   task: "import { Task, TaskContent, TaskItem, TaskItemFile, TaskTrigger } from 'duxkit-ai';",
@@ -38,6 +44,14 @@ const anatomySnippets: Record<ComponentDocSlug, string> = {
   message: `<ai-message from="assistant">
   <ai-message-content markdown="Message content supports markdown." />
 </ai-message>`,
+  attachment: `<ai-attachments variant="grid">
+  @for (attachment of attachments; track attachment.id) {
+    <ai-attachment [data]="attachment" (removed)="removeAttachment(attachment)">
+      <ai-attachment-preview />
+      <button aiAttachmentRemove hlmBtn variant="ghost" size="icon-sm"></button>
+    </ai-attachment>
+  }
+</ai-attachments>`,
   'chain-of-thought': `<ai-chain-of-thought>
   <button aiChainOfThoughtTrigger>Reviewed context</button>
   <ai-chain-of-thought-content>
@@ -69,6 +83,12 @@ const anatomySnippets: Record<ComponentDocSlug, string> = {
 </ai-confirmation>`,
   'code-block': `<ai-code-block language="ts" [code]="code" />`,
 };
+
+const attachmentPreviewExamples = [
+  { variant: 'grid', label: 'Grid' },
+  { variant: 'inline', label: 'Inline' },
+  { variant: 'list', label: 'List' },
+] as const;
 
 @Component({
   imports: [ComponentDocPreview, DocsCodeTabs, DocsTableOfContents, RouterLink],
@@ -116,14 +136,35 @@ const anatomySnippets: Record<ComponentDocSlug, string> = {
                 Rendered Angular examples using the same primitives shown in the code tab.
               </p>
             </div>
-            <app-docs-code-tabs
-              ariaLabel="Preview and code"
-              copyLabel="Copy preview code"
-              previewLabel="Preview"
-              [tabs]="previewTabs()"
-            >
-              <app-component-doc-preview [slug]="doc.slug" />
-            </app-docs-code-tabs>
+            @if (doc.slug === 'attachment') {
+              <div class="docs-preview-examples">
+                @for (example of attachmentPreviewExamples; track example.variant) {
+                  <article class="docs-preview-example">
+                    <h3 class="text-foreground">{{ example.label }}</h3>
+                    <app-docs-code-tabs
+                      [ariaLabel]="example.label + ' attachment preview and code'"
+                      [copyLabel]="'Copy ' + example.label + ' attachment code'"
+                      previewLabel="Preview"
+                      [tabs]="attachmentPreviewTabs(example.variant)"
+                    >
+                      <app-component-doc-preview
+                        slug="attachment"
+                        [attachmentVariant]="example.variant"
+                      />
+                    </app-docs-code-tabs>
+                  </article>
+                }
+              </div>
+            } @else {
+              <app-docs-code-tabs
+                ariaLabel="Preview and code"
+                copyLabel="Copy preview code"
+                previewLabel="Preview"
+                [tabs]="previewTabs()"
+              >
+                <app-component-doc-preview [slug]="doc.slug" />
+              </app-docs-code-tabs>
+            }
           </section>
 
           <section class="docs-section border-b border-border" aria-labelledby="api">
@@ -333,6 +374,26 @@ const anatomySnippets: Record<ComponentDocSlug, string> = {
       letter-spacing: 0;
     }
 
+    .docs-preview-examples {
+      display: grid;
+      gap: 18px;
+      min-width: 0;
+    }
+
+    .docs-preview-example {
+      display: grid;
+      gap: 10px;
+      min-width: 0;
+    }
+
+    .docs-preview-example h3 {
+      margin: 0;
+      font-size: 15px;
+      line-height: 1.4;
+      font-weight: 500;
+      letter-spacing: 0;
+    }
+
     .docs-api-reference {
       display: grid;
       gap: 34px;
@@ -474,6 +535,7 @@ export class ComponentDocPage {
   });
 
   protected readonly doc = computed(() => findComponentDoc(this.slug() ?? ''));
+  protected readonly attachmentPreviewExamples = attachmentPreviewExamples;
   protected readonly apiMetadata = computed(() => {
     const doc = this.doc();
 
@@ -545,5 +607,16 @@ export class ComponentDocPage {
 
   protected apiDescription(description: string | undefined): string {
     return description?.trim() || '-';
+  }
+
+  protected attachmentPreviewTabs(variant: keyof typeof attachmentPreviewSnippets) {
+    return [
+      {
+        id: 'code',
+        label: 'Code',
+        code: attachmentPreviewSnippets[variant],
+        language: 'html',
+      },
+    ];
   }
 }

@@ -3,6 +3,7 @@
  */
 
 export * from './lib/duxkit-ai';
+export * from './lib/attachment';
 export * from './lib/chain-of-thought';
 export * from './lib/types';
 export * from './lib/code-block';

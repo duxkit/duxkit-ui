@@ -5,6 +5,7 @@ import {
   normalizeSearchText,
   searchComponentDocs,
 } from './docs-search';
+import { componentDocs } from './component-docs.registry';
 
 describe('docs search', () => {
   it('matches component docs by title, selector, export, and API metadata', () => {
@@ -23,10 +24,17 @@ describe('docs search', () => {
     expect(searchComponentDocs('successful copy action').map((item) => item.slug)).toContain(
       'message',
     );
+    expect(searchComponentDocs('attachment').map((item) => item.slug)).toContain('attachment');
+    expect(searchComponentDocs('ai-attachment-preview').map((item) => item.slug)).toContain(
+      'attachment',
+    );
+    expect(searchComponentDocs('remove control is pressed').map((item) => item.slug)).toContain(
+      'attachment',
+    );
   });
 
   it('keeps generated API metadata attached to every indexed component doc', () => {
-    expect(componentDocsSearchIndex).toHaveLength(8);
+    expect(componentDocsSearchIndex).toHaveLength(componentDocs.length);
 
     for (const item of componentDocsSearchIndex) {
       expect(item.api.selectors.length).toBeGreaterThan(0);
