@@ -19,7 +19,7 @@ const themeStorageKey = 'duxkit-ui-theme';
 
 @Component({
   selector: 'app-header',
-  imports: [HlmCommandImports, HlmIcon, NgIcon, NgOptimizedImage, RouterLink],
+  imports: [HlmCommandImports, HlmIcon, NgIcon, RouterLink],
   providers: [provideIcons({ lucideMoon, lucideSun })],
   host: {
     '(document:keydown)': 'handleDocumentKeydown($event)',
@@ -29,15 +29,15 @@ const themeStorageKey = 'duxkit-ui-theme';
       <div class="site-header-inner">
         <div class="header-left">
           <a class="brand" routerLink="/" aria-label="Duxkit UI home">
-            <img
-              class="brand-mark"
-              ngSrc="duxkit_logo.png"
-              width="512"
-              height="352"
-              alt=""
-              aria-hidden="true"
-              priority
-            />
+<!--            <img-->
+<!--              class="brand-mark"-->
+<!--              ngSrc="dux_logomark.png"-->
+<!--              width="512"-->
+<!--              height="352"-->
+<!--              alt=""-->
+<!--              aria-hidden="true"-->
+<!--              priority-->
+<!--            />-->
             <span class="brand-name">Duxkit</span>
           </a>
 

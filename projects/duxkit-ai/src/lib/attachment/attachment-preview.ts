@@ -60,29 +60,29 @@ export type AttachmentPreviewVariants = VariantProps<typeof attachmentPreviewVar
           <span
             brnHoverCardTrigger
             [brnHoverCardTriggerFor]="previewCard"
-            class="inline-flex min-w-0 max-w-full items-center gap-1.5 focus-visible:outline-none"
+            class="inline-flex min-w-0 max-w-full items-center gap-1.5 rounded-sm outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
             tabindex="0"
+            role="img"
             [attr.aria-label]="attachment.previewLabel()"
           >
             <span
               class="inline-flex size-5 aspect-square shrink-0 items-center justify-center overflow-hidden rounded bg-background text-muted-foreground"
             >
-              @if (projectedRemove() !== undefined && attachment.hovered()) {
-                <ng-content select="[aiAttachmentRemove],ai-attachment-remove" />
+              @if (attachment.kind() === 'image' && attachment.url() !== undefined) {
+                <img
+                  class="size-full rounded object-cover"
+                  [src]="attachment.url()"
+                  [alt]="attachment.name()"
+                />
               } @else {
-                @if (attachment.kind() === 'image' && attachment.url() !== undefined) {
-                  <img
-                    class="size-full rounded object-cover"
-                    [src]="attachment.url()"
-                    [alt]="attachment.name()"
-                  />
-                } @else {
-                  <ng-icon [name]="iconName()" style="--ng-icon__size: 12px" aria-hidden="true" />
-                }
+                <ng-icon [name]="iconName()" style="--ng-icon__size: 12px" aria-hidden="true" />
               }
             </span>
             <span class="min-w-0 truncate">{{ attachment.name() }}</span>
           </span>
+          @if (projectedRemove() !== undefined && attachment.hovered()) {
+            <ng-content select="[aiAttachmentRemove],ai-attachment-remove" />
+          }
 
           <ng-template #previewCard="brnHoverCardContent" brnHoverCardContent>
             <div
@@ -110,6 +110,7 @@ export type AttachmentPreviewVariants = VariantProps<typeof attachmentPreviewVar
         <span class="flex min-w-0 flex-1 items-center gap-3">
           <span
             class="flex size-12 shrink-0 items-center justify-center overflow-hidden rounded-md bg-muted text-muted-foreground"
+            role="img"
             [attr.aria-label]="attachment.previewLabel()"
           >
             @if (attachment.kind() === 'image' && attachment.url() !== undefined) {
@@ -132,6 +133,7 @@ export type AttachmentPreviewVariants = VariantProps<typeof attachmentPreviewVar
       @default {
         <span
           class="flex size-full aspect-square items-center justify-center overflow-hidden bg-muted text-muted-foreground"
+          role="img"
           [attr.aria-label]="attachment.previewLabel()"
         >
           @if (attachment.kind() === 'image' && attachment.url() !== undefined) {

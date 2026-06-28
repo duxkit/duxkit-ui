@@ -4,7 +4,13 @@ import { HlmButton } from '@duxkit/ui/helm/button';
 import type { FileUIPart, SourceDocumentUIPart } from 'ai';
 import { beforeEach, describe, expect, it } from 'vitest';
 
-import { Attachment, Attachments, AttachmentPreview, AttachmentRemove } from './';
+import {
+  Attachment,
+  Attachments,
+  AttachmentPreview,
+  AttachmentRemove,
+  getAttachmentName,
+} from './';
 
 const imagePart: FileUIPart = {
   type: 'file',
@@ -185,6 +191,29 @@ describe('Attachment', () => {
     expect(trigger?.textContent).toContain('mountain-landscape.jpg');
   });
 
+  it('uses semantic preview roles and visible keyboard focus styles', () => {
+    const element = fixture.nativeElement as HTMLElement;
+    let previewVisual = element.querySelector('ai-attachment-preview [aria-label]');
+
+    expect(previewVisual?.getAttribute('role')).toBe('img');
+
+    fixture.componentInstance.variant.set('inline');
+    fixture.detectChanges();
+
+    const inlineTrigger = element.querySelector('[brnHoverCardTrigger]');
+
+    expect(inlineTrigger?.getAttribute('role')).toBe('img');
+    expect(inlineTrigger?.classList).toContain('focus-visible:ring-2');
+    expect(inlineTrigger?.classList).not.toContain('focus-visible:outline-none');
+
+    fixture.componentInstance.variant.set('list');
+    fixture.detectChanges();
+
+    previewVisual = element.querySelector('ai-attachment-preview [aria-label]');
+
+    expect(previewVisual?.getAttribute('role')).toBe('img');
+  });
+
   it('emits the current attachment when the remove button is pressed', () => {
     const element = fixture.nativeElement as HTMLElement;
     const button = element.querySelector<HTMLButtonElement>('button[aiAttachmentRemove]');
@@ -245,6 +274,40 @@ describe('Attachment', () => {
     expect(button?.classList).toContain('!size-5');
   });
 
+  it('keeps the inline remove button reachable when focus moves within the attachment', async () => {
+    await TestBed.resetTestingModule()
+      .configureTestingModule({
+        imports: [InlinePreviewRemoveHost],
+      })
+      .compileComponents();
+
+    const inlineFixture = TestBed.createComponent(InlinePreviewRemoveHost);
+    inlineFixture.detectChanges();
+    await inlineFixture.whenStable();
+
+    const element = inlineFixture.nativeElement as HTMLElement;
+    const preview = element.querySelector('ai-attachment-preview');
+    const trigger = preview?.querySelector('[brnHoverCardTrigger]');
+
+    trigger?.dispatchEvent(new FocusEvent('focusin', { bubbles: true }));
+    inlineFixture.detectChanges();
+    await inlineFixture.whenStable();
+
+    const button = preview?.querySelector<HTMLButtonElement>('button[aiAttachmentRemove]');
+
+    expect(button).not.toBeNull();
+
+    trigger?.dispatchEvent(
+      new FocusEvent('focusout', {
+        bubbles: true,
+        relatedTarget: button,
+      }),
+    );
+    inlineFixture.detectChanges();
+
+    expect(preview?.querySelector('button[aiAttachmentRemove]')).not.toBeNull();
+  });
+
   it('requires preview content to be inside an attachment', async () => {
     await TestBed.resetTestingModule()
       .configureTestingModule({
@@ -256,5 +319,15 @@ describe('Attachment', () => {
       const orphanFixture = TestBed.createComponent(OrphanPreviewHost);
       orphanFixture.detectChanges();
     }).toThrow();
+  });
+
+  it('derives relative URL filenames without query strings or fragments', () => {
+    const part: FileUIPart = {
+      type: 'file',
+      mediaType: 'application/pdf',
+      url: '/uploads/final%20report.pdf?download=1#page=2',
+    };
+
+    expect(getAttachmentName(part)).toBe('final report.pdf');
   });
 });

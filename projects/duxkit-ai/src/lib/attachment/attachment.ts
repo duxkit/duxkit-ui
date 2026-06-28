@@ -1,4 +1,4 @@
-import { computed, Directive, inject, input, output, signal } from '@angular/core';
+import { computed, Directive, ElementRef, inject, input, output, signal } from '@angular/core';
 import { cva, type VariantProps } from 'class-variance-authority';
 import { twMerge } from 'tailwind-merge';
 import { Attachments } from './attachments';
@@ -39,7 +39,7 @@ export type AttachmentVariants = VariantProps<typeof attachmentVariants>;
     '(mouseenter)': 'hovered.set(true)',
     '(mouseleave)': 'hovered.set(false)',
     '(focusin)': 'hovered.set(true)',
-    '(focusout)': 'hovered.set(false)',
+    '(focusout)': 'onFocusOut($event)',
     role: 'listitem',
   },
 })
@@ -52,6 +52,7 @@ export class Attachment {
   public readonly userClass = input<string | undefined>(undefined, { alias: 'class' });
 
   private readonly attachments = inject(Attachments, { optional: true });
+  private readonly elementRef = inject<ElementRef<HTMLElement>>(ElementRef);
 
   public readonly variant = computed(() => this.attachments?.variant() ?? 'grid');
   public readonly name = computed(() => getAttachmentName(this.data()));
@@ -69,5 +70,18 @@ export class Attachment {
 
   remove(): void {
     this.removed.emit(this.data());
+  }
+
+  protected onFocusOut(event: FocusEvent): void {
+    const nextFocusedElement = event.relatedTarget as Node | null;
+
+    if (
+      nextFocusedElement !== null &&
+      this.elementRef.nativeElement.contains(nextFocusedElement)
+    ) {
+      return;
+    }
+
+    this.hovered.set(false);
   }
 }

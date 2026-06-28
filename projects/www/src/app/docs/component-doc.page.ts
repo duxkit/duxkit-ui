@@ -45,7 +45,7 @@ const anatomySnippets: Record<ComponentDocSlug, string> = {
   <ai-message-content markdown="Message content supports markdown." />
 </ai-message>`,
   attachment: `<ai-attachments variant="grid">
-  @for (attachment of attachments; track attachment.id) {
+  @for (attachment of attachments; track attachmentKey(attachment)) {
     <ai-attachment [data]="attachment" (removed)="removeAttachment(attachment)">
       <ai-attachment-preview />
       <button aiAttachmentRemove hlmBtn variant="ghost" size="icon-sm"></button>

@@ -64,14 +64,23 @@ export function getAttachmentKind(part: AiAttachmentPart): AiAttachmentKind {
 }
 
 function getNameFromUrl(url: string): string | undefined {
+  let pathname: string;
+
   try {
-    const pathname = new URL(url).pathname;
-    const name = pathname.split('/').filter(Boolean).at(-1);
-
-    return name === undefined || name.length === 0 ? undefined : decodeURIComponent(name);
+    pathname = new URL(url, 'http://attachment.local').pathname;
   } catch {
-    const name = url.split('/').filter(Boolean).at(-1);
+    pathname = url.split(/[?#]/, 1)[0] ?? '';
+  }
 
-    return name === undefined || name.length === 0 ? undefined : name;
+  const name = pathname.split('/').filter(Boolean).at(-1);
+
+  if (name === undefined || name.length === 0) {
+    return undefined;
+  }
+
+  try {
+    return decodeURIComponent(name);
+  } catch {
+    return name;
   }
 }
