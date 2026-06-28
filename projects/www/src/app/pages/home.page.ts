@@ -1,6 +1,7 @@
 import { Component, computed, signal } from '@angular/core';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { lucideCheck, lucideCopy } from '@ng-icons/lucide';
+import { RouterLink } from '@angular/router';
 import {
   type AiToolPart,
   ChainOfThought,
@@ -52,6 +53,7 @@ import { HlmIcon } from '@duxkit/ui/helm/icon';
     Tool,
     ToolContent,
     ToolTrigger,
+    RouterLink,
   ],
   providers: [provideIcons({ lucideCheck, lucideCopy })],
   templateUrl: './home.page.html',

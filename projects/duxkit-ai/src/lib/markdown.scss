@@ -142,6 +142,15 @@
   word-wrap: break-word;
 }
 
+ai-message-content .ai-markdown.markdown-body,
+[aiMessageContent] .ai-markdown.markdown-body {
+  --bgColor-default: transparent;
+  --fgColor-default: currentColor;
+
+  color: inherit;
+  background-color: transparent;
+}
+
 .ai-markdown.markdown-body a {
   text-decoration: underline;
   text-underline-offset: .2rem;
@@ -1249,18 +1258,21 @@
 /* AI SDK Angular markdown overrides */
 .ai-markdown.markdown-body,
 .ai-code-block {
-  --ai-markdown-code-bg: var(--bgColor-muted, var(--sidebar, #f6f8fa));
-  --ai-markdown-code-border: var(--borderColor-default, var(--border, #d1d9e0));
-  --ai-markdown-code-color: var(--fgColor-default, var(--foreground, #1f2328));
-  --ai-markdown-code-comment: var(--color-prettylights-syntax-comment, var(--muted-foreground, #59636e));
-  --ai-markdown-code-gutter: var(--fgColor-muted, var(--muted-foreground, #59636e));
-  --ai-markdown-code-inline-bg: var(--bgColor-neutral-muted, var(--muted, #818b981f));
+  --ai-markdown-code-bg: var(--card, var(--bgColor-muted, #f6f8fa));
+  --ai-markdown-code-border: var(--border, var(--borderColor-default, #d1d9e0));
+  --ai-markdown-code-color: var(--foreground, var(--fgColor-default, #1f2328));
+  --ai-markdown-code-comment: var(
+    --muted-foreground,
+    var(--color-prettylights-syntax-comment, #59636e)
+  );
+  --ai-markdown-code-gutter: var(--muted-foreground, var(--fgColor-muted, #59636e));
+  --ai-markdown-code-inline-bg: var(--muted, var(--bgColor-neutral-muted, #818b981f));
   --ai-markdown-code-keyword: var(--color-prettylights-syntax-keyword, #cf222e);
-  --ai-markdown-code-label: var(--fgColor-muted, var(--muted-foreground, #59636e));
-  --ai-markdown-code-muted: var(--fgColor-muted, var(--muted-foreground, #59636e));
+  --ai-markdown-code-label: var(--muted-foreground, var(--fgColor-muted, #59636e));
+  --ai-markdown-code-muted: var(--muted-foreground, var(--fgColor-muted, #59636e));
   --ai-markdown-code-radius: 0.75rem;
   --ai-markdown-code-string: var(--color-prettylights-syntax-string, #0a3069);
-  --ai-markdown-code-surface: var(--bgColor-default, var(--background, #ffffff));
+  --ai-markdown-code-surface: var(--background, var(--bgColor-default, #ffffff));
 
   min-width: 0;
   max-width: 100%;

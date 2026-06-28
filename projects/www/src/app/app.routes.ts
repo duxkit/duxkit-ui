@@ -12,12 +12,17 @@ export const appRoutes: Route[] = [
       {
         path: '',
         pathMatch: 'full',
-        redirectTo: 'conversation',
+        loadComponent: () =>
+          import('./docs/component-explore.page').then((m) => m.ComponentExplorePage),
       },
       {
         path: ':slug',
         loadComponent: () => import('./docs/component-doc.page').then((m) => m.ComponentDocPage),
       },
     ],
+  },
+  {
+    path: '**',
+    loadComponent: () => import('./pages/not-found.page').then((m) => m.NotFoundPage),
   },
 ];

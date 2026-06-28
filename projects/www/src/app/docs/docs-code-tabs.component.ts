@@ -19,18 +19,22 @@ export interface DocsCodeTab {
   encapsulation: ViewEncapsulation.None,
   template: `
     @if (hasContent()) {
-      <div class="docs-code-tabs">
-        <div class="docs-code-tabs-header">
+      <div class="docs-code-tabs border border-border bg-card text-card-foreground">
+        <div class="docs-code-tabs-header border-b border-border bg-muted/40">
           <div class="docs-code-tabs-list" role="tablist" [attr.aria-label]="ariaLabel()">
             @if (hasPreview()) {
               <button
-                class="docs-code-tab-trigger"
+                class="docs-code-tab-trigger border-0 border-b-2 text-muted-foreground hover:text-foreground focus-visible:text-foreground"
                 type="button"
                 role="tab"
                 [id]="tabId(previewTabId)"
                 [attr.aria-controls]="panelId(previewTabId)"
                 [attr.aria-selected]="isPreviewActive()"
                 [attr.tabindex]="isPreviewActive() ? 0 : -1"
+                [class.border-primary]="isPreviewActive()"
+                [class.border-transparent]="!isPreviewActive()"
+                [class.text-foreground]="isPreviewActive()"
+                [class.text-muted-foreground]="!isPreviewActive()"
                 (click)="selectTab(previewTabId)"
                 (keydown)="handleTabKeydown($event, previewTabId)"
               >
@@ -40,13 +44,17 @@ export interface DocsCodeTab {
 
             @for (item of tabs(); track item.id) {
               <button
-                class="docs-code-tab-trigger"
+                class="docs-code-tab-trigger border-0 border-b-2 text-muted-foreground hover:text-foreground focus-visible:text-foreground"
                 type="button"
                 role="tab"
                 [id]="tabId(item.id)"
                 [attr.aria-controls]="panelId(item.id)"
                 [attr.aria-selected]="item.id === activePanelId()"
                 [attr.tabindex]="item.id === activePanelId() ? 0 : -1"
+                [class.border-primary]="item.id === activePanelId()"
+                [class.border-transparent]="item.id !== activePanelId()"
+                [class.text-foreground]="item.id === activePanelId()"
+                [class.text-muted-foreground]="item.id !== activePanelId()"
                 (click)="selectTab(item.id)"
                 (keydown)="handleTabKeydown($event, item.id)"
               >
@@ -58,7 +66,7 @@ export interface DocsCodeTab {
           @if (activeTab()) {
             <button
               hlmBtn
-              class="docs-code-copy"
+              class="docs-code-copy text-muted-foreground hover:text-foreground focus-visible:text-foreground"
               type="button"
               variant="ghost"
               size="icon-sm"
@@ -77,7 +85,7 @@ export interface DocsCodeTab {
         </div>
 
         <div
-          class="docs-code-tabs-panel"
+          class="docs-code-tabs-panel bg-card"
           [class.docs-code-tabs-panel-preview]="isPreviewActive()"
           role="tabpanel"
           tabindex="0"
@@ -100,10 +108,7 @@ export interface DocsCodeTab {
   styles: `
     .docs-code-tabs {
       overflow: hidden;
-      border: 1px solid #dcdfe4;
       border-radius: 6px;
-      background: #ffffff;
-      color: #18181b;
     }
 
     .docs-code-tabs-header {
@@ -112,8 +117,6 @@ export interface DocsCodeTab {
       align-items: center;
       justify-content: space-between;
       gap: 12px;
-      border-bottom: 1px solid #dcdfe4;
-      background: #fafafa;
       padding: 0 8px 0 12px;
     }
 
@@ -133,11 +136,8 @@ export interface DocsCodeTab {
     .docs-code-tab-trigger {
       min-height: 36px;
       flex: 0 0 auto;
-      border: 0;
-      border-bottom: 2px solid transparent;
       padding: 0;
       background: transparent;
-      color: #71717a;
       cursor: pointer;
       font: inherit;
       font-size: 13px;
@@ -145,35 +145,17 @@ export interface DocsCodeTab {
       letter-spacing: 0;
     }
 
-    .docs-code-tab-trigger:hover,
     .docs-code-tab-trigger:focus-visible {
-      color: #09090b;
-    }
-
-    .docs-code-tab-trigger:focus-visible {
-      outline: 2px solid #0069ff;
+      outline: 2px solid var(--ring);
       outline-offset: 2px;
-    }
-
-    .docs-code-tab-trigger[aria-selected='true'] {
-      border-bottom-color: #0069ff;
-      color: #0069ff;
     }
 
     .docs-code-copy {
       flex: 0 0 auto;
-      color: #3f3f46;
-    }
-
-    .docs-code-copy:hover,
-    .docs-code-copy:focus-visible {
-      background: transparent !important;
-      color: #09090b;
     }
 
     .docs-code-tabs-panel {
       overflow: auto;
-      background: #ffffff;
     }
 
     .docs-code-tabs-panel-preview {
@@ -182,7 +164,7 @@ export interface DocsCodeTab {
     }
 
     .docs-code-tabs-panel:focus-visible {
-      outline: 2px solid #0069ff;
+      outline: 2px solid var(--ring);
       outline-offset: -2px;
     }
 
@@ -233,66 +215,6 @@ export interface DocsCodeTab {
     .docs-code-tabs .hljs-number,
     .docs-code-tabs .hljs-literal {
       color: #cf222e;
-    }
-
-    @media (prefers-color-scheme: dark) {
-      .docs-code-tabs {
-        border-color: #27272a;
-        background: #111113;
-        color: #fafafa;
-      }
-
-      .docs-code-tabs-header {
-        border-color: #27272a;
-        background: #09090b;
-      }
-
-      .docs-code-tab-trigger {
-        color: #a1a1aa;
-      }
-
-      .docs-code-tab-trigger:hover,
-      .docs-code-tab-trigger:focus-visible,
-      .docs-code-copy:hover,
-      .docs-code-copy:focus-visible {
-        color: #fafafa;
-      }
-
-      .docs-code-copy {
-        color: #d4d4d8;
-      }
-
-      .docs-code-tabs-panel {
-        background: #111113;
-      }
-
-      .docs-code-tabs .hljs-keyword,
-      .docs-code-tabs .hljs-selector-tag,
-      .docs-code-tabs .hljs-title.function_ {
-        color: #79c0ff;
-      }
-
-      .docs-code-tabs .hljs-string,
-      .docs-code-tabs .hljs-attr,
-      .docs-code-tabs .hljs-template-tag {
-        color: #7ee787;
-      }
-
-      .docs-code-tabs .hljs-title,
-      .docs-code-tabs .hljs-name,
-      .docs-code-tabs .hljs-variable,
-      .docs-code-tabs .hljs-property {
-        color: #d2a8ff;
-      }
-
-      .docs-code-tabs .hljs-comment {
-        color: #8b949e;
-      }
-
-      .docs-code-tabs .hljs-number,
-      .docs-code-tabs .hljs-literal {
-        color: #ffa198;
-      }
     }
 
     @media (max-width: 640px) {

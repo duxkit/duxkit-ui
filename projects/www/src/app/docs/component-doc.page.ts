@@ -9,10 +9,7 @@ import {
 import { ComponentDocPreview, componentPreviewSnippets } from './component-doc-preview.component';
 import { DocsCodeTabs } from './docs-code-tabs.component';
 import { DocsTableOfContents } from './docs-table-of-contents.component';
-import {
-  apiSymbolHeadingId,
-  buildComponentDocsTableOfContents,
-} from './docs-table-of-contents';
+import { apiSymbolHeadingId, buildComponentDocsTableOfContents } from './docs-table-of-contents';
 import { type ComponentDocSlug, componentDocs, findComponentDoc } from './component-docs.registry';
 
 const componentImports: Record<ComponentDocSlug, string> = {
@@ -79,15 +76,17 @@ const anatomySnippets: Record<ComponentDocSlug, string> = {
     @if (doc(); as doc) {
       <div class="docs-page-layout">
         <div class="docs-page-main">
-          <header class="docs-page-header">
-            <h1 class="font-medium!">{{ doc.title }}</h1>
-            <p>{{ doc.description }}</p>
+          <header class="docs-page-header border-b border-border">
+            <h1 class="font-medium! text-foreground">{{ doc.title }}</h1>
+            <p class="text-muted-foreground">{{ doc.description }}</p>
           </header>
 
-          <section class="docs-section" aria-labelledby="install">
+          <section class="docs-section border-b border-border" aria-labelledby="install">
             <div class="docs-section-copy">
-              <h2 id="install">Install</h2>
-              <p>Add the package once, then import the primitive directly from the public API.</p>
+              <h2 id="install" class="text-foreground">Install</h2>
+              <p class="text-muted-foreground">
+                Add the package once, then import the primitive directly from the public API.
+              </p>
             </div>
             <app-docs-code-tabs
               ariaLabel="Installation options"
@@ -96,10 +95,12 @@ const anatomySnippets: Record<ComponentDocSlug, string> = {
             />
           </section>
 
-          <section class="docs-section" aria-labelledby="anatomy">
+          <section class="docs-section border-b border-border" aria-labelledby="anatomy">
             <div class="docs-section-copy">
-              <h2 id="anatomy">Anatomy</h2>
-              <p>Use these pieces as the starting structure for a generated example page.</p>
+              <h2 id="anatomy" class="text-foreground">Anatomy</h2>
+              <p class="text-muted-foreground">
+                Use these pieces as the starting structure for a generated example page.
+              </p>
             </div>
             <app-docs-code-tabs
               ariaLabel="Component anatomy code"
@@ -108,10 +109,12 @@ const anatomySnippets: Record<ComponentDocSlug, string> = {
             />
           </section>
 
-          <section class="docs-section" aria-labelledby="preview">
+          <section class="docs-section border-b border-border" aria-labelledby="preview">
             <div class="docs-section-copy">
-              <h2 id="preview">Preview</h2>
-              <p>Rendered Angular examples using the same primitives shown in the code tab.</p>
+              <h2 id="preview" class="text-foreground">Preview</h2>
+              <p class="text-muted-foreground">
+                Rendered Angular examples using the same primitives shown in the code tab.
+              </p>
             </div>
             <app-docs-code-tabs
               ariaLabel="Preview and code"
@@ -123,23 +126,27 @@ const anatomySnippets: Record<ComponentDocSlug, string> = {
             </app-docs-code-tabs>
           </section>
 
-          <section class="docs-section" aria-labelledby="api">
+          <section class="docs-section border-b border-border" aria-labelledby="api">
             <div class="docs-section-copy">
-              <h2 id="api">API</h2>
-              <p>Generated selector, input, output, export, and source metadata.</p>
+              <h2 id="api" class="text-foreground">API</h2>
+              <p class="text-muted-foreground">
+                Generated selector, input, output, export, and source metadata.
+              </p>
             </div>
             @if (apiMetadata(); as api) {
               <div class="docs-api-reference">
                 @for (symbol of api.symbols; track symbol.name) {
                   <article class="docs-api-entry">
-                    <h3 [id]="apiSymbolId(symbol.name)">{{ symbol.name }}</h3>
+                    <h3 [id]="apiSymbolId(symbol.name)" class="text-foreground">
+                      {{ symbol.name }}
+                    </h3>
 
-                    <dl class="docs-api-meta">
+                    <dl class="docs-api-meta text-muted-foreground">
                       @for (selector of symbol.selectors; track selector) {
                         <div>
                           <dt>Selector:</dt>
                           <dd>
-                            <code>{{ selector }}</code>
+                            <code class="bg-muted text-foreground">{{ selector }}</code>
                           </dd>
                         </div>
                       }
@@ -148,7 +155,7 @@ const anatomySnippets: Record<ComponentDocSlug, string> = {
                         <div>
                           <dt>ExportAs:</dt>
                           <dd>
-                            <code>{{ exportAs }}</code>
+                            <code class="bg-muted text-foreground">{{ exportAs }}</code>
                           </dd>
                         </div>
                       }
@@ -156,9 +163,11 @@ const anatomySnippets: Record<ComponentDocSlug, string> = {
 
                     @if (symbol.inputs.length > 0) {
                       <div class="docs-api-table-group">
-                        <h4>Inputs</h4>
-                        <div class="docs-api-table-wrap">
-                          <table class="docs-api-table">
+                        <h4 class="text-foreground">Inputs</h4>
+                        <div class="docs-api-table-wrap border border-border bg-card">
+                          <table
+                            class="docs-api-table text-muted-foreground [&_td]:border-b [&_td]:border-border [&_td]:px-2.5 [&_td]:py-2.5 [&_td]:align-top [&_td]:whitespace-nowrap [&_th]:border-b [&_th]:border-border [&_th]:px-2.5 [&_th]:py-2.5 [&_th]:text-left [&_th]:align-top [&_th]:font-semibold [&_th]:text-foreground [&_th]:whitespace-nowrap [&_tbody_tr:last-child_td]:border-b-0"
+                          >
                             <thead>
                               <tr>
                                 <th scope="col">Prop</th>
@@ -171,7 +180,7 @@ const anatomySnippets: Record<ComponentDocSlug, string> = {
                               @for (input of symbol.inputs; track input.name) {
                                 <tr>
                                   <td>
-                                    <code class="docs-api-prop">
+                                    <code class="docs-api-prop bg-muted text-foreground">
                                       {{ input.name }}
                                       @if (input.required) {
                                         <span aria-hidden="true">*</span>
@@ -181,7 +190,9 @@ const anatomySnippets: Record<ComponentDocSlug, string> = {
                                   </td>
                                   <td>{{ input.type }}</td>
                                   <td>
-                                    <code>{{ input.defaultValue }}</code>
+                                    <code class="bg-muted text-foreground">
+                                      {{ input.defaultValue }}
+                                    </code>
                                   </td>
                                   <td>{{ apiDescription(input.description) }}</td>
                                 </tr>
@@ -194,9 +205,11 @@ const anatomySnippets: Record<ComponentDocSlug, string> = {
 
                     @if (symbol.outputs.length > 0) {
                       <div class="docs-api-table-group">
-                        <h4>Outputs</h4>
-                        <div class="docs-api-table-wrap">
-                          <table class="docs-api-table">
+                        <h4 class="text-foreground">Outputs</h4>
+                        <div class="docs-api-table-wrap border border-border bg-card">
+                          <table
+                            class="docs-api-table text-muted-foreground [&_td]:border-b [&_td]:border-border [&_td]:px-2.5 [&_td]:py-2.5 [&_td]:align-top [&_td]:whitespace-nowrap [&_th]:border-b [&_th]:border-border [&_th]:px-2.5 [&_th]:py-2.5 [&_th]:text-left [&_th]:align-top [&_th]:font-semibold [&_th]:text-foreground [&_th]:whitespace-nowrap [&_tbody_tr:last-child_td]:border-b-0"
+                          >
                             <thead>
                               <tr>
                                 <th scope="col">Output</th>
@@ -208,7 +221,9 @@ const anatomySnippets: Record<ComponentDocSlug, string> = {
                               @for (output of symbol.outputs; track output.name) {
                                 <tr>
                                   <td>
-                                    <code class="docs-api-prop">{{ output.name }}</code>
+                                    <code class="docs-api-prop bg-muted text-foreground">
+                                      {{ output.name }}
+                                    </code>
                                   </td>
                                   <td>{{ output.type }}</td>
                                   <td>{{ apiDescription(output.description) }}</td>
@@ -225,14 +240,19 @@ const anatomySnippets: Record<ComponentDocSlug, string> = {
             }
           </section>
 
-          <section class="docs-section" aria-labelledby="related-primitives">
+          <section class="docs-section border-b border-border" aria-labelledby="related-primitives">
             <div class="docs-section-copy">
-              <h2 id="related-primitives">Related Primitives</h2>
+              <h2 id="related-primitives" class="text-foreground">Related Primitives</h2>
             </div>
             <ul class="related-list">
               @for (item of relatedDocs(); track item.slug) {
                 <li>
-                  <a [routerLink]="['/docs/components', item.slug]">{{ item.title }}</a>
+                  <a
+                    class="border border-border bg-card text-foreground hover:bg-muted"
+                    [routerLink]="['/docs/components', item.slug]"
+                  >
+                    {{ item.title }}
+                  </a>
                 </li>
               }
             </ul>
@@ -243,9 +263,14 @@ const anatomySnippets: Record<ComponentDocSlug, string> = {
       </div>
     } @else {
       <section class="docs-missing" aria-labelledby="missing-title">
-        <h1 id="missing-title">Component not found</h1>
-        <p>This primitive is not in the docs registry yet.</p>
-        <a routerLink="/docs/components">View component docs</a>
+        <h1 id="missing-title" class="text-foreground">Component not found</h1>
+        <p class="text-muted-foreground">This primitive is not in the docs registry yet.</p>
+        <a
+          class="border border-border bg-card text-foreground hover:bg-muted"
+          routerLink="/docs/components"
+        >
+          View component docs
+        </a>
       </section>
     }
   `,
@@ -272,12 +297,10 @@ const anatomySnippets: Record<ComponentDocSlug, string> = {
       display: grid;
       gap: 14px;
       padding-bottom: 30px;
-      border-bottom: 1px solid #e4e4e7;
     }
 
     .docs-page-header h1,
     .docs-missing h1 {
-      color: #050505;
       font-size: clamp(2.125rem, 3.6vw, 3rem);
       line-height: 1.08;
       letter-spacing: 0;
@@ -288,7 +311,6 @@ const anatomySnippets: Record<ComponentDocSlug, string> = {
     .docs-section-copy p,
     .docs-missing p {
       max-width: 680px;
-      color: #71717a;
       font-size: 17px;
       line-height: 1.6;
     }
@@ -297,7 +319,6 @@ const anatomySnippets: Record<ComponentDocSlug, string> = {
       display: grid;
       gap: 18px;
       padding: 36px 0;
-      border-bottom: 1px solid #e4e4e7;
     }
 
     .docs-section-copy {
@@ -306,7 +327,6 @@ const anatomySnippets: Record<ComponentDocSlug, string> = {
     }
 
     .docs-section h2 {
-      color: #09090b;
       font-size: 22px;
       line-height: 1.25;
       font-weight: 500;
@@ -327,7 +347,6 @@ const anatomySnippets: Record<ComponentDocSlug, string> = {
 
     .docs-api-entry h3 {
       margin: 0;
-      color: #18181b;
       font-size: 18px;
       line-height: 1.3;
       font-weight: 600;
@@ -338,7 +357,6 @@ const anatomySnippets: Record<ComponentDocSlug, string> = {
       display: grid;
       gap: 2px;
       margin: 0;
-      color: #18181b;
       font-size: 14px;
       line-height: 1.45;
     }
@@ -360,8 +378,6 @@ const anatomySnippets: Record<ComponentDocSlug, string> = {
     .docs-api-table code {
       border-radius: 4px;
       padding: 2px 4px;
-      background: #f4f4f5;
-      color: #27272a;
       font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
       font-size: 13px;
       line-height: 1.45;
@@ -376,7 +392,6 @@ const anatomySnippets: Record<ComponentDocSlug, string> = {
 
     .docs-api-table-group h4 {
       margin: 0;
-      color: #18181b;
       font-size: 15px;
       line-height: 1.4;
       font-weight: 500;
@@ -385,40 +400,21 @@ const anatomySnippets: Record<ComponentDocSlug, string> = {
     .docs-api-table-wrap {
       min-width: 0;
       overflow-x: auto;
-      border: 1px solid #e4e4e7;
       border-radius: 8px;
-      background: #ffffff;
     }
 
     .docs-api-table {
       width: 100%;
       min-width: 670px;
       border-collapse: collapse;
-      color: #18181b;
       font-size: 14px;
       line-height: 1.45;
       text-align: left;
     }
 
-    .docs-api-table th,
-    .docs-api-table td {
-      padding: 9px 10px;
-      border-bottom: 1px solid #e4e4e7;
-      vertical-align: top;
-      white-space: nowrap;
-    }
-
-    .docs-api-table th {
-      font-weight: 600;
-    }
-
     .docs-api-table td:last-child,
     .docs-api-table th:last-child {
       width: 38%;
-    }
-
-    .docs-api-table tbody tr:last-child td {
-      border-bottom: 0;
     }
 
     .docs-api-prop {
@@ -439,19 +435,11 @@ const anatomySnippets: Record<ComponentDocSlug, string> = {
       min-height: 36px;
       display: inline-flex;
       align-items: center;
-      border: 1px solid #d4d4d8;
       border-radius: 8px;
       padding: 0 12px;
-      background: #ffffff;
-      color: #09090b;
       font-size: 14px;
       font-weight: 600;
       text-decoration: none;
-    }
-
-    .related-list a:hover,
-    .docs-missing a:hover {
-      background: #f4f4f5;
     }
 
     .docs-missing {
@@ -459,54 +447,6 @@ const anatomySnippets: Record<ComponentDocSlug, string> = {
       gap: 16px;
       justify-items: start;
       padding: 44px 0;
-    }
-
-    @media (prefers-color-scheme: dark) {
-      .docs-page-header,
-      .docs-section {
-        border-color: #27272a;
-      }
-
-      .docs-page-header h1,
-      .docs-missing h1,
-      .docs-section h2,
-      .docs-api-entry h3,
-      .docs-api-table-group h4,
-      .related-list a,
-      .docs-missing a {
-        color: #fafafa;
-      }
-
-      .docs-page-header p,
-      .docs-section-copy p,
-      .docs-missing p,
-      .docs-api-meta,
-      .docs-api-table {
-        color: #a1a1aa;
-      }
-
-      .docs-api-table-wrap,
-      .related-list a,
-      .docs-missing a {
-        border-color: #27272a;
-        background: #111113;
-      }
-
-      .docs-api-table th,
-      .docs-api-table td {
-        border-color: #27272a;
-      }
-
-      .docs-api-meta code,
-      .docs-api-table code {
-        background: #09090b;
-        color: #e4e4e7;
-      }
-
-      .related-list a:hover,
-      .docs-missing a:hover {
-        background: #18181b;
-      }
     }
 
     @media (max-width: 1500px) {

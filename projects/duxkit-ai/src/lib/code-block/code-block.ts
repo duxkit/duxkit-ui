@@ -40,16 +40,16 @@ const languageExtensions: Record<string, string> = {
   styleUrl: '../markdown.scss',
   template: `
     <div
-      class="ai-code-block-header"
+      class="ai-code-block-header flex h-8 items-center justify-between gap-2 text-muted-foreground text-xs"
       [attr.data-language]="languageLabel()"
       data-streamdown="code-block-header"
     >
-      <span class="ai-code-block-language">{{ languageLabel() }}</span>
+      <span class="ai-code-block-language ml-1 font-mono lowercase">{{ languageLabel() }}</span>
 
       <div class="ai-code-block-actions" role="group" aria-label="Code block actions">
         <button
           type="button"
-          class="ai-code-block-action"
+          class="ai-code-block-action inline-flex h-6 w-6 cursor-pointer items-center justify-center rounded-md border-0 bg-transparent p-0 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
           title="Download file"
           aria-label="Download code"
           (click)="download()"
@@ -58,7 +58,7 @@ const languageExtensions: Record<string, string> = {
         </button>
         <button
           type="button"
-          class="ai-code-block-action"
+          class="ai-code-block-action inline-flex h-6 w-6 cursor-pointer items-center justify-center rounded-md border-0 bg-transparent p-0 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
           [title]="copyLabel()"
           [attr.aria-label]="copyLabel()"
           (click)="copy()"
@@ -98,10 +98,18 @@ export class CodeBlock {
     renderHighlightedCode(this.code(), this.languageLabel(), this.markdownOptions),
   );
 
-  protected readonly classes = computed(() => twMerge('ai-code-block', this.userClass()));
+  protected readonly classes = computed(() =>
+    twMerge(
+      'ai-code-block my-4 flex w-full min-w-0 max-w-full flex-col gap-2 overflow-hidden rounded-xl border border-border bg-card p-2 text-foreground',
+      this.userClass(),
+    ),
+  );
 
   protected readonly bodyClasses = computed(() =>
-    twMerge('ai-code-block-body', `language-${this.languageLabel()}`),
+    twMerge(
+      'ai-code-block-body min-w-0 max-w-full overflow-hidden rounded-lg border border-border bg-background p-4 text-foreground',
+      `language-${this.languageLabel()}`,
+    ),
   );
 
   protected readonly preClasses = computed(() => `language-${this.languageLabel()}`);

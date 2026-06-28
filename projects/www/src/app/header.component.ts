@@ -1,9 +1,11 @@
 import { NgOptimizedImage, DOCUMENT } from '@angular/common';
 import { Component, computed, inject, signal } from '@angular/core';
-import { Router, RouterLink, RouterLinkActive } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
+import { NgIcon, provideIcons } from '@ng-icons/core';
+import { lucideMoon, lucideSun } from '@ng-icons/lucide';
 import { type BrnDialogState } from '@spartan-ng/brain/dialog';
 import { HlmCommandImports } from '@duxkit/ui/helm/command';
-import { HlmNavigationMenuImports } from '@duxkit/ui/helm/navigation-menu';
+import { HlmIcon } from '@duxkit/ui/helm/icon';
 import {
   type ComponentDocsSearchItem,
   componentDocsSearchIndex,
@@ -11,21 +13,14 @@ import {
   searchComponentDocs,
 } from './docs/docs-search';
 
-interface HeaderNavItem {
-  readonly label: string;
-  readonly routerLink: string;
-  readonly fragment?: string;
-}
+type ThemeMode = 'light' | 'dark';
+
+const themeStorageKey = 'duxkit-ui-theme';
 
 @Component({
   selector: 'app-header',
-  imports: [
-    HlmCommandImports,
-    HlmNavigationMenuImports,
-    NgOptimizedImage,
-    RouterLink,
-    RouterLinkActive,
-  ],
+  imports: [HlmCommandImports, HlmIcon, NgIcon, NgOptimizedImage, RouterLink],
+  providers: [provideIcons({ lucideMoon, lucideSun })],
   host: {
     '(document:keydown)': 'handleDocumentKeydown($event)',
   },
@@ -36,43 +31,17 @@ interface HeaderNavItem {
           <a class="brand" routerLink="/" aria-label="Duxkit UI home">
             <img
               class="brand-mark"
-              ngSrc="duxkit-mark.png"
+              ngSrc="duxkit_logo.png"
               width="512"
-              height="512"
+              height="352"
               alt=""
               aria-hidden="true"
               priority
             />
-            <span class="brand-name">
-              Duxkit
-              <span class="brand-badge" aria-hidden="true">UI</span>
-            </span>
+            <span class="brand-name">Duxkit</span>
           </a>
 
-          <nav
-            hlmNavigationMenu
-            class="primary-navigation"
-            aria-label="Primary navigation"
-            openOn="hover"
-          >
-            <ul hlmNavigationMenuList class="primary-nav">
-              @for (item of primaryNavItems; track item.label) {
-                <li hlmNavigationMenuItem>
-                  <a
-                    hlmNavigationMenuLink
-                    routerLinkActive
-                    #routeActive="routerLinkActive"
-                    [active]="routeActive.isActive"
-                    [routerLink]="item.routerLink"
-                    [fragment]="item.fragment"
-                    [routerLinkActiveOptions]="{ exact: item.routerLink === '/' }"
-                  >
-                    {{ item.label }}
-                  </a>
-                </li>
-              }
-            </ul>
-          </nav>
+          <span class="brand-badge" aria-hidden="true">UI</span>
         </div>
 
         <div class="nav-actions" aria-label="Account actions">
@@ -87,9 +56,15 @@ interface HeaderNavItem {
             <span>Search...</span>
             <kbd>⌘K</kbd>
           </button>
-          <button class="ask-trigger" type="button">
-            <span aria-hidden="true">↗</span>
-            <span>Ask AI</span>
+
+          <button
+            class="theme-trigger"
+            type="button"
+            [attr.aria-label]="themeToggleLabel()"
+            [title]="themeToggleLabel()"
+            (click)="toggleTheme()"
+          >
+            <ng-icon hlmIcon size="sm" [name]="themeIcon()" aria-hidden="true" />
           </button>
         </div>
       </div>
@@ -145,20 +120,25 @@ export class HeaderComponent {
   private readonly router = inject(Router);
   private readonly document = inject(DOCUMENT);
 
-  protected readonly primaryNavItems: readonly HeaderNavItem[] = [
-    { label: 'Primitives', routerLink: '/docs/components' },
-    { label: 'Examples', routerLink: '/', fragment: 'primitives' },
-    { label: 'Docs', routerLink: '/docs/components' },
-  ];
-
   protected readonly searchState = signal<BrnDialogState>('closed');
   protected readonly searchQuery = signal('');
+  protected readonly theme = signal<ThemeMode>(this.readInitialTheme());
   protected readonly searchOpen = computed(() => this.searchState() === 'open');
+  protected readonly themeIcon = computed(() =>
+    this.theme() === 'dark' ? 'lucideSun' : 'lucideMoon',
+  );
+  protected readonly themeToggleLabel = computed(() =>
+    this.theme() === 'dark' ? 'Switch to light theme' : 'Switch to dark theme',
+  );
   protected readonly filteredDocs = computed(() =>
     searchComponentDocs(this.searchQuery()).slice(0, componentDocsSearchIndex.length),
   );
   protected readonly commandSearchFilter = (value: string, search: string): boolean =>
     matchesDocsSearchText(value, search);
+
+  constructor() {
+    this.applyTheme(this.theme());
+  }
 
   protected openSearch(): void {
     this.searchState.set('open');
@@ -189,6 +169,14 @@ export class HeaderComponent {
     return item.api.selectors[0] ?? item.slug;
   }
 
+  protected toggleTheme(): void {
+    const nextTheme = this.theme() === 'dark' ? 'light' : 'dark';
+
+    this.theme.set(nextTheme);
+    this.applyTheme(nextTheme);
+    this.storeTheme(nextTheme);
+  }
+
   protected handleDocumentKeydown(event: KeyboardEvent): void {
     if (event.key.toLowerCase() !== 'k' || (!event.metaKey && !event.ctrlKey)) {
       return;
@@ -196,5 +184,38 @@ export class HeaderComponent {
 
     event.preventDefault();
     this.openSearch();
+  }
+
+  private readInitialTheme(): ThemeMode {
+    const storedTheme = this.readStoredTheme();
+
+    if (storedTheme) {
+      return storedTheme;
+    }
+
+    return globalThis.matchMedia?.('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+  }
+
+  private readStoredTheme(): ThemeMode | undefined {
+    try {
+      const storedTheme = globalThis.localStorage?.getItem(themeStorageKey);
+
+      return storedTheme === 'dark' || storedTheme === 'light' ? storedTheme : undefined;
+    } catch {
+      return undefined;
+    }
+  }
+
+  private storeTheme(theme: ThemeMode): void {
+    try {
+      globalThis.localStorage?.setItem(themeStorageKey, theme);
+    } catch {
+      // Storage can be unavailable in private browsing or restricted embeds.
+    }
+  }
+
+  private applyTheme(theme: ThemeMode): void {
+    this.document.documentElement.dataset['theme'] = theme;
+    this.document.documentElement.style.colorScheme = theme;
   }
 }

@@ -12,14 +12,18 @@ import {
     '(window:scroll)': 'scheduleActiveUpdate()',
   },
   template: `
-    <nav class="docs-toc" aria-label="On this page">
-      <h2>On this page</h2>
+    <nav class="docs-toc border-l border-border" aria-label="On this page">
+      <h2 class="text-muted-foreground">On this page</h2>
       <ol>
         @for (item of items(); track item.id) {
           <li>
             <a
+              class="text-muted-foreground hover:text-foreground focus-visible:text-foreground"
               [href]="anchorHref(item.id)"
               [class.is-active]="activeId() === item.id"
+              [class.text-foreground]="activeId() === item.id"
+              [class.text-muted-foreground]="activeId() !== item.id"
+              [class.font-semibold]="activeId() === item.id"
               [attr.aria-current]="activeId() === item.id ? 'location' : null"
             >
               {{ item.label }}
@@ -30,11 +34,15 @@ import {
                 @for (child of item.items; track child.id) {
                   <li>
                     <a
+                      class="text-muted-foreground hover:text-foreground focus-visible:text-foreground"
                       [href]="anchorHref(child.id)"
                       [class.is-active]="activeId() === child.id"
+                      [class.text-foreground]="activeId() === child.id"
+                      [class.text-muted-foreground]="activeId() !== child.id"
+                      [class.font-semibold]="activeId() === child.id"
                       [attr.aria-current]="activeId() === child.id ? 'location' : null"
                     >
-                      <code>{{ child.label }}</code>
+                      <code class="bg-muted text-inherit">{{ child.label }}</code>
                     </a>
                   </li>
                 }
@@ -60,13 +68,11 @@ import {
       max-height: calc(100dvh - 113px);
       overflow: auto;
       padding-left: 20px;
-      border-left: 1px solid #e4e4e7;
       scrollbar-width: thin;
     }
 
     .docs-toc h2 {
       margin: 0 0 12px;
-      color: #71717a;
       font-size: 13px;
       line-height: 1.4;
       font-weight: 600;
@@ -90,17 +96,10 @@ import {
     .docs-toc a {
       max-width: 100%;
       display: inline-flex;
-      color: #71717a;
       font-size: 14px;
       line-height: 1.35;
       font-weight: 450;
       text-decoration: none;
-    }
-
-    .docs-toc a:hover,
-    .docs-toc a:focus-visible,
-    .docs-toc a.is-active {
-      color: #0069ff;
     }
 
     .docs-toc a.is-active {
@@ -111,32 +110,9 @@ import {
       overflow-wrap: anywhere;
       border-radius: 4px;
       padding: 1px 3px;
-      background: #f4f4f5;
-      color: currentColor;
       font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
       font-size: 13px;
       line-height: 1.45;
-    }
-
-    @media (prefers-color-scheme: dark) {
-      .docs-toc {
-        border-color: #27272a;
-      }
-
-      .docs-toc h2,
-      .docs-toc a {
-        color: #a1a1aa;
-      }
-
-      .docs-toc a:hover,
-      .docs-toc a:focus-visible,
-      .docs-toc a.is-active {
-        color: #79c0ff;
-      }
-
-      .docs-toc code {
-        background: #09090b;
-      }
     }
 
     @media (max-width: 1500px) {

@@ -8,7 +8,7 @@ import { componentDocs } from './component-docs.registry';
   template: `
     <section class="docs-layout">
       <aside class="docs-sidebar" aria-label="Component docs">
-        <div class="docs-sidebar-heading">
+        <div class="docs-sidebar-heading text-muted-foreground">
           <span>Chatbot</span>
         </div>
 
@@ -20,6 +20,9 @@ import { componentDocs } from './component-docs.registry';
                   hlmNavigationMenuLink
                   routerLinkActive
                   #routeActive="routerLinkActive"
+                  class="docs-sidebar-link hover:text-foreground focus:text-foreground"
+                  [class.text-foreground]="routeActive.isActive"
+                  [class.text-muted-foreground]="!routeActive.isActive"
                   [active]="routeActive.isActive"
                   [routerLink]="['/docs/components', item.slug]"
                   [routerLinkActiveOptions]="{ exact: true }"
@@ -64,7 +67,6 @@ import { componentDocs } from './component-docs.registry';
     .docs-sidebar-heading {
       margin-bottom: 12px;
       padding: 0 8px;
-      color: #71717a;
       font-size: 12px;
       font-weight: 650;
       letter-spacing: 0.08em;
@@ -89,48 +91,25 @@ import { componentDocs } from './component-docs.registry';
       width: 100%;
     }
 
-    .docs-sidebar-list a {
-      color: #3f3f46;
+    .docs-sidebar-link {
       font-weight: 450;
       text-decoration: none;
       background: transparent !important;
     }
 
-    .docs-sidebar-list a:hover,
-    .docs-sidebar-list a:focus {
-      color: #0069ff;
+    .docs-sidebar-link:hover,
+    .docs-sidebar-link:focus {
       background: transparent !important;
     }
 
-    .docs-sidebar-list a.is-active,
-    .docs-sidebar-list a[data-active='true'] {
-      color: #09090b;
+    .docs-sidebar-link.is-active,
+    .docs-sidebar-link[data-active='true'] {
       font-weight: 600;
       background: transparent !important;
     }
 
     .docs-content {
       min-width: 0;
-    }
-
-    @media (prefers-color-scheme: dark) {
-      .docs-sidebar-heading {
-        color: #a1a1aa;
-      }
-
-      .docs-sidebar-list a {
-        color: #d4d4d8;
-      }
-
-      .docs-sidebar-list a:hover,
-      .docs-sidebar-list a:focus {
-        color: #79c0ff;
-      }
-
-      .docs-sidebar-list a.is-active,
-      .docs-sidebar-list a[data-active='true'] {
-        color: #fafafa;
-      }
     }
 
     @media (max-width: 860px) {

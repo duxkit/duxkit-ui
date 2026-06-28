@@ -2,15 +2,17 @@
   <div class="hero-copy">
     <h1
       id="hero-title"
-      class="text-balance text-center font-semibold text-[40px]! leading-[1.1] tracking-tight sm:text-5xl! lg:font-semibold xl:text-6xl!"
+      class="text-balance text-center font-semibold text-foreground text-[40px]! leading-[1.1] tracking-tight sm:text-5xl! lg:font-semibold xl:text-6xl!"
     >
       Duxkit UI
     </h1>
 
-    <p class="lede">Angular primitives for teams building with Vercel's AI SDK and SpartanNG.</p>
+    <p class="lede text-muted-foreground">
+      Angular primitives for teams building with Vercel's AI SDK and SpartanNG.
+    </p>
 
     <div class="hero-actions" aria-label="Hero actions">
-      <a hlmBtn class="primary-button" href="#primitives">Explore Components</a>
+      <a hlmBtn class="primary-button" routerLink="/docs/components">Explore Components</a>
 
       <button
         hlmBtn
@@ -35,39 +37,43 @@
   </div>
 </section>
 
-<section class="feature-strip" aria-label="Highlights">
+<section class="feature-strip border border-border bg-card" aria-label="Highlights">
   <article>
-    <h2>AI SDK Ready</h2>
-    <p>
+    <h2 class="text-foreground">AI SDK Ready</h2>
+    <p class="text-muted-foreground">
       Render conversations, reasoning, tools, tasks, and approvals from the same interaction
       patterns used by Vercel's AI SDK.
     </p>
   </article>
   <article>
-    <h2>Angular Native</h2>
-    <p>
+    <h2 class="text-foreground">Angular Native</h2>
+    <p class="text-muted-foreground">
       Standalone components, signals, strict templates, and predictable APIs for modern Angular
       applications.
     </p>
   </article>
   <article>
-    <h2>SpartanNG Foundation</h2>
-    <p>
+    <h2 class="text-foreground">SpartanNG Foundation</h2>
+    <p class="text-muted-foreground">
       Built to sit beside SpartanNG and HLM primitives, so your AI components inherit the same
       design language as the rest of your app.
     </p>
   </article>
 </section>
 
-<section id="primitives" class="showcase-section w-full" aria-labelledby="showcase-title">
+<section
+  id="primitives"
+  class="showcase-section border-x border-b border-border bg-card w-full"
+  aria-labelledby="showcase-title"
+>
   <div class="text-center gap-4 mx-auto max-w-xl! flex flex-col items-center justify-center w-full">
     <h2
       id="showcase-title"
-      class="font-semibold text-xl tracking-tight sm:text-2xl md:text-3xl lg:text-[40px]"
+      class="font-semibold text-foreground text-xl tracking-tight sm:text-2xl md:text-3xl lg:text-[40px]"
     >
       AI SDK components for Angular
     </h2>
-    <p>
+    <p class="text-muted-foreground">
       Compose Vercel AI SDK responses with SpartanNG-friendly primitives for chat, workflows, IDEs,
       voice agents, and approval flows.
     </p>
@@ -77,30 +83,37 @@
     class="component-board component-board-perspective"
     aria-label="AI primitive component previews"
   >
-    <article class="component-card component-card-wide" aria-label="Mocked conversation preview">
-      <div class="conversation-plane static-conversation-plane">
+    <article
+      class="component-card component-card-wide border border-border bg-card text-card-foreground"
+      aria-label="Mocked conversation preview"
+    >
+      <div class="p-6 bg-card">
         <ai-conversation [stickToBottom]="false">
           <ai-conversation-content aria-live="polite">
             <ai-message from="user" class="mt-3">
               <ai-message-content
+                class="text-muted-foreground"
                 markdown="We need a changelog page for the SDK docs. Can you outline the first pass?"
               />
             </ai-message>
 
             <ai-message from="assistant">
               <ai-message-content
+                class="text-muted-foreground"
                 markdown="Yes. I’d start with release groups, migration notes, and a compact list of breaking changes."
               />
             </ai-message>
 
             <ai-message from="user">
               <ai-message-content
+                class="text-muted-foreground"
                 markdown="Keep it useful for Angular teams upgrading between minor versions."
               />
             </ai-message>
 
             <ai-message from="assistant">
               <ai-message-content
+                class="text-muted-foreground"
                 markdown="Then each release should call out template changes, signal API updates, dependency ranges, and one copyable upgrade command."
               />
             </ai-message>
@@ -112,7 +125,7 @@
     </article>
 
     <article
-      class="component-card primitive-preview-card"
+      class="component-card primitive-preview-card border border-border bg-card text-card-foreground"
       aria-label="Open chain of thought preview"
     >
       <div class="primitive-preview-body">
@@ -147,7 +160,10 @@
       </div>
     </article>
 
-    <article class="component-card primitive-preview-card" aria-label="Static task preview">
+    <article
+      class="component-card primitive-preview-card border border-border bg-card text-card-foreground"
+      aria-label="Static task preview"
+    >
       <div class="primitive-preview-body">
         <ai-task [autoToggle]="false" [expanded]="true" [isStreaming]="false">
           <button aiTaskTrigger>Prepare changelog draft</button>
