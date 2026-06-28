@@ -60,4 +60,5 @@ You are an expert in TypeScript, Angular, and scalable web application developme
 
 Repo-local skills live under `docs/agent-skills`.
 
+- When creating a new `duxkit-ai` primitive, adding primitive pieces, or changing a primitive API, read `docs/agent-skills/create-primitive/SKILL.md` before editing.
 - When adding a new `duxkit-ai` primitive to the `www` docs, or updating docs after a primitive API change, read `docs/agent-skills/add-primitive-docs/SKILL.md` before editing.
