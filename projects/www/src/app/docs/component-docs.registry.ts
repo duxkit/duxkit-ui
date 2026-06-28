@@ -41,6 +41,11 @@ export const componentDocs = [
     description: 'Collapsible markdown reasoning content.',
   },
   {
+    slug: 'sources',
+    title: 'Sources',
+    description: 'Collapsible source references for AI responses.',
+  },
+  {
     slug: 'confirmation',
     title: 'Confirmation',
     description: 'Approval request primitives for user-controlled actions.',

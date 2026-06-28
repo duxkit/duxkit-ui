@@ -33,6 +33,10 @@ import {
   Reasoning,
   ReasoningContent,
   ReasoningTrigger,
+  Source,
+  Sources,
+  SourcesContent,
+  SourcesTrigger,
   Task,
   TaskContent,
   TaskItem,
@@ -163,6 +167,14 @@ export const componentPreviewSnippets: Record<ComponentDocSlug, string> = {
   <button aiReasoningTrigger></button>
   <ai-reasoning-content [markdown]="reasoningMarkdown" />
 </ai-reasoning>`,
+  sources: `<ai-sources [expanded]="true">
+  <button aiSourcesTrigger [count]="sources.length"></button>
+  <ai-sources-content>
+    @for (source of sources; track source.href) {
+      <a aiSource [href]="source.href" [title]="source.title"></a>
+    }
+  </ai-sources-content>
+</ai-sources>`,
   confirmation: `<ai-confirmation class="w-[420px]" [part]="confirmationRequestedPart">
   <ai-confirmation-request>
     <ai-confirmation-title />
@@ -236,6 +248,10 @@ export const attachmentPreviewSnippets: Record<AttachmentsVariant, string> = {
     Reasoning,
     ReasoningContent,
     ReasoningTrigger,
+    Source,
+    Sources,
+    SourcesContent,
+    SourcesTrigger,
     Task,
     TaskContent,
     TaskItem,
@@ -404,6 +420,17 @@ export const attachmentPreviewSnippets: Record<AttachmentsVariant, string> = {
         </ai-reasoning>
       }
 
+      @case ('sources') {
+        <ai-sources [expanded]="true">
+          <button aiSourcesTrigger [count]="sources.length"></button>
+          <ai-sources-content>
+            @for (source of sources; track source.href) {
+              <a aiSource [href]="source.href" [title]="source.title"></a>
+            }
+          </ai-sources-content>
+        </ai-sources>
+      }
+
       @case ('confirmation') {
         <ai-confirmation class="w-[420px]" [part]="confirmationRequestedPart">
           <ai-confirmation-request>
@@ -460,6 +487,20 @@ export class ComponentDocPreview {
 export class ExampleCounter {
   protected readonly count = signal(0);
 }`;
+  protected readonly sources = [
+    {
+      href: 'https://docs.stripe.com/api',
+      title: 'Stripe API Documentation',
+    },
+    {
+      href: 'https://docs.github.com/en/rest',
+      title: 'GitHub REST API',
+    },
+    {
+      href: 'https://docs.aws.amazon.com/sdk-for-javascript',
+      title: 'AWS SDK for JavaScript',
+    },
+  ];
 
   protected readonly attachmentParts: readonly AiAttachmentPart[] = [
     {

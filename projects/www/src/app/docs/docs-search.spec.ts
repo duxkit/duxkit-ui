@@ -31,6 +31,9 @@ describe('docs search', () => {
     expect(searchComponentDocs('remove control is pressed').map((item) => item.slug)).toContain(
       'attachment',
     );
+    expect(searchComponentDocs('SourcesTrigger').map((item) => item.slug)).toContain('sources');
+    expect(searchComponentDocs('ai-sources-content').map((item) => item.slug)).toContain('sources');
+    expect(searchComponentDocs('source link').map((item) => item.slug)).toContain('sources');
   });
 
   it('keeps generated API metadata attached to every indexed component doc', () => {

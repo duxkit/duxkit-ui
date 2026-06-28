@@ -27,6 +27,7 @@ const componentImports: Record<ComponentDocSlug, string> = {
   task: "import { Task, TaskContent, TaskItem, TaskItemFile, TaskTrigger } from 'duxkit-ai';",
   tool: "import { Tool, ToolContent, ToolTrigger } from 'duxkit-ai';",
   reasoning: "import { Reasoning, ReasoningContent, ReasoningTrigger } from 'duxkit-ai';",
+  sources: "import { Source, Sources, SourcesContent, SourcesTrigger } from 'duxkit-ai';",
   confirmation:
     "import { Confirmation, ConfirmationAction, ConfirmationActions, ConfirmationRequest, ConfirmationTitle } from 'duxkit-ai';",
   'code-block': "import { CodeBlock } from 'duxkit-ai';",
@@ -72,6 +73,14 @@ const anatomySnippets: Record<ComponentDocSlug, string> = {
   <button aiReasoningTrigger>Thought for 8 seconds</button>
   <ai-reasoning-content markdown="Summarized reasoning can render here." />
 </ai-reasoning>`,
+  sources: `<ai-sources [expanded]="true">
+  <button aiSourcesTrigger [count]="sources.length"></button>
+  <ai-sources-content>
+    @for (source of sources; track source.href) {
+      <a aiSource [href]="source.href" [title]="source.title"></a>
+    }
+  </ai-sources-content>
+</ai-sources>`,
   confirmation: `<ai-confirmation [part]="toolPart">
   <ai-confirmation-request>
     <ai-confirmation-title />

@@ -939,6 +939,122 @@ export const componentApiMetadata = {
       },
     ],
   },
+  sources: {
+    selectors: [
+      '[aiSources]',
+      'ai-sources',
+      '[aiSourcesContent]',
+      'ai-sources-content',
+      'button[aiSourcesTrigger]',
+      'a[aiSource]',
+    ],
+    exports: ['Sources', 'SourcesContent', 'SourcesTrigger', 'Source'],
+    inputs: ['class', 'count', 'href', 'title', 'target', 'rel'],
+    outputs: [],
+    sourcePaths: [
+      'projects/duxkit-ai/src/lib/sources/sources.ts',
+      'projects/duxkit-ai/src/lib/sources/sources-content.ts',
+      'projects/duxkit-ai/src/lib/sources/sources-trigger.ts',
+      'projects/duxkit-ai/src/lib/sources/source.ts',
+    ],
+    symbols: [
+      {
+        name: 'Sources',
+        selectors: ['[aiSources]', 'ai-sources'],
+        inputs: [
+          {
+            name: 'class',
+            type: 'string | undefined',
+            defaultValue: 'undefined',
+            required: false,
+            description: 'Additional classes merged onto the sources root element.',
+          },
+        ],
+        outputs: [],
+        sourcePath: 'projects/duxkit-ai/src/lib/sources/sources.ts',
+      },
+      {
+        name: 'SourcesContent',
+        selectors: ['[aiSourcesContent]', 'ai-sources-content'],
+        inputs: [
+          {
+            name: 'class',
+            type: 'string | undefined',
+            defaultValue: 'undefined',
+            required: false,
+            description: 'Additional classes merged onto the collapsible sources content region.',
+          },
+        ],
+        outputs: [],
+        sourcePath: 'projects/duxkit-ai/src/lib/sources/sources-content.ts',
+      },
+      {
+        name: 'SourcesTrigger',
+        selectors: ['button[aiSourcesTrigger]'],
+        inputs: [
+          {
+            name: 'count',
+            type: 'number',
+            defaultValue: '-',
+            required: true,
+            description: 'Number of sources referenced by the response.',
+          },
+          {
+            name: 'class',
+            type: 'string | undefined',
+            defaultValue: 'undefined',
+            required: false,
+            description: 'Additional classes merged onto the sources trigger button.',
+          },
+        ],
+        outputs: [],
+        sourcePath: 'projects/duxkit-ai/src/lib/sources/sources-trigger.ts',
+      },
+      {
+        name: 'Source',
+        selectors: ['a[aiSource]'],
+        inputs: [
+          {
+            name: 'href',
+            type: 'string | undefined',
+            defaultValue: 'undefined',
+            required: false,
+            description: 'URL opened when the source link is activated.',
+          },
+          {
+            name: 'title',
+            type: 'string | undefined',
+            defaultValue: 'undefined',
+            required: false,
+            description: 'Accessible source title and default visible label.',
+          },
+          {
+            name: 'target',
+            type: 'string | undefined',
+            defaultValue: "'_blank'",
+            required: false,
+            description: 'Anchor target for the source link.',
+          },
+          {
+            name: 'rel',
+            type: 'string | undefined',
+            defaultValue: "'noreferrer'",
+            required: false,
+            description: 'Relationship attribute for the source link.',
+          },
+          {
+            name: 'class',
+            type: 'string | undefined',
+            defaultValue: 'undefined',
+            required: false,
+            description: 'Additional classes merged onto the source link.',
+          },
+        ],
+        outputs: [],
+        sourcePath: 'projects/duxkit-ai/src/lib/sources/source.ts',
+      },
+    ],
+  },
   confirmation: {
     selectors: [
       '[aiConfirmation]',
