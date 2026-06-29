@@ -4,6 +4,7 @@ import {
   ElementRef,
   OnDestroy,
   WritableSignal,
+  computed,
   inject,
   signal,
 } from '@angular/core';
@@ -26,7 +27,11 @@ import {
   TaskItemFile,
   TaskTrigger,
 } from 'duxkit-ai';
-import { revealConversationText } from './conversation-demo-timeline';
+import {
+  type DemoReasoningStepState,
+  revealConversationText,
+  reasoningStepStatus,
+} from './conversation-demo-timeline';
 
 const introAssistantMessage =
   'Absolutely. I’ll compare quieter areas, keep food local, and ask before holding anything.';
@@ -79,29 +84,33 @@ const dinnerAssistantMessage =
                     animate.enter="step-enter"
                     [autoToggle]="false"
                     [expanded]="true"
-                    [isStreaming]="false"
+                    [isStreaming]="introReasoningStreaming()"
                   >
                     <button aiChainOfThoughtTrigger></button>
                     <ai-chain-of-thought-content>
-                      <ai-chain-of-thought-step
-                        animate.enter="step-enter delay-1"
-                        status="complete"
-                        icon="lucideCircleCheck"
-                        label="Understand the trip"
-                        description="Quiet Lisbon weekend, good food, nice hotel, fewer tourist traps."
-                      />
-
-                      <ai-chain-of-thought-step
-                        animate.enter="step-enter delay-2"
-                        status="complete"
-                        icon="lucideCircleCheck"
-                        label="Compare neighborhoods"
-                        description="Favor calm areas with restaurants and refundable stays."
-                      >
-                        <ai-reasoning-content
-                          markdown="Prioritize Principe Real, Estrela, and Lapa. Look for walkable restaurants, a calm hotel, and refundable availability."
+                      @if (introTripStep() !== 'hidden') {
+                        <ai-chain-of-thought-step
+                          animate.enter="step-enter"
+                          [status]="stepStatus(introTripStep())"
+                          [icon]="stepIcon(introTripStep(), 'lucideCircleCheck')"
+                          label="Understand the trip"
+                          description="Quiet Lisbon weekend, good food, nice hotel, fewer tourist traps."
                         />
-                      </ai-chain-of-thought-step>
+                      }
+
+                      @if (introNeighborhoodStep() !== 'hidden') {
+                        <ai-chain-of-thought-step
+                          animate.enter="step-enter"
+                          [status]="stepStatus(introNeighborhoodStep())"
+                          [icon]="stepIcon(introNeighborhoodStep(), 'lucideCircleCheck')"
+                          label="Compare neighborhoods"
+                          description="Favor calm areas with restaurants and refundable stays."
+                        >
+                          <ai-reasoning-content
+                            markdown="Prioritize Principe Real, Estrela, and Lapa. Look for walkable restaurants, a calm hotel, and refundable availability."
+                          />
+                        </ai-chain-of-thought-step>
+                      }
                     </ai-chain-of-thought-content>
                   </ai-chain-of-thought>
                 }
@@ -123,14 +132,14 @@ const dinnerAssistantMessage =
                     animate.enter="step-enter"
                     [autoToggle]="false"
                     [expanded]="true"
-                    [isStreaming]="dinnerAssistantStreaming()"
+                    [isStreaming]="dinnerSearchStep() === 'active'"
                   >
                     <button aiChainOfThoughtTrigger></button>
                     <ai-chain-of-thought-content>
                       <ai-chain-of-thought-step
                         animate.enter="step-enter"
-                        [status]="dinnerAssistantStreaming() ? 'active' : 'complete'"
-                        [icon]="dinnerAssistantStreaming() ? 'lucideLoaderCircle' : 'lucideGlobe'"
+                        [status]="stepStatus(dinnerSearchStep())"
+                        [icon]="stepIcon(dinnerSearchStep(), 'lucideGlobe')"
                         label="Search nearby dinner spots"
                         description="Find relaxed restaurants near Principe Real."
                       >
@@ -281,6 +290,12 @@ export class ConversationDemoComponent implements AfterViewInit, OnDestroy {
   protected readonly dinnerAssistantMarkdown = signal('');
   protected readonly introAssistantStreaming = signal(false);
   protected readonly dinnerAssistantStreaming = signal(false);
+  protected readonly introTripStep = signal<DemoReasoningStepState>('hidden');
+  protected readonly introNeighborhoodStep = signal<DemoReasoningStepState>('hidden');
+  protected readonly dinnerSearchStep = signal<DemoReasoningStepState>('hidden');
+  protected readonly introReasoningStreaming = computed(
+    () => this.introTripStep() === 'active' || this.introNeighborhoodStep() === 'active',
+  );
 
   ngAfterViewInit(): void {
     if (typeof IntersectionObserver === 'undefined') {
@@ -329,14 +344,22 @@ export class ConversationDemoComponent implements AfterViewInit, OnDestroy {
       streaming: this.introAssistantStreaming,
       beforeStart: () => this.showIntroAssistant.set(true),
       afterComplete: () => {
-        this.schedule(260, () => this.showIntroReasoning.set(true));
-        this.schedule(1500, () => this.showDinnerUser.set(true));
-        this.schedule(2250, () => {
+        this.schedule(260, () => {
+          this.showIntroReasoning.set(true);
+          this.introTripStep.set('active');
+        });
+        this.schedule(880, () => this.introTripStep.set('complete'));
+        this.schedule(1080, () => this.introNeighborhoodStep.set('active'));
+        this.schedule(1820, () => this.introNeighborhoodStep.set('complete'));
+        this.schedule(2480, () => this.showDinnerUser.set(true));
+        this.schedule(3220, () => {
           this.showDinnerAssistant.set(true);
           this.showDinnerSearch.set(true);
+          this.dinnerSearchStep.set('active');
         });
+        this.schedule(4020, () => this.dinnerSearchStep.set('complete'));
         this.streamAssistantMessage({
-          delay: 3000,
+          delay: 4280,
           target: this.dinnerAssistantMarkdown,
           text: dinnerAssistantMessage,
           streaming: this.dinnerAssistantStreaming,
@@ -376,6 +399,14 @@ export class ConversationDemoComponent implements AfterViewInit, OnDestroy {
 
       this.intervals.push(interval);
     });
+  }
+
+  protected stepStatus(state: DemoReasoningStepState): 'active' | 'complete' | 'pending' {
+    return reasoningStepStatus(state);
+  }
+
+  protected stepIcon(state: DemoReasoningStepState, completeIcon: string): string {
+    return state === 'active' ? 'lucideLoaderCircle' : completeIcon;
   }
 
   private schedule(delay: number, callback: () => void): void {

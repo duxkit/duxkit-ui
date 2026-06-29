@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { revealConversationText } from './conversation-demo-timeline';
+import { reasoningStepStatus, revealConversationText } from './conversation-demo-timeline';
 
 describe('conversation demo streaming text', () => {
   it('reveals text progressively and clamps to the available content', () => {
@@ -10,5 +10,11 @@ describe('conversation demo streaming text', () => {
 
   it('does not split surrogate-pair characters while streaming', () => {
     expect(revealConversationText('Ship 🚀', 6)).toBe('Ship 🚀');
+  });
+
+  it('marks visible reasoning steps active before they complete', () => {
+    expect(reasoningStepStatus('hidden')).toBe('pending');
+    expect(reasoningStepStatus('active')).toBe('active');
+    expect(reasoningStepStatus('complete')).toBe('complete');
   });
 });
