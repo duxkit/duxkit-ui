@@ -45,6 +45,10 @@ describe('docs search', () => {
     expect(searchComponentDocs('SourcesTrigger').map((item) => item.slug)).toContain('sources');
     expect(searchComponentDocs('ai-sources-content').map((item) => item.slug)).toContain('sources');
     expect(searchComponentDocs('source link').map((item) => item.slug)).toContain('sources');
+    expect(searchComponentDocs('shimmer').map((item) => item.slug)).toContain('shimmer');
+    expect(searchComponentDocs('ai-shimmer').map((item) => item.slug)).toContain('shimmer');
+    expect(searchComponentDocs('duration').map((item) => item.slug)).toContain('shimmer');
+    expect(searchComponentDocs('text length').map((item) => item.slug)).toContain('shimmer');
   });
 
   it('keeps generated API metadata attached to every indexed component doc', () => {

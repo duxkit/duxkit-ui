@@ -1299,4 +1299,42 @@ export const componentApiMetadata = {
       },
     ],
   },
+  shimmer: {
+    selectors: ['[aiShimmer]', 'ai-shimmer'],
+    exports: ['Shimmer'],
+    inputs: ['duration', 'spread', 'class'],
+    outputs: [],
+    sourcePaths: ['projects/duxkit-ai/src/lib/shimmer/shimmer.ts'],
+    symbols: [
+      {
+        name: 'Shimmer',
+        selectors: ['[aiShimmer]', 'ai-shimmer'],
+        inputs: [
+          {
+            name: 'duration',
+            type: 'number',
+            defaultValue: '2',
+            required: false,
+            description: 'Animation duration in seconds.',
+          },
+          {
+            name: 'spread',
+            type: 'number',
+            defaultValue: '2',
+            required: false,
+            description: 'Pixel multiplier used with text length to calculate shimmer spread.',
+          },
+          {
+            name: 'class',
+            type: 'string | undefined',
+            defaultValue: 'undefined',
+            required: false,
+            description: 'Additional classes merged onto the shimmer element.',
+          },
+        ],
+        outputs: [],
+        sourcePath: 'projects/duxkit-ai/src/lib/shimmer/shimmer.ts',
+      },
+    ],
+  },
 } satisfies Record<ComponentDocSlug, ComponentApiMetadata>;

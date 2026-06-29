@@ -16,6 +16,8 @@ import { DocsTableOfContents } from './docs-table-of-contents.component';
 import { apiSymbolHeadingId, buildComponentDocsTableOfContents } from './docs-table-of-contents';
 import { type ComponentDocSlug, componentDocs, findComponentDoc } from './component-docs.registry';
 
+const packagePublished = false;
+
 const componentImports: Record<ComponentDocSlug, string> = {
   conversation:
     "import { Conversation, ConversationContent, ConversationScrollAnchor } from 'duxkit-ai';",
@@ -32,6 +34,7 @@ const componentImports: Record<ComponentDocSlug, string> = {
   confirmation:
     "import { Confirmation, ConfirmationAction, ConfirmationActions, ConfirmationRequest, ConfirmationTitle } from 'duxkit-ai';",
   'code-block': "import { CodeBlock } from 'duxkit-ai';",
+  shimmer: "import { Shimmer } from 'duxkit-ai';",
 };
 
 const anatomySnippets: Record<ComponentDocSlug, string> = {
@@ -96,6 +99,9 @@ const anatomySnippets: Record<ComponentDocSlug, string> = {
   </ai-confirmation-request>
 </ai-confirmation>`,
   'code-block': `<ai-code-block language="ts" [code]="code" />`,
+  shimmer: `<p aiShimmer>
+  Generating a response from the model...
+</p>`,
 };
 
 const attachmentPreviewExamples = [
@@ -118,15 +124,32 @@ const attachmentPreviewExamples = [
           <section class="docs-section border-b border-border" aria-labelledby="install">
             <div class="docs-section-copy">
               <h2 id="install" class="text-foreground">Install</h2>
-              <p class="text-muted-foreground">
-                Add the package once, then import the primitive directly from the public API.
-              </p>
+              @if (packagePublished) {
+                <p class="text-muted-foreground">
+                  Add the package once, then import the primitive directly from the public API.
+                </p>
+              } @else {
+                <p class="text-muted-foreground">
+                  The docs are available as a preview while the package API is still being
+                  finalized.
+                </p>
+              }
             </div>
-            <app-docs-code-tabs
-              ariaLabel="Installation options"
-              copyLabel="Copy installation snippet"
-              [tabs]="installTabs()"
-            />
+            @if (packagePublished) {
+              <app-docs-code-tabs
+                ariaLabel="Installation options"
+                copyLabel="Copy installation snippet"
+                [tabs]="installTabs()"
+              />
+            } @else {
+              <aside class="docs-install-soon border border-border bg-card text-muted-foreground">
+                <h3 class="text-foreground">Coming soon</h3>
+                <p>
+                  The component APIs, examples, and usage patterns are still being finalized.
+                  Install instructions are temporarily hidden while the component set is refined.
+                </p>
+              </aside>
+            }
           </section>
 
           <section class="docs-section border-b border-border" aria-labelledby="anatomy">
@@ -381,6 +404,35 @@ const attachmentPreviewExamples = [
       gap: 8px;
     }
 
+    .docs-install-soon {
+      display: grid;
+      gap: 8px;
+      border-radius: 8px;
+      padding: 16px;
+      font-size: 15px;
+      line-height: 1.55;
+    }
+
+    .docs-install-soon h3 {
+      margin: 0;
+      font-size: 15px;
+      line-height: 1.4;
+      font-weight: 600;
+      letter-spacing: 0;
+    }
+
+    .docs-install-soon p {
+      margin: 0;
+    }
+
+    .docs-install-soon code {
+      border-radius: 4px;
+      padding: 2px 4px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      font-size: 13px;
+      line-height: 1.45;
+    }
+
     .docs-section h2 {
       font-size: 22px;
       line-height: 1.25;
@@ -548,6 +600,7 @@ export class ComponentDocPage {
     initialValue: 'conversation',
   });
 
+  protected readonly packagePublished = packagePublished;
   protected readonly doc = computed(() => findComponentDoc(this.slug() ?? ''));
   protected readonly attachmentPreviewExamples = attachmentPreviewExamples;
   protected readonly apiMetadata = computed(() => {

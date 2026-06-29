@@ -36,6 +36,7 @@ import {
   Reasoning,
   ReasoningContent,
   ReasoningTrigger,
+  Shimmer,
   Source,
   Sources,
   SourcesContent,
@@ -207,6 +208,9 @@ export const componentPreviewSnippets: Record<ComponentDocSlug, string> = {
   </ai-confirmation-rejected>
 </ai-confirmation>`,
   'code-block': `<ai-code-block language="ts" [code]="codeBlockCode" />`,
+  shimmer: `<p aiShimmer class="text-lg font-medium">
+  Generating a response from the model...
+</p>`,
 };
 
 export const attachmentPreviewSnippets: Record<AttachmentsVariant, string> = {
@@ -266,6 +270,7 @@ export const attachmentPreviewSnippets: Record<AttachmentsVariant, string> = {
     Reasoning,
     ReasoningContent,
     ReasoningTrigger,
+    Shimmer,
     Source,
     Sources,
     SourcesContent,
@@ -487,6 +492,10 @@ export const attachmentPreviewSnippets: Record<AttachmentsVariant, string> = {
 
       @case ('code-block') {
         <ai-code-block language="ts" [code]="codeBlockCode" />
+      }
+
+      @case ('shimmer') {
+        <p aiShimmer class="text-lg font-medium">Generating a response from the model...</p>
       }
     }
   `,

@@ -60,6 +60,11 @@ export const componentDocs = [
     title: 'Code Block',
     description: 'Syntax highlighted code output with copy behavior.',
   },
+  {
+    slug: 'shimmer',
+    title: 'Shimmer',
+    description: 'Animated text shimmer for loading states and progressive AI output.',
+  },
 ] as const satisfies readonly ComponentDocLink[];
 
 export type ComponentDoc = (typeof componentDocs)[number];
