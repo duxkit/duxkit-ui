@@ -1,4 +1,4 @@
-import { Component, computed, inject } from '@angular/core';
+import { Component, computed, effect, inject } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { map } from 'rxjs';
@@ -15,6 +15,8 @@ import { DocsCodeTabs } from './docs-code-tabs.component';
 import { DocsTableOfContents } from './docs-table-of-contents.component';
 import { apiSymbolHeadingId, buildComponentDocsTableOfContents } from './docs-table-of-contents';
 import { type ComponentDocSlug, componentDocs, findComponentDoc } from './component-docs.registry';
+import { docsComponentRoutePath } from '../seo';
+import { SeoService } from '../seo.service';
 
 const packagePublished = false;
 
@@ -609,6 +611,7 @@ const attachmentPreviewExamples = [
 })
 export class ComponentDocPage {
   private readonly route = inject(ActivatedRoute);
+  private readonly seo = inject(SeoService);
   private readonly slug = toSignal(this.route.paramMap.pipe(map((params) => params.get('slug'))), {
     initialValue: 'conversation',
   });
@@ -625,6 +628,15 @@ export class ComponentDocPage {
     buildComponentDocsTableOfContents(this.apiMetadata()?.symbols ?? []),
   );
   protected readonly installSnippet = computed(() => 'pnpm add duxkit-ai');
+
+  constructor() {
+    effect(() => {
+      const doc = this.doc();
+      const slug = this.slug();
+
+      this.seo.setPath(doc ? docsComponentRoutePath(doc.slug) : `/docs/components/${slug ?? ''}`);
+    });
+  }
   protected readonly importSnippet = computed(() => {
     const doc = this.doc();
 

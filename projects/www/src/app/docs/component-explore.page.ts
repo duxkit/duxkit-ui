@@ -1,6 +1,7 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { componentDocs } from './component-docs.registry';
+import { SeoService } from '../seo.service';
 
 @Component({
   imports: [RouterLink],
@@ -487,6 +488,12 @@ import { componentDocs } from './component-docs.registry';
   `,
 })
 export class ComponentExplorePage {
+  private readonly seo = inject(SeoService);
+
+  constructor() {
+    this.seo.setPath('/docs/components');
+  }
+
   protected readonly componentGroups = [
     {
       title: 'Chatbot',

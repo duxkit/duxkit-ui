@@ -1,5 +1,5 @@
-import { NgOptimizedImage, DOCUMENT } from '@angular/common';
-import { Component, computed, inject, signal } from '@angular/core';
+import { isPlatformBrowser, NgOptimizedImage, DOCUMENT } from '@angular/common';
+import { Component, computed, inject, PLATFORM_ID, signal } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { lucideMoon, lucideSun } from '@ng-icons/lucide';
@@ -119,6 +119,7 @@ const themeStorageKey = 'duxkit-ui-theme';
 export class HeaderComponent {
   private readonly router = inject(Router);
   private readonly document = inject(DOCUMENT);
+  private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
 
   protected readonly searchState = signal<BrnDialogState>('closed');
   protected readonly searchQuery = signal('');
@@ -137,7 +138,9 @@ export class HeaderComponent {
     matchesDocsSearchText(value, search);
 
   constructor() {
-    this.applyTheme(this.theme());
+    if (this.isBrowser) {
+      this.applyTheme(this.theme());
+    }
   }
 
   protected openSearch(): void {
@@ -187,6 +190,10 @@ export class HeaderComponent {
   }
 
   private readInitialTheme(): ThemeMode {
+    if (!this.isBrowser) {
+      return 'light';
+    }
+
     const storedTheme = this.readStoredTheme();
 
     if (storedTheme) {
@@ -215,6 +222,10 @@ export class HeaderComponent {
   }
 
   private applyTheme(theme: ThemeMode): void {
+    if (!this.isBrowser) {
+      return;
+    }
+
     this.document.documentElement.dataset['theme'] = theme;
     this.document.documentElement.style.colorScheme = theme;
   }

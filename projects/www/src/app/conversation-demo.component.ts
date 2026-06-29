@@ -3,11 +3,13 @@ import {
   Component,
   ElementRef,
   OnDestroy,
+  PLATFORM_ID,
   WritableSignal,
   computed,
   inject,
   signal,
 } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 import {
   type AiAttachmentPart,
   type AiToolPart,
@@ -497,6 +499,7 @@ const notesSaveApprovedPart: AiToolPart = {
 })
 export class ConversationDemoComponent implements AfterViewInit, OnDestroy {
   private readonly elementRef = inject<ElementRef<HTMLElement>>(ElementRef);
+  private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
   private readonly timers: ReturnType<typeof globalThis.setTimeout>[] = [];
   private readonly intervals: ReturnType<typeof globalThis.setInterval>[] = [];
   private observer: IntersectionObserver | undefined;
@@ -542,6 +545,10 @@ export class ConversationDemoComponent implements AfterViewInit, OnDestroy {
   );
 
   ngAfterViewInit(): void {
+    if (!this.isBrowser) {
+      return;
+    }
+
     if (typeof IntersectionObserver === 'undefined') {
       this.startTimeline();
       return;

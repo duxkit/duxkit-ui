@@ -1,4 +1,4 @@
-import { Component, computed, signal } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { lucideCheck, lucideCopy } from '@ng-icons/lucide';
 import { RouterLink } from '@angular/router';
@@ -28,6 +28,7 @@ import {
 } from 'duxkit-ai';
 import { HlmButton } from '@duxkit/ui/helm/button';
 import { HlmIcon } from '@duxkit/ui/helm/icon';
+import { SeoService } from '../seo.service';
 
 @Component({
   imports: [
@@ -62,6 +63,8 @@ import { HlmIcon } from '@duxkit/ui/helm/icon';
   styleUrl: './home.page.scss',
 })
 export class HomePage {
+  private readonly seo = inject(SeoService);
+
   protected readonly installCommand = 'pnpm add duxkit-ai';
   protected readonly databaseToolPart: AiToolPart = {
     type: 'tool-database_query',
@@ -83,6 +86,10 @@ export class HomePage {
   protected readonly installCopyLabel = computed(() =>
     this.installCommandCopied() ? 'Copied install command' : 'Copy install command',
   );
+
+  constructor() {
+    this.seo.setPath('/');
+  }
 
   protected async copyInstallCommand(): Promise<void> {
     await globalThis.navigator?.clipboard?.writeText(this.installCommand);

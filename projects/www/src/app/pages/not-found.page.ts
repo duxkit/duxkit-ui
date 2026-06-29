@@ -1,7 +1,8 @@
 import { NgOptimizedImage } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { HlmButton } from '@duxkit/ui/helm/button';
+import { SeoService } from '../seo.service';
 
 @Component({
   imports: [HlmButton, NgOptimizedImage, RouterLink],
@@ -53,4 +54,10 @@ import { HlmButton } from '@duxkit/ui/helm/button';
     }
   `,
 })
-export class NotFoundPage {}
+export class NotFoundPage {
+  private readonly seo = inject(SeoService);
+
+  constructor() {
+    this.seo.setPath('/not-found');
+  }
+}

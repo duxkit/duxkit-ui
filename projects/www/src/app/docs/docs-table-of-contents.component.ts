@@ -1,5 +1,5 @@
-import { DOCUMENT } from '@angular/common';
-import { Component, computed, effect, inject, input, signal } from '@angular/core';
+import { DOCUMENT, isPlatformBrowser } from '@angular/common';
+import { Component, computed, effect, inject, input, PLATFORM_ID, signal } from '@angular/core';
 import {
   flattenDocsTableOfContentsItems,
   type DocsTableOfContentsItem,
@@ -124,6 +124,7 @@ import {
 })
 export class DocsTableOfContents {
   private readonly document = inject(DOCUMENT);
+  private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
   private frame: number | undefined;
 
   readonly items = input.required<readonly DocsTableOfContentsItem[]>();
@@ -145,6 +146,10 @@ export class DocsTableOfContents {
   }
 
   protected scheduleActiveUpdate(): void {
+    if (!this.isBrowser) {
+      return;
+    }
+
     if (this.frame !== undefined) {
       return;
     }
