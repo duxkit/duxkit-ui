@@ -625,8 +625,6 @@ h1 {
 
 .agent-demo-visual app-conversation-demo {
   display: block;
-  transform: rotate(-2deg) translateY(8px);
-  transform-origin: center top;
 }
 
 .agent-demo-visual .conversation-plane {
@@ -886,10 +884,6 @@ h1 {
   .agent-demo-visual {
     min-height: 244px;
     padding: 18px 18px 0;
-  }
-
-  .agent-demo-visual app-conversation-demo {
-    transform: rotate(-2deg) translateY(6px);
   }
 
   .agent-demo-visual .conversation-plane {

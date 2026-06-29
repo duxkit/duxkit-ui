@@ -45,16 +45,16 @@ import {
       <div class="conversation-plane h-[32rem] px-5 border-border border-gray-200 border rounded-xl">
         <ai-conversation [stickToBottom]="'auto'">
           <ai-conversation-content
-            class="[scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+            class="[scrollbar-width:none] [&::-webkit-scrollbar]:hidden space-y-4 py-3"
             aria-live="polite"
           >
-            <ai-message from="user" class="mt-3">
+            <ai-message from="user" class="message-enter-right">
               <ai-message-content
                 markdown="Can you help me plan a quiet weekend in Lisbon? I want a nice hotel, good food, and no tourist traps."
               />
             </ai-message>
 
-            <ai-message from="assistant">
+            <ai-message from="assistant" class="message-enter-left delay-1">
               <ai-message-content
                 markdown="Absolutely. I’ll compare quieter areas, keep food local, and ask before holding anything."
               />
@@ -63,6 +63,7 @@ import {
                 <button aiChainOfThoughtTrigger></button>
                 <ai-chain-of-thought-content>
                   <ai-chain-of-thought-step
+                    class="step-enter delay-2"
                     status="complete"
                     icon="lucideCircleCheck"
                     label="Understand the trip"
@@ -70,6 +71,7 @@ import {
                   />
 
                   <ai-chain-of-thought-step
+                    class="step-enter delay-3"
                     status="complete"
                     icon="lucideCircleCheck"
                     label="Compare neighborhoods"
@@ -83,15 +85,16 @@ import {
               </ai-chain-of-thought>
             </ai-message>
 
-            <ai-message from="user">
+            <ai-message from="user" class="message-enter-right delay-4">
               <ai-message-content markdown="Great. Can you also find somewhere nearby for dinner?" />
             </ai-message>
 
-            <ai-message from="assistant">
+            <ai-message from="assistant" class="message-enter-left delay-5">
               <ai-chain-of-thought [autoToggle]="false" [expanded]="true" [isStreaming]="false">
                 <button aiChainOfThoughtTrigger></button>
                 <ai-chain-of-thought-content>
                   <ai-chain-of-thought-step
+                    class="step-enter delay-6"
                     status="complete"
                     icon="lucideGlobe"
                     label="Search nearby dinner spots"
@@ -111,8 +114,13 @@ import {
               />
             </ai-message>
 
-            <ai-message from="assistant">
-              <ai-task [autoToggle]="false" [expanded]="true" [isStreaming]="false">
+            <ai-message from="assistant" class="message-enter-left delay-7">
+              <ai-task
+                class="step-enter delay-8"
+                [autoToggle]="false"
+                [expanded]="true"
+                [isStreaming]="false"
+              >
                 <button aiTaskTrigger>Update travel notes</button>
                 <ai-task-content>
                   <div aiTaskItem>
@@ -130,6 +138,88 @@ import {
         </ai-conversation>
       </div>
     </div>
+  `,
+  styles: `
+    .message-enter-left,
+    .message-enter-right,
+    .step-enter {
+      animation-duration: 260ms;
+      animation-fill-mode: both;
+      animation-timing-function: ease-out;
+    }
+
+    .message-enter-left,
+    .step-enter {
+      animation-name: message-enter-left;
+    }
+
+    .message-enter-right {
+      animation-name: message-enter-right;
+    }
+
+    .delay-1 {
+      animation-delay: 90ms;
+    }
+
+    .delay-2 {
+      animation-delay: 180ms;
+    }
+
+    .delay-3 {
+      animation-delay: 260ms;
+    }
+
+    .delay-4 {
+      animation-delay: 360ms;
+    }
+
+    .delay-5 {
+      animation-delay: 460ms;
+    }
+
+    .delay-6 {
+      animation-delay: 560ms;
+    }
+
+    .delay-7 {
+      animation-delay: 660ms;
+    }
+
+    .delay-8 {
+      animation-delay: 760ms;
+    }
+
+    @keyframes message-enter-left {
+      from {
+        opacity: 0;
+        transform: translateX(-12px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+
+    @keyframes message-enter-right {
+      from {
+        opacity: 0;
+        transform: translateX(12px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .message-enter-left,
+      .message-enter-right,
+      .step-enter {
+        animation: none;
+      }
+    }
   `,
 })
 export class ConversationDemoComponent {}
