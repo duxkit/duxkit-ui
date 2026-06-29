@@ -4,10 +4,11 @@ import { NgIcon, provideIcons } from '@ng-icons/core';
 import { lucideBrain, lucideChevronDown } from '@ng-icons/lucide';
 import { twMerge } from 'tailwind-merge';
 import { ChainOfThought } from './chain-of-thought';
+import { Shimmer } from '../shimmer';
 
 @Component({
   selector: 'button[aiChainOfThoughtTrigger],ai-chain-of-thought-trigger',
-  imports: [NgIcon],
+  imports: [NgIcon, Shimmer],
   providers: [provideIcons({ lucideBrain, lucideChevronDown })],
   hostDirectives: [{ directive: BrnCollapsibleTrigger, inputs: ['type'] }],
   host: {
@@ -16,9 +17,15 @@ import { ChainOfThought } from './chain-of-thought';
   },
   template: `
     <ng-icon name="lucideBrain" style="--ng-icon__size: 16px" />
-    <span class="min-w-0 truncate text-left">
-      <ng-content>{{ triggerLabel() }}</ng-content>
-    </span>
+    @if (chainOfThought.isStreaming()) {
+      <span aiShimmer class="min-w-0 truncate text-left">
+        <ng-content>{{ triggerLabel() }}</ng-content>
+      </span>
+    } @else {
+      <span class="min-w-0 truncate text-left">
+        <ng-content>{{ triggerLabel() }}</ng-content>
+      </span>
+    }
     <ng-icon
       name="lucideChevronDown"
       class="transition-transform"

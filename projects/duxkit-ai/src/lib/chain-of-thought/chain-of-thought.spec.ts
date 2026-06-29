@@ -148,6 +148,9 @@ describe('ChainOfThought', () => {
     await streamingFixture.whenStable();
 
     expect(streamingFixture.nativeElement.textContent).toContain('Thinking...');
+    expect(streamingFixture.nativeElement.querySelector('.ai-shimmer')?.textContent).toContain(
+      'Thinking...',
+    );
 
     vi.setSystemTime(6_500);
     streamingFixture.componentInstance.isStreaming.set(false);
@@ -155,6 +158,7 @@ describe('ChainOfThought', () => {
     await streamingFixture.whenStable();
 
     expect(streamingFixture.nativeElement.textContent).toContain('Thought for 6 seconds');
+    expect(streamingFixture.nativeElement.querySelector('.ai-shimmer')).toBeNull();
 
     vi.useRealTimers();
   });
