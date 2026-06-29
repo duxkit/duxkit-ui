@@ -15,3 +15,10 @@ export function reasoningSequenceStreaming(
 ): boolean {
   return visible && finalStepState !== 'complete';
 }
+
+export function visibleSearchSources(
+  sources: readonly string[],
+  visibleCount: number,
+): readonly string[] {
+  return sources.slice(0, Math.max(0, visibleCount));
+}

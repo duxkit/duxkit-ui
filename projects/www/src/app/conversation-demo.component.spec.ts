@@ -3,6 +3,7 @@ import {
   reasoningSequenceStreaming,
   reasoningStepStatus,
   revealConversationText,
+  visibleSearchSources,
 } from './conversation-demo-timeline';
 
 describe('conversation demo streaming text', () => {
@@ -27,5 +28,13 @@ describe('conversation demo streaming text', () => {
     expect(reasoningSequenceStreaming(true, 'hidden')).toBe(true);
     expect(reasoningSequenceStreaming(true, 'active')).toBe(true);
     expect(reasoningSequenceStreaming(true, 'complete')).toBe(false);
+  });
+
+  it('reveals search sources sequentially and clamps the visible count', () => {
+    const sources = ['Taberna Rua das Flores', 'Prado', 'O Velho Eurico'];
+
+    expect(visibleSearchSources(sources, -1)).toEqual([]);
+    expect(visibleSearchSources(sources, 1)).toEqual(['Taberna Rua das Flores']);
+    expect(visibleSearchSources(sources, 99)).toEqual(sources);
   });
 });

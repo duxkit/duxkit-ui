@@ -32,6 +32,7 @@ import {
   revealConversationText,
   reasoningSequenceStreaming,
   reasoningStepStatus,
+  visibleSearchSources,
 } from './conversation-demo-timeline';
 
 const introAssistantMessage =
@@ -43,6 +44,7 @@ const dinnerAssistantMessage =
 const travelNotesUserPrompt = 'That works. Can you add the hotel area and dinner picks to my travel notes?';
 const finalAssistantMessage =
   'Done — I added the neighborhood shortlist, hotel notes, and dinner picks to your travel notes so the plan is ready to refine.';
+const dinnerSearchSources = ['Taberna Rua das Flores', 'Prado', 'O Velho Eurico'] as const;
 
 @Component({
   imports: [
@@ -146,9 +148,15 @@ const finalAssistantMessage =
                         description="Find relaxed restaurants near Principe Real."
                       >
                         <ai-chain-of-thought-search-results>
-                          <span aiChainOfThoughtSearchResult>Taberna Rua das Flores</span>
-                          <span aiChainOfThoughtSearchResult>Prado</span>
-                          <span aiChainOfThoughtSearchResult>O Velho Eurico</span>
+                          @if (visibleDinnerSearchSources().length === 0) {
+                            <span class="search-source-loading text-muted-foreground">
+                              Loading sources...
+                            </span>
+                          }
+
+                          @for (source of visibleDinnerSearchSources(); track source) {
+                            <span aiChainOfThoughtSearchResult>{{ source }}</span>
+                          }
                         </ai-chain-of-thought-search-results>
                       </ai-chain-of-thought-step>
                     </ai-chain-of-thought-content>
@@ -250,6 +258,14 @@ const finalAssistantMessage =
       font-size: 13px;
       line-height: 1.45;
     }
+
+    .search-source-loading {
+      display: inline-flex;
+      align-items: center;
+      min-height: 22px;
+      font-size: 12px;
+      line-height: 1;
+    }
   `,
 })
 export class ConversationDemoComponent implements AfterViewInit, OnDestroy {
@@ -276,12 +292,16 @@ export class ConversationDemoComponent implements AfterViewInit, OnDestroy {
   protected readonly dinnerAssistantStreaming = signal(false);
   protected readonly finalAssistantStreaming = signal(false);
   protected readonly taskUpdateStreaming = signal(false);
+  protected readonly dinnerSearchSourceCount = signal(0);
   protected readonly introTripStep = signal<DemoReasoningStepState>('hidden');
   protected readonly introNeighborhoodStep = signal<DemoReasoningStepState>('hidden');
   protected readonly dinnerSearchStep = signal<DemoReasoningStepState>('hidden');
   protected readonly travelNotesUserMessage = travelNotesUserPrompt;
   protected readonly introReasoningStreaming = computed(() =>
     reasoningSequenceStreaming(this.showIntroReasoning(), this.introNeighborhoodStep()),
+  );
+  protected readonly visibleDinnerSearchSources = computed(() =>
+    visibleSearchSources(dinnerSearchSources, this.dinnerSearchSourceCount()),
   );
 
   ngAfterViewInit(): void {
@@ -350,6 +370,9 @@ export class ConversationDemoComponent implements AfterViewInit, OnDestroy {
               this.showDinnerSearch.set(true);
               this.dinnerSearchStep.set('active');
             });
+            this.schedule(2180, () => this.dinnerSearchSourceCount.set(1));
+            this.schedule(2860, () => this.dinnerSearchSourceCount.set(2));
+            this.schedule(3540, () => this.dinnerSearchSourceCount.set(3));
             this.schedule(4260, () => this.dinnerSearchStep.set('complete'));
             this.streamAssistantMessage({
               delay: 4620,
