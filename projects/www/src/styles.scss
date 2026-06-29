@@ -561,6 +561,195 @@ h1 {
   line-height: 1.5;
 }
 
+.agent-outcomes-section,
+.production-section {
+  width: min(100% - 48px, 1024px);
+  margin: 0 auto;
+}
+
+.agent-outcomes-section {
+  padding: 56px 48px;
+}
+
+.agent-outcomes-heading,
+.production-heading {
+  display: grid;
+  gap: 16px;
+  max-width: 720px;
+}
+
+.agent-outcomes-heading h2,
+.production-heading h2 {
+  font-size: clamp(2.25rem, 5vw, 3.5rem);
+  line-height: 1.06;
+  font-weight: 600;
+  letter-spacing: 0;
+}
+
+.agent-outcomes-heading p,
+.production-heading p {
+  font-size: 18px;
+  line-height: 1.6;
+}
+
+.agent-outcomes-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr);
+  gap: 18px;
+  margin-top: 36px;
+}
+
+.agent-outcome-card {
+  min-height: 164px;
+  display: grid;
+  align-content: start;
+  gap: 14px;
+  border-radius: 8px;
+  padding: 26px;
+  overflow: hidden;
+}
+
+.agent-outcome-card-large {
+  grid-row: span 3;
+  min-height: 528px;
+  align-content: space-between;
+  padding: 0;
+}
+
+.agent-workflow-visual {
+  min-height: 286px;
+  display: grid;
+  grid-template-columns: 56px minmax(0, 1fr);
+  gap: 20px;
+  padding: 34px;
+  background:
+    linear-gradient(180deg, rgb(from var(--muted) r g b / 42%), transparent 72%),
+    var(--background);
+}
+
+.agent-workflow-rail {
+  display: grid;
+  align-content: start;
+  gap: 12px;
+  padding-top: 12px;
+}
+
+.agent-workflow-rail span {
+  width: 34px;
+  height: 34px;
+  display: block;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--card);
+}
+
+.agent-workflow-rail span:nth-child(2) {
+  background: var(--primary);
+}
+
+.agent-workflow-panel {
+  align-self: start;
+  display: grid;
+  gap: 12px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 22px;
+  background: var(--card);
+  box-shadow: 0 18px 50px rgb(9 9 11 / 8%);
+  transform: rotate(-2deg);
+  transform-origin: center;
+}
+
+.agent-workflow-line,
+.agent-workflow-actions span {
+  display: block;
+  height: 10px;
+  border-radius: 999px;
+  background: #d4d4d8;
+}
+
+.agent-workflow-line.w-58 {
+  width: 58%;
+}
+
+.agent-workflow-line.w-72 {
+  width: 72%;
+}
+
+.agent-workflow-line.w-90 {
+  width: 90%;
+}
+
+.agent-workflow-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 18px;
+}
+
+.agent-workflow-actions span {
+  width: 72px;
+  height: 30px;
+  border-radius: 8px;
+  background: var(--muted);
+}
+
+.agent-workflow-actions span:last-child {
+  background: var(--primary);
+}
+
+.agent-outcome-copy {
+  display: grid;
+  gap: 12px;
+  padding: 0 30px 32px;
+}
+
+.agent-outcome-card h3,
+.production-list h3 {
+  margin: 0;
+  font-size: 22px;
+  line-height: 1.22;
+  font-weight: 650;
+  letter-spacing: 0;
+}
+
+.agent-outcome-card p,
+.production-list p {
+  margin: 0;
+  font-size: 16px;
+  line-height: 1.55;
+}
+
+.agent-outcome-index,
+.production-kicker {
+  font-size: 12px;
+  line-height: 1;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+}
+
+.production-section {
+  padding: 56px 48px 64px;
+}
+
+.production-list {
+  display: grid;
+  margin-top: 34px;
+  border-top: 1px solid var(--border);
+}
+
+.production-list article {
+  display: grid;
+  grid-template-columns: 180px minmax(0, 0.9fr) minmax(0, 1.1fr);
+  gap: 28px;
+  align-items: start;
+  border-bottom: 1px solid var(--border);
+  padding: 22px 0;
+}
+
+.production-list h3 {
+  font-size: 20px;
+}
+
 @mixin dark-site-theme {
   .site-header {
     border-bottom-color: #27272a;
@@ -609,6 +798,14 @@ h1 {
   .prompt-box p,
   .prompt-actions span {
     color: #a1a1aa;
+  }
+
+  .agent-workflow-line {
+    background: #3f3f46;
+  }
+
+  .agent-workflow-panel {
+    box-shadow: 0 18px 50px rgb(0 0 0 / 28%);
   }
 
   .search-trigger:hover,
@@ -662,7 +859,9 @@ h1 {
   }
 
   .feature-strip,
-  .showcase-section {
+  .showcase-section,
+  .agent-outcomes-section,
+  .production-section {
     width: min(100% - 32px, 720px);
   }
 
@@ -688,6 +887,29 @@ h1 {
   .showcase-section {
     padding: 40px 18px 48px;
   }
+
+  .agent-outcomes-section,
+  .production-section {
+    padding: 48px 24px;
+  }
+
+  .agent-outcomes-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .agent-outcome-card-large {
+    grid-row: auto;
+    min-height: 0;
+  }
+
+  .agent-workflow-visual {
+    min-height: 260px;
+  }
+
+  .production-list article {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 12px;
+  }
 }
 
 @media (max-width: 640px) {
@@ -711,5 +933,60 @@ h1 {
 
   .feature-strip article {
     padding: 32px 24px;
+  }
+
+  .agent-outcomes-heading p,
+  .production-heading p {
+    font-size: 16px;
+  }
+
+  .agent-outcomes-heading h2,
+  .production-heading h2 {
+    font-size: 2rem;
+    line-height: 1.08;
+  }
+
+  .agent-outcomes-grid {
+    gap: 12px;
+    margin-top: 28px;
+  }
+
+  .agent-workflow-visual {
+    grid-template-columns: 42px minmax(0, 1fr);
+    gap: 14px;
+    min-height: 172px;
+    padding: 18px;
+  }
+
+  .agent-workflow-rail span {
+    width: 28px;
+    height: 28px;
+  }
+
+  .agent-workflow-panel {
+    padding: 18px;
+  }
+
+  .agent-outcome-copy,
+  .agent-outcome-card {
+    padding: 20px;
+  }
+
+  .agent-outcome-card h3,
+  .production-list h3 {
+    font-size: 19px;
+  }
+
+  .agent-outcome-card p,
+  .production-list p {
+    font-size: 15px;
+  }
+
+  .production-list {
+    margin-top: 28px;
+  }
+
+  .production-list article {
+    padding: 18px 0;
   }
 }
