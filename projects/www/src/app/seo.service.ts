@@ -3,7 +3,10 @@ import { inject, Injectable } from '@angular/core';
 import { Meta, Title } from '@angular/platform-browser';
 import {
   absoluteUrl,
+  defaultOgImageAlt,
+  defaultOgImageHeight,
   defaultOgImagePath,
+  defaultOgImageWidth,
   getSeoPage,
   type SeoPage,
   siteName,
@@ -29,10 +32,14 @@ export class SeoService {
     this.setMetaTag('property', 'og:description', page.description);
     this.setMetaTag('property', 'og:url', page.canonicalUrl);
     this.setMetaTag('property', 'og:image', absoluteUrl(defaultOgImagePath));
+    this.setMetaTag('property', 'og:image:width', String(defaultOgImageWidth));
+    this.setMetaTag('property', 'og:image:height', String(defaultOgImageHeight));
+    this.setMetaTag('property', 'og:image:alt', defaultOgImageAlt);
     this.setMetaTag('name', 'twitter:card', 'summary_large_image');
     this.setMetaTag('name', 'twitter:title', page.title);
     this.setMetaTag('name', 'twitter:description', page.description);
     this.setMetaTag('name', 'twitter:image', absoluteUrl(defaultOgImagePath));
+    this.setMetaTag('name', 'twitter:image:alt', defaultOgImageAlt);
     this.setCanonical(page.canonicalUrl);
     this.setJsonLd(page.jsonLd);
   }

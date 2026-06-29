@@ -5,18 +5,11 @@ import { RouterLink } from '@angular/router';
 import { ConversationDemoComponent } from '../conversation-demo.component';
 import {
   type AiToolPart,
-  ChainOfThought,
-  ChainOfThoughtContent,
-  ChainOfThoughtSearchResult,
-  ChainOfThoughtSearchResults,
-  ChainOfThoughtStep,
-  ChainOfThoughtTrigger,
   Conversation,
   ConversationContent,
   ConversationScrollAnchor,
   Message,
   MessageContent,
-  ReasoningContent,
   Task,
   TaskContent,
   TaskItem,
@@ -32,12 +25,6 @@ import { SeoService } from '../seo.service';
 
 @Component({
   imports: [
-    ChainOfThought,
-    ChainOfThoughtContent,
-    ChainOfThoughtSearchResult,
-    ChainOfThoughtSearchResults,
-    ChainOfThoughtStep,
-    ChainOfThoughtTrigger,
     Conversation,
     ConversationDemoComponent,
     ConversationContent,
@@ -47,7 +34,6 @@ import { SeoService } from '../seo.service';
     Message,
     MessageContent,
     NgIcon,
-    ReasoningContent,
     Task,
     TaskContent,
     TaskItem,

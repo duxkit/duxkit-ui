@@ -2,7 +2,10 @@ import { componentDocs, findComponentDoc, type ComponentDocSlug } from './docs/c
 
 export const siteName = 'Duxkit UI';
 export const siteOrigin = 'https://duxkit.com';
-export const defaultOgImagePath = '/duxkit_logo.png';
+export const defaultOgImagePath = '/og-image.png';
+export const defaultOgImageWidth = 1200;
+export const defaultOgImageHeight = 630;
+export const defaultOgImageAlt = 'Duxkit UI: Angular AI SDK primitives.';
 
 export interface SeoPage {
   readonly title: string;
@@ -29,7 +32,7 @@ export function getSeoPage(path: string): SeoPage {
       canonicalPath: '/',
       title: 'Duxkit UI - Angular primitives for AI SDK interfaces',
       description:
-        'Duxkit UI provides Angular primitives for AI SDK chat, agent workflows, tool calls, reasoning, approvals, and generated output.',
+        'Angular primitives for AI SDK chat, agent workflows, tool calls, reasoning, approvals, and generated output.',
       jsonLd: [websiteJsonLd(), softwareSourceCodeJsonLd()],
     });
   }
@@ -39,7 +42,7 @@ export function getSeoPage(path: string): SeoPage {
       canonicalPath: '/docs/components',
       title: 'Angular AI Components - Duxkit UI',
       description:
-        'Explore Duxkit UI component primitives for building Angular AI SDK interfaces, chat surfaces, agent workflows, and generated output.',
+        'Explore Angular AI primitives for chat, agent workflows, generated output, and AI SDK interfaces.',
       jsonLd: [breadcrumbJsonLd([{ name: 'Components', path: '/docs/components' }])],
     });
   }
@@ -53,7 +56,7 @@ export function getSeoPage(path: string): SeoPage {
     return buildSeoPage({
       canonicalPath,
       title: `${componentDoc.title} Component - Duxkit UI`,
-      description: `${componentDoc.description} Learn the Angular selectors, API, anatomy, and examples for the ${componentDoc.title} primitive.`,
+      description: `Angular ${componentDoc.title} primitive for AI SDK interfaces. ${componentDoc.description}`,
       jsonLd: [
         breadcrumbJsonLd([
           { name: 'Components', path: '/docs/components' },

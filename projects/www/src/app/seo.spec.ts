@@ -5,6 +5,10 @@ import { componentDocs } from './docs/component-docs.registry';
 import {
   buildRobotsTxt,
   buildSitemapXml,
+  defaultOgImageAlt,
+  defaultOgImageHeight,
+  defaultOgImagePath,
+  defaultOgImageWidth,
   docsComponentRoutePath,
   getSeoPage,
   siteOrigin,
@@ -41,6 +45,24 @@ describe('www SEO configuration', () => {
     expect(getSeoPage('/docs/components/conversation').canonicalUrl).toBe(
       `${siteOrigin}/docs/components/conversation`,
     );
+  });
+
+  it('uses a social preview image with the expected large-card dimensions', () => {
+    const publicRoot = join(import.meta.dirname, '../../public');
+    const ogImage = readFileSync(join(publicRoot, defaultOgImagePath.slice(1)));
+
+    expect(defaultOgImagePath).toBe('/og-image.png');
+    expect(defaultOgImageAlt).toBe('Duxkit UI: Angular AI SDK primitives.');
+    expect(ogImage.readUInt32BE(16)).toBe(defaultOgImageWidth);
+    expect(ogImage.readUInt32BE(20)).toBe(defaultOgImageHeight);
+    expect(defaultOgImageWidth).toBe(1200);
+    expect(defaultOgImageHeight).toBe(630);
+  });
+
+  it('keeps social descriptions short enough for preview cards', () => {
+    for (const route of staticSeoRoutes) {
+      expect(getSeoPage(route).description.length).toBeLessThanOrEqual(125);
+    }
   });
 
   it('builds crawl assets from the same route inventory', () => {
