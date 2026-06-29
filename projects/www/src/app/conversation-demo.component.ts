@@ -326,11 +326,11 @@ export class ConversationDemoComponent implements AfterViewInit, OnDestroy {
           this.showIntroReasoning.set(true);
           this.introTripStep.set('active');
         });
-        this.schedule(880, () => this.introTripStep.set('complete'));
-        this.schedule(1080, () => this.introNeighborhoodStep.set('active'));
-        this.schedule(1820, () => this.introNeighborhoodStep.set('complete'));
+        this.schedule(1450, () => this.introTripStep.set('complete'));
+        this.schedule(1700, () => this.introNeighborhoodStep.set('active'));
+        this.schedule(3200, () => this.introNeighborhoodStep.set('complete'));
         this.streamAssistantMessage({
-          delay: 2220,
+          delay: 3650,
           target: this.introPlanMarkdown,
           text: introPlanMessage,
           streaming: this.introPlanStreaming,
@@ -341,9 +341,9 @@ export class ConversationDemoComponent implements AfterViewInit, OnDestroy {
               this.showDinnerSearch.set(true);
               this.dinnerSearchStep.set('active');
             });
-            this.schedule(2260, () => this.dinnerSearchStep.set('complete'));
+            this.schedule(4260, () => this.dinnerSearchStep.set('complete'));
             this.streamAssistantMessage({
-              delay: 2520,
+              delay: 4620,
               target: this.dinnerAssistantMarkdown,
               text: dinnerAssistantMessage,
               streaming: this.dinnerAssistantStreaming,
