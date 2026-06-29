@@ -35,6 +35,8 @@ import {
 
 const introAssistantMessage =
   'Absolutely. I’ll compare quieter areas, keep food local, and ask before holding anything.';
+const introPlanMessage =
+  'I’d start with Príncipe Real or Estrela: both stay calm, have strong restaurants nearby, and make it easy to pick a comfortable hotel without being in the busiest tourist streets.';
 const dinnerAssistantMessage =
   'I found a nearby option that fits: a small Portuguese restaurant about 8 minutes away, with petiscos, grilled fish, and a quieter late seating.';
 
@@ -108,6 +110,10 @@ const dinnerAssistantMessage =
                       }
                     </ai-chain-of-thought-content>
                   </ai-chain-of-thought>
+                }
+
+                @if (introPlanMarkdown()) {
+                  <ai-message-content [markdown]="introPlanMarkdown()" />
                 }
               </ai-message>
             }
@@ -239,8 +245,10 @@ export class ConversationDemoComponent implements AfterViewInit, OnDestroy {
   protected readonly showDinnerSearch = signal(false);
   protected readonly showTaskUpdate = signal(false);
   protected readonly introAssistantMarkdown = signal('');
+  protected readonly introPlanMarkdown = signal('');
   protected readonly dinnerAssistantMarkdown = signal('');
   protected readonly introAssistantStreaming = signal(false);
+  protected readonly introPlanStreaming = signal(false);
   protected readonly dinnerAssistantStreaming = signal(false);
   protected readonly taskUpdateStreaming = signal(false);
   protected readonly introTripStep = signal<DemoReasoningStepState>('hidden');
@@ -304,24 +312,32 @@ export class ConversationDemoComponent implements AfterViewInit, OnDestroy {
         this.schedule(880, () => this.introTripStep.set('complete'));
         this.schedule(1080, () => this.introNeighborhoodStep.set('active'));
         this.schedule(1820, () => this.introNeighborhoodStep.set('complete'));
-        this.schedule(2480, () => this.showDinnerUser.set(true));
-        this.schedule(3220, () => {
-          this.showDinnerAssistant.set(true);
-          this.showDinnerSearch.set(true);
-          this.dinnerSearchStep.set('active');
-        });
-        this.schedule(4020, () => this.dinnerSearchStep.set('complete'));
         this.streamAssistantMessage({
-          delay: 4280,
-          target: this.dinnerAssistantMarkdown,
-          text: dinnerAssistantMessage,
-          streaming: this.dinnerAssistantStreaming,
+          delay: 2220,
+          target: this.introPlanMarkdown,
+          text: introPlanMessage,
+          streaming: this.introPlanStreaming,
           afterComplete: () => {
-            this.schedule(520, () => {
-              this.showTaskUpdate.set(true);
-              this.taskUpdateStreaming.set(true);
+            this.schedule(720, () => this.showDinnerUser.set(true));
+            this.schedule(1460, () => {
+              this.showDinnerAssistant.set(true);
+              this.showDinnerSearch.set(true);
+              this.dinnerSearchStep.set('active');
             });
-            this.schedule(1800, () => this.taskUpdateStreaming.set(false));
+            this.schedule(2260, () => this.dinnerSearchStep.set('complete'));
+            this.streamAssistantMessage({
+              delay: 2520,
+              target: this.dinnerAssistantMarkdown,
+              text: dinnerAssistantMessage,
+              streaming: this.dinnerAssistantStreaming,
+              afterComplete: () => {
+                this.schedule(520, () => {
+                  this.showTaskUpdate.set(true);
+                  this.taskUpdateStreaming.set(true);
+                });
+                this.schedule(1800, () => this.taskUpdateStreaming.set(false));
+              },
+            });
           },
         });
       },
