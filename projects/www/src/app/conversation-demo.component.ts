@@ -48,13 +48,13 @@ import {
             class="[scrollbar-width:none] [&::-webkit-scrollbar]:hidden space-y-4 py-3"
             aria-live="polite"
           >
-            <ai-message from="user" class="message-enter-right">
+            <ai-message from="user" animate.enter="message-enter-right">
               <ai-message-content
                 markdown="Can you help me plan a quiet weekend in Lisbon? I want a nice hotel, good food, and no tourist traps."
               />
             </ai-message>
 
-            <ai-message from="assistant" class="message-enter-left delay-1">
+            <ai-message from="assistant" animate.enter="message-enter-left delay-1">
               <ai-message-content
                 markdown="Absolutely. I’ll compare quieter areas, keep food local, and ask before holding anything."
               />
@@ -63,7 +63,7 @@ import {
                 <button aiChainOfThoughtTrigger></button>
                 <ai-chain-of-thought-content>
                   <ai-chain-of-thought-step
-                    class="step-enter delay-2"
+                    animate.enter="step-enter delay-2"
                     status="complete"
                     icon="lucideCircleCheck"
                     label="Understand the trip"
@@ -71,7 +71,7 @@ import {
                   />
 
                   <ai-chain-of-thought-step
-                    class="step-enter delay-3"
+                    animate.enter="step-enter delay-3"
                     status="complete"
                     icon="lucideCircleCheck"
                     label="Compare neighborhoods"
@@ -85,16 +85,16 @@ import {
               </ai-chain-of-thought>
             </ai-message>
 
-            <ai-message from="user" class="message-enter-right delay-4">
+            <ai-message from="user" animate.enter="message-enter-right delay-4">
               <ai-message-content markdown="Great. Can you also find somewhere nearby for dinner?" />
             </ai-message>
 
-            <ai-message from="assistant" class="message-enter-left delay-5">
+            <ai-message from="assistant" animate.enter="message-enter-left delay-5">
               <ai-chain-of-thought [autoToggle]="false" [expanded]="true" [isStreaming]="false">
                 <button aiChainOfThoughtTrigger></button>
                 <ai-chain-of-thought-content>
                   <ai-chain-of-thought-step
-                    class="step-enter delay-6"
+                    animate.enter="step-enter delay-6"
                     status="complete"
                     icon="lucideGlobe"
                     label="Search nearby dinner spots"
@@ -114,9 +114,9 @@ import {
               />
             </ai-message>
 
-            <ai-message from="assistant" class="message-enter-left delay-7">
+            <ai-message from="assistant" animate.enter="message-enter-left delay-7">
               <ai-task
-                class="step-enter delay-8"
+                animate.enter="step-enter delay-8"
                 [autoToggle]="false"
                 [expanded]="true"
                 [isStreaming]="false"
