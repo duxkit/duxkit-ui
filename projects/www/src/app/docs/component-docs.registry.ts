@@ -16,6 +16,11 @@ export const componentDocs = [
     description: 'Role-aware message primitives for user, assistant, and system output.',
   },
   {
+    slug: 'checkpoint',
+    title: 'Checkpoint',
+    description: 'Conversation restore point primitive for reverting to earlier chat state.',
+  },
+  {
     slug: 'attachment',
     title: 'Attachment',
     description: 'Composable file and source-document previews for AI SDK message parts.',

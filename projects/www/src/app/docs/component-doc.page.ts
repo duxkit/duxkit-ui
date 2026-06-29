@@ -20,6 +20,7 @@ const componentImports: Record<ComponentDocSlug, string> = {
   conversation:
     "import { Conversation, ConversationContent, ConversationScrollAnchor } from 'duxkit-ai';",
   message: "import { Message, MessageContent } from 'duxkit-ai';",
+  checkpoint: "import { Checkpoint, CheckpointIcon, CheckpointTrigger } from 'duxkit-ai';",
   attachment:
     "import { Attachment, AttachmentPreview, AttachmentRemove, Attachments } from 'duxkit-ai';",
   'chain-of-thought':
@@ -45,6 +46,10 @@ const anatomySnippets: Record<ComponentDocSlug, string> = {
   message: `<ai-message from="assistant">
   <ai-message-content markdown="Message content supports markdown." />
 </ai-message>`,
+  checkpoint: `<ai-checkpoint>
+  <ai-checkpoint-icon />
+  <button aiCheckpointTrigger>Restore checkpoint</button>
+</ai-checkpoint>`,
   attachment: `<ai-attachments variant="grid">
   @for (attachment of attachments; track attachmentKey(attachment)) {
     <ai-attachment [data]="attachment" (removed)="removeAttachment(attachment)">

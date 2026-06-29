@@ -252,6 +252,92 @@ export const componentApiMetadata = {
       },
     ],
   },
+  checkpoint: {
+    selectors: [
+      'ai-checkpoint',
+      '[aiCheckpoint]',
+      'button[aiCheckpointTrigger]',
+      'ai-checkpoint-trigger',
+      'ai-checkpoint-icon',
+      '[aiCheckpointIcon]',
+    ],
+    exports: ['Checkpoint', 'CheckpointTrigger', 'CheckpointIcon'],
+    inputs: ['class', 'ariaLabel', 'disabled'],
+    outputs: ['checkpointRestore'],
+    sourcePaths: [
+      'projects/duxkit-ai/src/lib/checkpoint/checkpoint.ts',
+      'projects/duxkit-ai/src/lib/checkpoint/checkpoint-trigger.ts',
+      'projects/duxkit-ai/src/lib/checkpoint/checkpoint-icon.ts',
+    ],
+    symbols: [
+      {
+        name: 'Checkpoint',
+        selectors: ['ai-checkpoint', '[aiCheckpoint]'],
+        inputs: [
+          {
+            name: 'class',
+            type: 'string | undefined',
+            defaultValue: 'undefined',
+            required: false,
+            description: 'Additional classes merged onto the checkpoint row.',
+          },
+        ],
+        outputs: [],
+        sourcePath: 'projects/duxkit-ai/src/lib/checkpoint/checkpoint.ts',
+      },
+      {
+        name: 'CheckpointTrigger',
+        selectors: ['button[aiCheckpointTrigger]', 'ai-checkpoint-trigger'],
+        inputs: [
+          {
+            name: 'ariaLabel',
+            type: 'string | undefined',
+            defaultValue: 'undefined',
+            required: false,
+            description:
+              'Accessible label for the restore trigger when visible text is not enough.',
+          },
+          {
+            name: 'disabled',
+            type: 'boolean',
+            defaultValue: 'false',
+            required: false,
+            description: 'Whether the restore trigger is disabled.',
+          },
+          {
+            name: 'class',
+            type: 'string | undefined',
+            defaultValue: 'undefined',
+            required: false,
+            description: 'Additional classes merged onto the checkpoint trigger.',
+          },
+        ],
+        outputs: [
+          {
+            name: 'checkpointRestore',
+            type: 'void',
+            description: 'Emits when the checkpoint restore trigger is pressed.',
+          },
+        ],
+        sourcePath: 'projects/duxkit-ai/src/lib/checkpoint/checkpoint-trigger.ts',
+      },
+      {
+        name: 'CheckpointIcon',
+        selectors: ['ai-checkpoint-icon', '[aiCheckpointIcon]'],
+        inputs: [
+          {
+            name: 'class',
+            type: 'string | undefined',
+            defaultValue: 'undefined',
+            required: false,
+            description: 'Additional classes merged onto the checkpoint icon.',
+          },
+        ],
+        outputs: [],
+        sourcePath: 'projects/duxkit-ai/src/lib/checkpoint/checkpoint-icon.ts',
+      },
+    ],
+  },
   attachment: {
     selectors: [
       '[aiAttachment]',

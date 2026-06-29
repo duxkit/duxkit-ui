@@ -15,6 +15,9 @@ import {
   ChainOfThoughtSearchResults,
   ChainOfThoughtStep,
   ChainOfThoughtTrigger,
+  Checkpoint,
+  CheckpointIcon,
+  CheckpointTrigger,
   CodeBlock,
   Confirmation,
   ConfirmationAction,
@@ -74,6 +77,18 @@ export const componentPreviewSnippets: Record<ComponentDocSlug, string> = {
     </ai-message-actions>
   </ai-message>
 </div>`,
+  checkpoint: `<ai-checkpoint class="w-[720px]">
+  <ai-checkpoint-icon />
+  <button
+    aiCheckpointTrigger
+    hlmBtn
+    variant="ghost"
+    size="sm"
+    ariaLabel="Restore to this checkpoint"
+  >
+    Restore checkpoint
+  </button>
+</ai-checkpoint>`,
   attachment: `<ai-attachments class="w-[640px]" variant="grid">
   @for (attachment of attachmentParts; track attachmentKey(attachment)) {
     <ai-attachment [data]="attachment">
@@ -229,6 +244,9 @@ export const attachmentPreviewSnippets: Record<AttachmentsVariant, string> = {
     ChainOfThoughtSearchResults,
     ChainOfThoughtStep,
     ChainOfThoughtTrigger,
+    Checkpoint,
+    CheckpointIcon,
+    CheckpointTrigger,
     CodeBlock,
     Confirmation,
     ConfirmationAction,
@@ -292,6 +310,21 @@ export const attachmentPreviewSnippets: Record<AttachmentsVariant, string> = {
             </ai-message-actions>
           </ai-message>
         </div>
+      }
+
+      @case ('checkpoint') {
+        <ai-checkpoint class="w-[720px]">
+          <ai-checkpoint-icon />
+          <button
+            aiCheckpointTrigger
+            hlmBtn
+            variant="ghost"
+            size="sm"
+            ariaLabel="Restore to this checkpoint"
+          >
+            Restore checkpoint
+          </button>
+        </ai-checkpoint>
       }
 
       @case ('attachment') {

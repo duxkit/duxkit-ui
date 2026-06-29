@@ -17,6 +17,17 @@ describe('docs search', () => {
     expect(searchComponentDocs('MessageActionsThumbsUp').map((item) => item.slug)).toContain(
       'message',
     );
+    expect(searchComponentDocs('checkpoint').map((item) => item.slug)).toContain('checkpoint');
+    expect(searchComponentDocs('ai-checkpoint').map((item) => item.slug)).toContain('checkpoint');
+    expect(searchComponentDocs('CheckpointTrigger').map((item) => item.slug)).toContain(
+      'checkpoint',
+    );
+    expect(searchComponentDocs('checkpointRestore').map((item) => item.slug)).toContain(
+      'checkpoint',
+    );
+    expect(searchComponentDocs('restore trigger is pressed').map((item) => item.slug)).toContain(
+      'checkpoint',
+    );
     expect(searchComponentDocs('ReasoningContent').map((item) => item.slug)).toContain('reasoning');
     expect(searchComponentDocs('collapsedMaxHeight').map((item) => item.slug)).toEqual(
       expect.arrayContaining(['reasoning', 'chain-of-thought']),
