@@ -86,7 +86,11 @@ const dinnerSearchSources = ['Taberna Rua das Flores', 'Prado', 'O Velho Eurico'
             @if (showIntroAssistant()) {
               <ai-message from="assistant" animate.enter="message-enter-left">
                 <ai-message-content [markdown]="introAssistantMarkdown()" />
+              </ai-message>
+            }
 
+            @if (showIntroPlanAssistant()) {
+              <ai-message from="assistant" animate.enter="message-enter-left">
                 @if (showIntroReasoning()) {
                   <ai-chain-of-thought
                     [isStreaming]="introReasoningStreaming()"
@@ -277,6 +281,7 @@ export class ConversationDemoComponent implements AfterViewInit, OnDestroy {
 
   protected readonly showInitialUser = signal(false);
   protected readonly showIntroAssistant = signal(false);
+  protected readonly showIntroPlanAssistant = signal(false);
   protected readonly showIntroReasoning = signal(false);
   protected readonly showDinnerUser = signal(false);
   protected readonly showDinnerAssistant = signal(false);
@@ -352,6 +357,7 @@ export class ConversationDemoComponent implements AfterViewInit, OnDestroy {
       beforeStart: () => this.showIntroAssistant.set(true),
       afterComplete: () => {
         this.schedule(260, () => {
+          this.showIntroPlanAssistant.set(true);
           this.showIntroReasoning.set(true);
           this.introTripStep.set('active');
         });
