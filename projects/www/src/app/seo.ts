@@ -1,7 +1,7 @@
 import { componentDocs, findComponentDoc, type ComponentDocSlug } from './docs/component-docs.registry';
 
 export const siteName = 'Duxkit UI';
-export const siteOrigin = 'https://duxkit.pages.dev';
+export const siteOrigin = 'https://duxkit.com';
 export const defaultOgImagePath = '/duxkit_logo.png';
 
 export interface SeoPage {

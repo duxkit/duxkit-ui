@@ -1,77 +1,77 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://duxkit.pages.dev</loc>
+    <loc>https://duxkit.com</loc>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>https://duxkit.pages.dev/docs/components</loc>
+    <loc>https://duxkit.com/docs/components</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://duxkit.pages.dev/docs/components/conversation</loc>
+    <loc>https://duxkit.com/docs/components/conversation</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://duxkit.pages.dev/docs/components/message</loc>
+    <loc>https://duxkit.com/docs/components/message</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://duxkit.pages.dev/docs/components/checkpoint</loc>
+    <loc>https://duxkit.com/docs/components/checkpoint</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://duxkit.pages.dev/docs/components/context</loc>
+    <loc>https://duxkit.com/docs/components/context</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://duxkit.pages.dev/docs/components/attachment</loc>
+    <loc>https://duxkit.com/docs/components/attachment</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://duxkit.pages.dev/docs/components/chain-of-thought</loc>
+    <loc>https://duxkit.com/docs/components/chain-of-thought</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://duxkit.pages.dev/docs/components/task</loc>
+    <loc>https://duxkit.com/docs/components/task</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://duxkit.pages.dev/docs/components/tool</loc>
+    <loc>https://duxkit.com/docs/components/tool</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://duxkit.pages.dev/docs/components/reasoning</loc>
+    <loc>https://duxkit.com/docs/components/reasoning</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://duxkit.pages.dev/docs/components/sources</loc>
+    <loc>https://duxkit.com/docs/components/sources</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://duxkit.pages.dev/docs/components/confirmation</loc>
+    <loc>https://duxkit.com/docs/components/confirmation</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://duxkit.pages.dev/docs/components/code-block</loc>
+    <loc>https://duxkit.com/docs/components/code-block</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://duxkit.pages.dev/docs/components/shimmer</loc>
+    <loc>https://duxkit.com/docs/components/shimmer</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
