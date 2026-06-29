@@ -594,7 +594,7 @@ h1 {
 
 .agent-outcomes-grid {
   display: grid;
-  grid-template-columns: minmax(0, 1fr);
+  grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr);
   gap: 18px;
   margin-top: 36px;
 }
@@ -610,6 +610,7 @@ h1 {
 }
 
 .agent-outcome-card-large {
+  grid-row: span 3;
   min-height: 528px;
   align-content: space-between;
   padding: 0;
@@ -641,7 +642,6 @@ h1 {
 }
 
 .agent-outcome-card h3,
-.agent-outcome-blocks h3,
 .production-list h3 {
   margin: 0;
   font-size: 22px;
@@ -651,35 +651,18 @@ h1 {
 }
 
 .agent-outcome-card p,
-.agent-outcome-blocks p,
 .production-list p {
   margin: 0;
   font-size: 16px;
   line-height: 1.55;
 }
 
+.agent-outcome-index,
 .production-kicker {
   font-size: 12px;
   line-height: 1;
   font-weight: 700;
   letter-spacing: 0.08em;
-}
-
-.agent-outcome-blocks {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-}
-
-.agent-outcome-blocks article {
-  min-height: 196px;
-  display: grid;
-  align-content: start;
-  gap: 14px;
-  padding: 28px 26px;
-}
-
-.agent-outcome-blocks article + article {
-  border-left: 1px solid var(--border);
 }
 
 .production-section {
@@ -845,16 +828,8 @@ h1 {
   }
 
   .agent-outcome-card-large {
+    grid-row: auto;
     min-height: 0;
-  }
-
-  .agent-outcome-blocks {
-    grid-template-columns: minmax(0, 1fr);
-  }
-
-  .agent-outcome-blocks article + article {
-    border-top: 1px solid var(--border);
-    border-left: 0;
   }
 
   .agent-demo-visual {
@@ -917,19 +892,16 @@ h1 {
   }
 
   .agent-outcome-copy,
-  .agent-outcome-card,
-  .agent-outcome-blocks article {
+  .agent-outcome-card {
     padding: 20px;
   }
 
   .agent-outcome-card h3,
-  .agent-outcome-blocks h3,
   .production-list h3 {
     font-size: 19px;
   }
 
   .agent-outcome-card p,
-  .agent-outcome-blocks p,
   .production-list p {
     font-size: 15px;
   }
