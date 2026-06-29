@@ -26,6 +26,11 @@ export const componentDocs = [
     description: 'Context window usage, token breakdown, and model cost estimate primitives.',
   },
   {
+    slug: 'model-selector',
+    title: 'Model Selector',
+    description: 'Searchable provider-grouped model picker for AI model selection.',
+  },
+  {
     slug: 'attachment',
     title: 'Attachment',
     description: 'Composable file and source-document previews for AI SDK message parts.',

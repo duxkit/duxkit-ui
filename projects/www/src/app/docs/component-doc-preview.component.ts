@@ -44,6 +44,17 @@ import {
   MessageActions,
   MessageActionsCopy,
   MessageContent,
+  ModelSelector,
+  ModelSelectorContent,
+  ModelSelectorEmpty,
+  ModelSelectorGroup,
+  ModelSelectorInput,
+  ModelSelectorItem,
+  ModelSelectorList,
+  ModelSelectorLogo,
+  ModelSelectorName,
+  ModelSelectorShortcut,
+  ModelSelectorTrigger,
   Reasoning,
   ReasoningContent,
   ReasoningTrigger,
@@ -60,6 +71,9 @@ import {
   Tool,
   ToolContent,
   ToolTrigger,
+  createModelSelectorSearchValue,
+  groupModelSelectorModels,
+  type ModelSelectorModel,
 } from 'duxkit-ai';
 import { type ComponentDocSlug } from './component-docs.registry';
 
@@ -119,6 +133,31 @@ export const componentPreviewSnippets: Record<ComponentDocSlug, string> = {
     <ai-context-content-footer />
   </ai-context-content>
 </ai-context>`,
+  'model-selector': `<ai-model-selector class="w-[min(92vw,520px)]">
+  <button aiModelSelectorTrigger hlmBtn class="justify-between" variant="outline">
+    <ai-model-selector-logo provider="openai" />
+    <ai-model-selector-name>GPT-4.1</ai-model-selector-name>
+  </button>
+  <ai-model-selector-content>
+    <ai-model-selector-input placeholder="Search models..." />
+    <ai-model-selector-list>
+      <ai-model-selector-empty>No models found.</ai-model-selector-empty>
+      @for (group of modelSelectorGroups; track group.provider) {
+        <ai-model-selector-group [heading]="group.heading">
+          @for (model of group.models; track model.id) {
+            <button aiModelSelectorItem [value]="modelSelectorSearchValue(model)">
+              <ai-model-selector-logo [provider]="model.providerSlug ?? model.provider" />
+              <ai-model-selector-name>{{ model.name }}</ai-model-selector-name>
+              @if (model.shortcut; as shortcut) {
+                <ai-model-selector-shortcut>{{ shortcut }}</ai-model-selector-shortcut>
+              }
+            </button>
+          }
+        </ai-model-selector-group>
+      }
+    </ai-model-selector-list>
+  </ai-model-selector-content>
+</ai-model-selector>`,
   attachment: `<ai-attachments class="w-[640px]" variant="grid">
   @for (attachment of attachmentParts; track attachmentKey(attachment)) {
     <ai-attachment [data]="attachment">
@@ -306,6 +345,17 @@ export const attachmentPreviewSnippets: Record<AttachmentsVariant, string> = {
     MessageActions,
     MessageActionsCopy,
     MessageContent,
+    ModelSelector,
+    ModelSelectorContent,
+    ModelSelectorEmpty,
+    ModelSelectorGroup,
+    ModelSelectorInput,
+    ModelSelectorItem,
+    ModelSelectorList,
+    ModelSelectorLogo,
+    ModelSelectorName,
+    ModelSelectorShortcut,
+    ModelSelectorTrigger,
     Reasoning,
     ReasoningContent,
     ReasoningTrigger,
@@ -390,6 +440,34 @@ export const attachmentPreviewSnippets: Record<AttachmentsVariant, string> = {
             <ai-context-content-footer />
           </ai-context-content>
         </ai-context>
+      }
+
+      @case ('model-selector') {
+        <ai-model-selector class="w-[min(92vw,520px)]">
+          <button aiModelSelectorTrigger hlmBtn class="justify-between" variant="outline">
+            <ai-model-selector-logo provider="openai" />
+            <ai-model-selector-name>GPT-4.1</ai-model-selector-name>
+          </button>
+          <ai-model-selector-content>
+            <ai-model-selector-input placeholder="Search models..." />
+            <ai-model-selector-list>
+              <ai-model-selector-empty>No models found.</ai-model-selector-empty>
+              @for (group of modelSelectorGroups; track group.provider) {
+                <ai-model-selector-group [heading]="group.heading">
+                  @for (model of group.models; track model.id) {
+                    <button aiModelSelectorItem [value]="modelSelectorSearchValue(model)">
+                      <ai-model-selector-logo [provider]="model.providerSlug ?? model.provider" />
+                      <ai-model-selector-name>{{ model.name }}</ai-model-selector-name>
+                      @if (model.shortcut; as shortcut) {
+                        <ai-model-selector-shortcut>{{ shortcut }}</ai-model-selector-shortcut>
+                      }
+                    </button>
+                  }
+                </ai-model-selector-group>
+              }
+            </ai-model-selector-list>
+          </ai-model-selector-content>
+        </ai-model-selector>
       }
 
       @case ('attachment') {
@@ -603,6 +681,41 @@ export class ExampleCounter {
     },
     totalTokens: 41_500,
   };
+  protected readonly modelSelectorModels = [
+    {
+      id: 'gpt-4.1',
+      name: 'GPT-4.1',
+      provider: 'openai',
+      providerLabel: 'OpenAI',
+      shortcut: 'M1',
+    },
+    {
+      id: 'gpt-4.1-mini',
+      name: 'GPT-4.1 Mini',
+      provider: 'openai',
+      providerLabel: 'OpenAI',
+    },
+    {
+      id: 'claude-sonnet-4.5',
+      name: 'Claude Sonnet 4.5',
+      provider: 'anthropic',
+      providerLabel: 'Anthropic',
+      shortcut: 'M2',
+    },
+    {
+      id: 'gemini-2.5-pro',
+      name: 'Gemini 2.5 Pro',
+      provider: 'google',
+      providerLabel: 'Google',
+    },
+    {
+      id: 'mistral-large',
+      name: 'Mistral Large',
+      provider: 'mistral',
+      providerLabel: 'Mistral',
+    },
+  ] as const satisfies readonly ModelSelectorModel[];
+  protected readonly modelSelectorGroups = groupModelSelectorModels(this.modelSelectorModels);
   protected readonly sources = [
     {
       href: 'https://docs.stripe.com/api',
@@ -656,6 +769,10 @@ export class ExampleCounter {
     return attachment.type === 'file'
       ? (attachment.filename ?? attachment.url)
       : attachment.sourceId;
+  }
+
+  protected modelSelectorSearchValue(model: ModelSelectorModel): string {
+    return createModelSelectorSearchValue(model);
   }
 
   protected readonly weatherToolPart: AiToolPart = {

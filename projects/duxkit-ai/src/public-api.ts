@@ -13,6 +13,7 @@ export * from './lib/conversation';
 export * from './lib/context';
 export * from './lib/markdown';
 export * from './lib/message';
+export * from './lib/model-selector';
 export * from './lib/reasoning';
 export * from './lib/shimmer';
 export * from './lib/sources';

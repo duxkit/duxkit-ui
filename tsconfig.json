@@ -42,6 +42,9 @@
       "path": "./projects/duxkit-ai/tsconfig.spec.json"
     },
     {
+      "path": "./projects/duxkit-ai/tsconfig.storybook.json"
+    },
+    {
       "path": "./projects/playground/tsconfig.app.json"
     },
     {

@@ -27,6 +27,8 @@ const componentImports: Record<ComponentDocSlug, string> = {
   checkpoint: "import { Checkpoint, CheckpointIcon, CheckpointTrigger } from 'duxkit-ai';",
   context:
     "import { Context, ContextContent, ContextContentBody, ContextContentFooter, ContextContentHeader, ContextInputUsage, ContextOutputUsage, ContextTrigger } from 'duxkit-ai';",
+  'model-selector':
+    "import { ModelSelector, ModelSelectorContent, ModelSelectorEmpty, ModelSelectorGroup, ModelSelectorInput, ModelSelectorItem, ModelSelectorList, ModelSelectorLogo, ModelSelectorName, ModelSelectorShortcut, ModelSelectorTrigger } from 'duxkit-ai';",
   attachment:
     "import { Attachment, AttachmentPreview, AttachmentRemove, Attachments } from 'duxkit-ai';",
   'chain-of-thought':
@@ -68,6 +70,24 @@ const anatomySnippets: Record<ComponentDocSlug, string> = {
     <ai-context-content-footer />
   </ai-context-content>
 </ai-context>`,
+  'model-selector': `<ai-model-selector>
+  <button aiModelSelectorTrigger>
+    <ai-model-selector-logo provider="openai" />
+    <ai-model-selector-name>GPT-4.1</ai-model-selector-name>
+  </button>
+  <ai-model-selector-content>
+    <ai-model-selector-input placeholder="Search models..." />
+    <ai-model-selector-list>
+      <ai-model-selector-empty>No models found.</ai-model-selector-empty>
+      <ai-model-selector-group heading="OpenAI">
+        <button aiModelSelectorItem value="gpt-4.1 GPT-4.1 openai OpenAI">
+          <ai-model-selector-logo provider="openai" />
+          <ai-model-selector-name>GPT-4.1</ai-model-selector-name>
+        </button>
+      </ai-model-selector-group>
+    </ai-model-selector-list>
+  </ai-model-selector-content>
+</ai-model-selector>`,
   attachment: `<ai-attachments variant="grid">
   @for (attachment of attachments; track attachmentKey(attachment)) {
     <ai-attachment [data]="attachment" (removed)="removeAttachment(attachment)">
