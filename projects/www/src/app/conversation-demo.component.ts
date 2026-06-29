@@ -30,6 +30,7 @@ import {
 import {
   type DemoReasoningStepState,
   revealConversationText,
+  reasoningSequenceStreaming,
   reasoningStepStatus,
 } from './conversation-demo-timeline';
 
@@ -106,6 +107,7 @@ const finalAssistantMessage =
                           description="Favor calm areas with restaurants and refundable stays."
                         >
                           <ai-reasoning-content
+                            class="agent-reasoning-note"
                             markdown="Prioritize Principe Real, Estrela, and Lapa. Look for walkable restaurants, a calm hotel, and refundable availability."
                           />
                         </ai-chain-of-thought-step>
@@ -236,6 +238,11 @@ const finalAssistantMessage =
         animation: none;
       }
     }
+
+    :host ::ng-deep .agent-reasoning-note .ai-markdown-reasoning {
+      font-size: 13px;
+      line-height: 1.45;
+    }
   `,
 })
 export class ConversationDemoComponent implements AfterViewInit, OnDestroy {
@@ -264,8 +271,8 @@ export class ConversationDemoComponent implements AfterViewInit, OnDestroy {
   protected readonly introTripStep = signal<DemoReasoningStepState>('hidden');
   protected readonly introNeighborhoodStep = signal<DemoReasoningStepState>('hidden');
   protected readonly dinnerSearchStep = signal<DemoReasoningStepState>('hidden');
-  protected readonly introReasoningStreaming = computed(
-    () => this.introTripStep() === 'active' || this.introNeighborhoodStep() === 'active',
+  protected readonly introReasoningStreaming = computed(() =>
+    reasoningSequenceStreaming(this.showIntroReasoning(), this.introNeighborhoodStep()),
   );
 
   ngAfterViewInit(): void {

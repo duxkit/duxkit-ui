@@ -8,3 +8,10 @@ export function revealConversationText(text: string, characterCount: number): st
 export function reasoningStepStatus(state: DemoReasoningStepState): DemoReasoningStepStatus {
   return state === 'hidden' ? 'pending' : state;
 }
+
+export function reasoningSequenceStreaming(
+  visible: boolean,
+  finalStepState: DemoReasoningStepState,
+): boolean {
+  return visible && finalStepState !== 'complete';
+}

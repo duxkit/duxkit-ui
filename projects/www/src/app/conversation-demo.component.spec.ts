@@ -1,5 +1,9 @@
 import { describe, expect, it } from 'vitest';
-import { reasoningStepStatus, revealConversationText } from './conversation-demo-timeline';
+import {
+  reasoningSequenceStreaming,
+  reasoningStepStatus,
+  revealConversationText,
+} from './conversation-demo-timeline';
 
 describe('conversation demo streaming text', () => {
   it('reveals text progressively and clamps to the available content', () => {
@@ -16,5 +20,12 @@ describe('conversation demo streaming text', () => {
     expect(reasoningStepStatus('hidden')).toBe('pending');
     expect(reasoningStepStatus('active')).toBe('active');
     expect(reasoningStepStatus('complete')).toBe('complete');
+  });
+
+  it('keeps the reasoning sequence streaming until the final step completes', () => {
+    expect(reasoningSequenceStreaming(false, 'hidden')).toBe(false);
+    expect(reasoningSequenceStreaming(true, 'hidden')).toBe(true);
+    expect(reasoningSequenceStreaming(true, 'active')).toBe(true);
+    expect(reasoningSequenceStreaming(true, 'complete')).toBe(false);
   });
 });
