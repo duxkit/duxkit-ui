@@ -40,6 +40,7 @@ const introPlanMessage =
   'I’d start with Príncipe Real or Estrela: both stay calm, have strong restaurants nearby, and make it easy to pick a comfortable hotel without being in the busiest tourist streets.';
 const dinnerAssistantMessage =
   'I found a nearby option that fits: a small Portuguese restaurant about 8 minutes away, with petiscos, grilled fish, and a quieter late seating.';
+const travelNotesUserPrompt = 'That works. Can you add the hotel area and dinner picks to my travel notes?';
 const finalAssistantMessage =
   'Done — I added the neighborhood shortlist, hotel notes, and dinner picks to your travel notes so the plan is ready to refine.';
 
@@ -162,6 +163,12 @@ const finalAssistantMessage =
               </ai-message>
             }
 
+            @if (showTravelNotesUser()) {
+              <ai-message from="user" animate.enter="message-enter-right">
+                <ai-message-content [markdown]="travelNotesUserMessage" />
+              </ai-message>
+            }
+
             @if (showTaskUpdate()) {
               <ai-message from="assistant" animate.enter="message-enter-left">
                 <ai-task
@@ -258,6 +265,7 @@ export class ConversationDemoComponent implements AfterViewInit, OnDestroy {
   protected readonly showDinnerUser = signal(false);
   protected readonly showDinnerAssistant = signal(false);
   protected readonly showDinnerSearch = signal(false);
+  protected readonly showTravelNotesUser = signal(false);
   protected readonly showTaskUpdate = signal(false);
   protected readonly introAssistantMarkdown = signal('');
   protected readonly introPlanMarkdown = signal('');
@@ -271,6 +279,7 @@ export class ConversationDemoComponent implements AfterViewInit, OnDestroy {
   protected readonly introTripStep = signal<DemoReasoningStepState>('hidden');
   protected readonly introNeighborhoodStep = signal<DemoReasoningStepState>('hidden');
   protected readonly dinnerSearchStep = signal<DemoReasoningStepState>('hidden');
+  protected readonly travelNotesUserMessage = travelNotesUserPrompt;
   protected readonly introReasoningStreaming = computed(() =>
     reasoningSequenceStreaming(this.showIntroReasoning(), this.introNeighborhoodStep()),
   );
@@ -348,13 +357,14 @@ export class ConversationDemoComponent implements AfterViewInit, OnDestroy {
               text: dinnerAssistantMessage,
               streaming: this.dinnerAssistantStreaming,
               afterComplete: () => {
-                this.schedule(520, () => {
+                this.schedule(520, () => this.showTravelNotesUser.set(true));
+                this.schedule(1280, () => {
                   this.showTaskUpdate.set(true);
                   this.taskUpdateStreaming.set(true);
                 });
-                this.schedule(1800, () => this.taskUpdateStreaming.set(false));
+                this.schedule(2560, () => this.taskUpdateStreaming.set(false));
                 this.streamAssistantMessage({
-                  delay: 2200,
+                  delay: 2960,
                   target: this.finalAssistantMarkdown,
                   text: finalAssistantMessage,
                   streaming: this.finalAssistantStreaming,
