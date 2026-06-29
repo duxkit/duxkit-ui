@@ -23,6 +23,8 @@ The app shell should use clear page landmarks:
 
 This avoids placing the site footer inside the current `main.site-shell` wrapper.
 
+The footer content should be restrained inside a centered container. It should not span edge to edge on wide screens. Use a max width consistent with the current `www` page content, such as the existing 1024px home sections or a slightly wider docs-friendly container if the link grid needs room. The footer background and borders may occupy the footer block, but the CTA row and link grid content should align inside the constrained inner container.
+
 ## CTA Row
 
 The first footer row should carry the main visual weight.
@@ -46,6 +48,7 @@ Desktop layout:
 - Headline aligned left.
 - CTA aligned right.
 - Both sit on the same row with enough spacing that the title can breathe.
+- CTA content sits inside the same centered footer container as the link grid.
 
 Mobile layout:
 
