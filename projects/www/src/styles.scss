@@ -620,9 +620,7 @@ h1 {
   min-height: 326px;
   overflow: hidden;
   padding: 28px 28px 0;
-  background:
-    linear-gradient(180deg, rgb(from var(--muted) r g b / 42%), transparent 72%),
-    var(--background);
+  background: transparent;
 }
 
 .agent-demo-visual app-conversation-demo {
@@ -633,9 +631,10 @@ h1 {
 
 .agent-demo-visual .conversation-plane {
   height: 24rem;
+  border: 0;
   padding-inline: 16px;
-  background: var(--card);
-  box-shadow: 0 18px 50px rgb(9 9 11 / 8%);
+  background: transparent;
+  box-shadow: none;
 }
 
 .agent-outcome-copy {
@@ -739,10 +738,6 @@ h1 {
   .prompt-box p,
   .prompt-actions span {
     color: #a1a1aa;
-  }
-
-  .agent-demo-visual .conversation-plane {
-    box-shadow: 0 18px 50px rgb(0 0 0 / 28%);
   }
 
   .search-trigger:hover,
