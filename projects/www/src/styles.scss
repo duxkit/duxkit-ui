@@ -106,6 +106,10 @@ body {
   font-family: var(--font-sans);
 }
 
+.site-main {
+  min-width: 0;
+}
+
 .site-header {
   position: sticky;
   top: 0;
