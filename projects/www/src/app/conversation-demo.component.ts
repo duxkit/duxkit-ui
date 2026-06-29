@@ -81,16 +81,12 @@ const dinnerAssistantMessage =
 
                 @if (showIntroReasoning()) {
                   <ai-chain-of-thought
-                    animate.enter="step-enter"
-                    [autoToggle]="false"
-                    [expanded]="true"
                     [isStreaming]="introReasoningStreaming()"
                   >
                     <button aiChainOfThoughtTrigger></button>
                     <ai-chain-of-thought-content>
                       @if (introTripStep() !== 'hidden') {
                         <ai-chain-of-thought-step
-                          animate.enter="step-enter"
                           [status]="stepStatus(introTripStep())"
                           [icon]="stepIcon(introTripStep(), 'lucideCircleCheck')"
                           label="Understand the trip"
@@ -100,7 +96,6 @@ const dinnerAssistantMessage =
 
                       @if (introNeighborhoodStep() !== 'hidden') {
                         <ai-chain-of-thought-step
-                          animate.enter="step-enter"
                           [status]="stepStatus(introNeighborhoodStep())"
                           [icon]="stepIcon(introNeighborhoodStep(), 'lucideCircleCheck')"
                           label="Compare neighborhoods"
@@ -129,15 +124,11 @@ const dinnerAssistantMessage =
               <ai-message from="assistant" animate.enter="message-enter-left">
                 @if (showDinnerSearch()) {
                   <ai-chain-of-thought
-                    animate.enter="step-enter"
-                    [autoToggle]="false"
-                    [expanded]="true"
                     [isStreaming]="dinnerSearchStep() === 'active'"
                   >
                     <button aiChainOfThoughtTrigger></button>
                     <ai-chain-of-thought-content>
                       <ai-chain-of-thought-step
-                        animate.enter="step-enter"
                         [status]="stepStatus(dinnerSearchStep())"
                         [icon]="stepIcon(dinnerSearchStep(), 'lucideGlobe')"
                         label="Search nearby dinner spots"
@@ -155,7 +146,6 @@ const dinnerAssistantMessage =
 
                 @if (dinnerAssistantMarkdown()) {
                   <ai-message-content
-                    animate.enter="step-enter"
                     [markdown]="dinnerAssistantMarkdown()"
                   />
                 }
@@ -165,10 +155,7 @@ const dinnerAssistantMessage =
             @if (showTaskUpdate()) {
               <ai-message from="assistant" animate.enter="message-enter-left">
                 <ai-task
-                  animate.enter="step-enter"
-                  [autoToggle]="false"
-                  [expanded]="true"
-                  [isStreaming]="false"
+                  [isStreaming]="taskUpdateStreaming()"
                 >
                   <button aiTaskTrigger>Update travel notes</button>
                   <ai-task-content>
@@ -191,52 +178,18 @@ const dinnerAssistantMessage =
   `,
   styles: `
     .message-enter-left,
-    .message-enter-right,
-    .step-enter {
+    .message-enter-right {
       animation-duration: 260ms;
       animation-fill-mode: both;
       animation-timing-function: ease-out;
     }
 
-    .message-enter-left,
-    .step-enter {
+    .message-enter-left {
       animation-name: message-enter-left;
     }
 
     .message-enter-right {
       animation-name: message-enter-right;
-    }
-
-    .delay-1 {
-      animation-delay: 90ms;
-    }
-
-    .delay-2 {
-      animation-delay: 180ms;
-    }
-
-    .delay-3 {
-      animation-delay: 260ms;
-    }
-
-    .delay-4 {
-      animation-delay: 360ms;
-    }
-
-    .delay-5 {
-      animation-delay: 460ms;
-    }
-
-    .delay-6 {
-      animation-delay: 560ms;
-    }
-
-    .delay-7 {
-      animation-delay: 660ms;
-    }
-
-    .delay-8 {
-      animation-delay: 760ms;
     }
 
     @keyframes message-enter-left {
@@ -265,8 +218,7 @@ const dinnerAssistantMessage =
 
     @media (prefers-reduced-motion: reduce) {
       .message-enter-left,
-      .message-enter-right,
-      .step-enter {
+      .message-enter-right {
         animation: none;
       }
     }
@@ -290,6 +242,7 @@ export class ConversationDemoComponent implements AfterViewInit, OnDestroy {
   protected readonly dinnerAssistantMarkdown = signal('');
   protected readonly introAssistantStreaming = signal(false);
   protected readonly dinnerAssistantStreaming = signal(false);
+  protected readonly taskUpdateStreaming = signal(false);
   protected readonly introTripStep = signal<DemoReasoningStepState>('hidden');
   protected readonly introNeighborhoodStep = signal<DemoReasoningStepState>('hidden');
   protected readonly dinnerSearchStep = signal<DemoReasoningStepState>('hidden');
@@ -363,7 +316,13 @@ export class ConversationDemoComponent implements AfterViewInit, OnDestroy {
           target: this.dinnerAssistantMarkdown,
           text: dinnerAssistantMessage,
           streaming: this.dinnerAssistantStreaming,
-          afterComplete: () => this.schedule(520, () => this.showTaskUpdate.set(true)),
+          afterComplete: () => {
+            this.schedule(520, () => {
+              this.showTaskUpdate.set(true);
+              this.taskUpdateStreaming.set(true);
+            });
+            this.schedule(1800, () => this.taskUpdateStreaming.set(false));
+          },
         });
       },
     });
