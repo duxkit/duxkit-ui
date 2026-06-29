@@ -39,6 +39,8 @@ const introPlanMessage =
   'I’d start with Príncipe Real or Estrela: both stay calm, have strong restaurants nearby, and make it easy to pick a comfortable hotel without being in the busiest tourist streets.';
 const dinnerAssistantMessage =
   'I found a nearby option that fits: a small Portuguese restaurant about 8 minutes away, with petiscos, grilled fish, and a quieter late seating.';
+const finalAssistantMessage =
+  'Done — I added the neighborhood shortlist, hotel notes, and dinner picks to your travel notes so the plan is ready to refine.';
 
 @Component({
   imports: [
@@ -176,6 +178,12 @@ const dinnerAssistantMessage =
               </ai-message>
             }
 
+            @if (finalAssistantMarkdown()) {
+              <ai-message from="assistant" animate.enter="message-enter-left">
+                <ai-message-content [markdown]="finalAssistantMarkdown()" />
+              </ai-message>
+            }
+
             <div aiConversationScrollAnchor></div>
           </ai-conversation-content>
         </ai-conversation>
@@ -247,9 +255,11 @@ export class ConversationDemoComponent implements AfterViewInit, OnDestroy {
   protected readonly introAssistantMarkdown = signal('');
   protected readonly introPlanMarkdown = signal('');
   protected readonly dinnerAssistantMarkdown = signal('');
+  protected readonly finalAssistantMarkdown = signal('');
   protected readonly introAssistantStreaming = signal(false);
   protected readonly introPlanStreaming = signal(false);
   protected readonly dinnerAssistantStreaming = signal(false);
+  protected readonly finalAssistantStreaming = signal(false);
   protected readonly taskUpdateStreaming = signal(false);
   protected readonly introTripStep = signal<DemoReasoningStepState>('hidden');
   protected readonly introNeighborhoodStep = signal<DemoReasoningStepState>('hidden');
@@ -336,6 +346,12 @@ export class ConversationDemoComponent implements AfterViewInit, OnDestroy {
                   this.taskUpdateStreaming.set(true);
                 });
                 this.schedule(1800, () => this.taskUpdateStreaming.set(false));
+                this.streamAssistantMessage({
+                  delay: 2200,
+                  target: this.finalAssistantMarkdown,
+                  text: finalAssistantMessage,
+                  streaming: this.finalAssistantStreaming,
+                });
               },
             });
           },
