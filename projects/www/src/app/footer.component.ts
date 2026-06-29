@@ -1,9 +1,10 @@
 import { Component } from '@angular/core';
 import { RouterLink } from '@angular/router';
+import { HlmButton } from '@duxkit/ui/helm/button';
 import { footerLinkGroups } from './footer-link-groups';
 
 @Component({
-  imports: [RouterLink],
+  imports: [HlmButton, RouterLink],
   selector: 'app-footer',
   template: `
     <footer class="site-footer">
@@ -11,7 +12,9 @@ import { footerLinkGroups } from './footer-link-groups';
         <section class="site-footer-cta" aria-labelledby="site-footer-title">
           <h2 id="site-footer-title">Build your next Angular AI surface.</h2>
 
-          <a class="site-footer-button" routerLink="/docs/components">Explore components</a>
+          <a hlmBtn class="site-footer-button" routerLink="/docs/components">
+            Explore components
+          </a>
         </section>
 
         <nav class="site-footer-nav" aria-label="Footer navigation">
