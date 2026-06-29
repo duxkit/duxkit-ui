@@ -1,0 +1,9 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "duxkit",
+  "compatibility_date": "2026-06-29",
+  "assets": {
+    "directory": "./dist/www/browser",
+    "not_found_handling": "single-page-application"
+  }
+}
