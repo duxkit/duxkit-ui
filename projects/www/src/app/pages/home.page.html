@@ -7,9 +7,7 @@
       Duxkit UI
     </h1>
 
-    <p class="lede text-muted-foreground">
-      Angular primitives for teams building with Vercel's AI SDK and SpartanNG.
-    </p>
+    <p class="lede text-muted-foreground">Angular primitives for AI SDK interfaces.</p>
 
     <div class="hero-actions" aria-label="Hero actions">
       <a hlmBtn class="primary-button" routerLink="/docs/components">Explore Components</a>
@@ -41,22 +39,19 @@
   <article>
     <h2 class="text-foreground">AI SDK Ready</h2>
     <p class="text-muted-foreground">
-      Render conversations, reasoning, tools, tasks, and approvals from the same interaction
-      patterns used by Vercel's AI SDK.
+      Render conversations, reasoning, tools, tasks, and approvals from AI SDK state.
     </p>
   </article>
   <article>
     <h2 class="text-foreground">Angular Native</h2>
     <p class="text-muted-foreground">
-      Standalone components, signals, strict templates, and predictable APIs for modern Angular
-      applications.
+      Standalone components with signal-led APIs and strict template support.
     </p>
   </article>
   <article>
     <h2 class="text-foreground">SpartanNG Foundation</h2>
     <p class="text-muted-foreground">
-      Built to sit beside SpartanNG and HLM primitives, so your AI components inherit the same
-      design language as the rest of your app.
+      Built beside SpartanNG, with accessible patterns out of the box.
     </p>
   </article>
 </section>
@@ -66,16 +61,17 @@
   class="showcase-section border-x border-b border-border bg-card w-full"
   aria-labelledby="showcase-title"
 >
-  <div class="text-center gap-4 mx-auto max-w-xl! flex flex-col items-center justify-center w-full">
+  <div
+    class="text-center gap-4 mx-auto max-w-2xl! flex flex-col items-center justify-center w-full"
+  >
     <h2
       id="showcase-title"
       class="font-semibold text-foreground text-xl tracking-tight sm:text-2xl md:text-3xl lg:text-[40px]"
     >
-      AI SDK components for Angular
+      Components to build agent interfaces
     </h2>
     <p class="text-muted-foreground">
-      Compose Vercel AI SDK responses with SpartanNG-friendly primitives for chat, workflows, IDEs,
-      voice agents, and approval flows.
+      Mix primitives for chat, workflows, IDEs, voice agents, and approval flows.
     </p>
   </div>
 
@@ -192,97 +188,45 @@
   class="agent-outcomes-section border-x border-b border-border bg-card"
   aria-labelledby="agent-outcomes-title"
 >
-  <div class="agent-outcomes-heading">
-    <h2 id="agent-outcomes-title" class="text-foreground">
-      The interface around your agent, shaped for Angular.
-    </h2>
+  <div class="agent-outcomes-heading p-9">
+    <h2 id="agent-outcomes-title" class="text-foreground">Agent interfaces, shaped for Angular.</h2>
     <p class="text-muted-foreground">
-      Duxkit handles the UI patterns that appear once an AI app leaves the demo: long-running work,
-      generated content, user control, and understandable state.
+      Production patterns for streaming work, user approvals, generated output, and readable state.
     </p>
   </div>
 
   <div class="agent-outcomes-grid">
-    <article class="agent-outcome-card agent-outcome-card-large border border-border bg-background">
+    <article class="agent-outcome-card agent-outcome-card-large bg-background">
       <div class="agent-demo-visual">
         <app-conversation-demo />
       </div>
 
-      <div class="agent-outcome-copy">
+      <div class="agent-outcome-copy border-t">
         <h3 class="text-foreground">Conversations that keep their shape</h3>
         <p class="text-muted-foreground">
-          Keep chat surfaces readable as answers grow, context changes, and generated UI appears
-          inside the thread.
+          Keep chat readable as answers grow, context shifts, and generated UI appears inline.
         </p>
       </div>
     </article>
 
-    <article class="agent-outcome-card border border-border bg-background">
-      <span class="agent-outcome-index text-muted-foreground">01</span>
+    <article class="agent-outcome-card bg-background self-center">
       <h3 class="text-foreground">Work users can follow</h3>
       <p class="text-muted-foreground">
-        Show progress, tool activity, and intermediate states without making the interface feel like
-        raw logs.
+        Show progress, tool activity, and intermediate states without exposing raw logs.
       </p>
     </article>
 
-    <article class="agent-outcome-card border border-border bg-background">
-      <span class="agent-outcome-index text-muted-foreground">02</span>
+    <article class="agent-outcome-card bg-background self-center">
       <h3 class="text-foreground">Control where it matters</h3>
       <p class="text-muted-foreground">
-        Give people clear approval moments when agents need to take actions, edit data, or cross a
-        boundary.
+        Add approval moments before agents act, edit data, or cross a boundary.
       </p>
     </article>
 
-    <article class="agent-outcome-card border border-border bg-background">
-      <span class="agent-outcome-index text-muted-foreground">03</span>
+    <article class="agent-outcome-card bg-background self-center">
       <h3 class="text-foreground">Output that belongs in your app</h3>
       <p class="text-muted-foreground">
-        Render generated explanations, references, files, and structured results as product UI, not
-        pasted text.
-      </p>
-    </article>
-  </div>
-</section>
-
-<section
-  class="production-section border-x border-b border-border bg-card"
-  aria-labelledby="production-title"
->
-  <div class="production-heading">
-    <h2 id="production-title" class="text-foreground">Built for real Angular AI apps.</h2>
-    <p class="text-muted-foreground">
-      The library sits in the same system as the rest of your application: Angular composition,
-      accessible interactions, and Spartan-friendly styling.
-    </p>
-  </div>
-
-  <div class="production-list">
-    <article>
-      <span class="production-kicker text-muted-foreground">Angular native</span>
-      <h3 class="text-foreground">Fits standalone components and signal-led state.</h3>
-      <p class="text-muted-foreground">
-        Compose AI interfaces with the same Angular primitives and routing model you already use
-        elsewhere.
-      </p>
-    </article>
-
-    <article>
-      <span class="production-kicker text-muted-foreground">Design-system ready</span>
-      <h3 class="text-foreground">Designed to sit beside Spartan and HLM.</h3>
-      <p class="text-muted-foreground">
-        Keep AI surfaces visually aligned with your app instead of introducing a separate
-        chat-widget aesthetic.
-      </p>
-    </article>
-
-    <article>
-      <span class="production-kicker text-muted-foreground">Interaction complete</span>
-      <h3 class="text-foreground">Theme-aware, keyboard-friendly, and ready for real workflows.</h3>
-      <p class="text-muted-foreground">
-        States like expansion, focus, streaming, and approval remain understandable across light and
-        dark themes.
+        Render explanations, references, files, and structured results as product UI.
       </p>
     </article>
   </div>

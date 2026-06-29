@@ -14,8 +14,8 @@ import { HlmButton } from '@duxkit/ui/helm/button';
           </p>
 
           <img
-            class="brand-mark h-10 w-14 sm:h-14 sm:w-20"
-            ngSrc="duxkit_logo.png"
+            class="not-found-logomark h-10 w-14 sm:h-14 sm:w-20"
+            ngSrc="dux_logomark.png"
             width="512"
             height="352"
             alt="Duxkit"
@@ -40,6 +40,16 @@ import { HlmButton } from '@duxkit/ui/helm/button';
   styles: `
     :host {
       display: block;
+    }
+
+    .not-found-logomark {
+      display: block;
+      flex: 0 0 auto;
+      object-fit: contain;
+    }
+
+    :host-context(html[data-theme='dark']) .not-found-logomark {
+      filter: invert(1);
     }
   `,
 })

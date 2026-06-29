@@ -41,7 +41,8 @@ const introPlanMessage =
   'I’d start with Príncipe Real or Estrela: both stay calm, have strong restaurants nearby, and make it easy to pick a comfortable hotel without being in the busiest tourist streets.';
 const dinnerAssistantMessage =
   'I found a nearby option that fits: a small Portuguese restaurant about 8 minutes away, with petiscos, grilled fish, and a quieter late seating.';
-const travelNotesUserPrompt = 'That works. Can you add the hotel area and dinner picks to my travel notes?';
+const travelNotesUserPrompt =
+  'That works. Can you add the hotel area and dinner picks to my travel notes?';
 const finalAssistantMessage =
   'Done — I added the neighborhood shortlist, hotel notes, and dinner picks to your travel notes so the plan is ready to refine.';
 const dinnerSearchSources = ['Taberna Rua das Flores', 'Prado', 'O Velho Eurico'] as const;
@@ -69,7 +70,9 @@ const dinnerSearchSources = ['Taberna Rua das Flores', 'Prado', 'O Velho Eurico'
   selector: 'app-conversation-demo',
   template: `
     <div class="conversation-perspective" aria-label="Conversation demo preview">
-      <div class="conversation-plane h-[32rem] px-5 border-border border-gray-200 border rounded-xl">
+      <div
+        class="conversation-plane h-[32rem] px-5 border-border border-gray-200 border rounded-xl"
+      >
         <ai-conversation [stickToBottom]="'auto'">
           <ai-conversation-content
             class="[scrollbar-width:none] [&::-webkit-scrollbar]:hidden space-y-4 py-3"
@@ -92,9 +95,7 @@ const dinnerSearchSources = ['Taberna Rua das Flores', 'Prado', 'O Velho Eurico'
             @if (showIntroPlanAssistant()) {
               <ai-message from="assistant" animate.enter="message-enter-left">
                 @if (showIntroReasoning()) {
-                  <ai-chain-of-thought
-                    [isStreaming]="introReasoningStreaming()"
-                  >
+                  <ai-chain-of-thought [isStreaming]="introReasoningStreaming()">
                     <button aiChainOfThoughtTrigger></button>
                     <ai-chain-of-thought-content>
                       @if (introTripStep() !== 'hidden') {
@@ -140,9 +141,7 @@ const dinnerSearchSources = ['Taberna Rua das Flores', 'Prado', 'O Velho Eurico'
             @if (showDinnerAssistant()) {
               <ai-message from="assistant" animate.enter="message-enter-left">
                 @if (showDinnerSearch()) {
-                  <ai-chain-of-thought
-                    [isStreaming]="dinnerSearchStep() === 'active'"
-                  >
+                  <ai-chain-of-thought [isStreaming]="dinnerSearchStep() === 'active'">
                     <button aiChainOfThoughtTrigger></button>
                     <ai-chain-of-thought-content>
                       <ai-chain-of-thought-step
@@ -168,9 +167,7 @@ const dinnerSearchSources = ['Taberna Rua das Flores', 'Prado', 'O Velho Eurico'
                 }
 
                 @if (dinnerAssistantMarkdown()) {
-                  <ai-message-content
-                    [markdown]="dinnerAssistantMarkdown()"
-                  />
+                  <ai-message-content [markdown]="dinnerAssistantMarkdown()" />
                 }
               </ai-message>
             }
@@ -181,27 +178,28 @@ const dinnerSearchSources = ['Taberna Rua das Flores', 'Prado', 'O Velho Eurico'
               </ai-message>
             }
 
-            @if (showTaskUpdate()) {
+            @if (showTaskUpdate() || finalAssistantMarkdown()) {
               <ai-message from="assistant" animate.enter="message-enter-left">
-                <ai-task
-                  [isStreaming]="taskUpdateStreaming()"
-                >
-                  <button aiTaskTrigger>Update travel notes</button>
-                  <ai-task-content>
-                    <div aiTaskItem>
-                      Added hotel area to <span aiTaskItemFile>lisbon_2026.docx</span>
-                    </div>
-                    <div aiTaskItem>
-                      Added dinner picks to <span aiTaskItemFile>lisbon_2026.docx</span>
-                    </div>
-                  </ai-task-content>
-                </ai-task>
-              </ai-message>
-            }
+                @if (showTaskUpdate()) {
+                  <ai-task [isStreaming]="taskUpdateStreaming()">
+                    <button aiTaskTrigger>Update travel notes</button>
+                    <ai-task-content>
+                      <div aiTaskItem>
+                        Added hotel area to <span aiTaskItemFile>lisbon_2026.docx</span>
+                      </div>
+                      <div aiTaskItem>
+                        Added dinner picks to <span aiTaskItemFile>lisbon_2026.docx</span>
+                      </div>
+                    </ai-task-content>
+                  </ai-task>
+                }
 
-            @if (finalAssistantMarkdown()) {
-              <ai-message from="assistant" animate.enter="message-enter-left">
-                <ai-message-content [markdown]="finalAssistantMarkdown()" />
+                @if (finalAssistantMarkdown()) {
+                  <ai-message-content
+                    class="task-follow-up-message"
+                    [markdown]="finalAssistantMarkdown()"
+                  />
+                }
               </ai-message>
             }
 
@@ -269,6 +267,10 @@ const dinnerSearchSources = ['Taberna Rua das Flores', 'Prado', 'O Velho Eurico'
       min-height: 22px;
       font-size: 12px;
       line-height: 1;
+    }
+
+    .task-follow-up-message {
+      display: block;
     }
   `,
 })

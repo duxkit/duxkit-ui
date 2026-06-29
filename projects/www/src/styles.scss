@@ -166,7 +166,7 @@ body {
 .brand-mark {
   width: 75px;
   height: 55px;
-  display: block;
+  display: none;
   flex: 0 0 auto;
   object-fit: contain;
 }
@@ -561,50 +561,39 @@ h1 {
   line-height: 1.5;
 }
 
-.agent-outcomes-section,
-.production-section {
+.agent-outcomes-section {
   width: min(100% - 48px, 1024px);
   margin: 0 auto;
 }
 
-.agent-outcomes-section {
-  padding: 56px 48px;
-}
-
-.agent-outcomes-heading,
-.production-heading {
+.agent-outcomes-heading {
   display: grid;
   gap: 16px;
-  max-width: 720px;
+  text-align: left;
 }
 
-.agent-outcomes-heading h2,
-.production-heading h2 {
-  font-size: clamp(2.25rem, 5vw, 3.5rem);
+.agent-outcomes-heading h2 {
+  font-size: clamp(2.25rem, 5vw, 2.5rem);
   line-height: 1.06;
   font-weight: 600;
   letter-spacing: 0;
 }
 
-.agent-outcomes-heading p,
-.production-heading p {
+.agent-outcomes-heading p {
   font-size: 18px;
   line-height: 1.6;
+  font-weight: 400;
 }
 
 .agent-outcomes-grid {
   display: grid;
   grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr);
-  gap: 18px;
-  margin-top: 36px;
+  border-top: 1px solid var(--border);
 }
 
 .agent-outcome-card {
   min-height: 164px;
   display: grid;
-  align-content: start;
-  gap: 14px;
-  border-radius: 8px;
   padding: 26px;
   overflow: hidden;
 }
@@ -613,13 +602,18 @@ h1 {
   grid-row: span 3;
   min-height: 528px;
   align-content: space-between;
+  border-right: 1px solid var(--border);
   padding: 0;
+}
+
+.agent-outcomes-grid > .agent-outcome-card:not(.agent-outcome-card-large):not(:last-child) {
+  border-bottom: 1px solid var(--border);
 }
 
 .agent-demo-visual {
   min-height: 326px;
   overflow: hidden;
-  padding: 28px 28px 0;
+  padding: 0 28px;
   background: transparent;
 }
 
@@ -638,11 +632,10 @@ h1 {
 .agent-outcome-copy {
   display: grid;
   gap: 12px;
-  padding: 0 30px 32px;
+  padding: 32px 30px 32px;
 }
 
-.agent-outcome-card h3,
-.production-list h3 {
+.agent-outcome-card h3 {
   margin: 0;
   font-size: 22px;
   line-height: 1.22;
@@ -650,42 +643,10 @@ h1 {
   letter-spacing: 0;
 }
 
-.agent-outcome-card p,
-.production-list p {
+.agent-outcome-card p {
   margin: 0;
   font-size: 16px;
   line-height: 1.55;
-}
-
-.agent-outcome-index,
-.production-kicker {
-  font-size: 12px;
-  line-height: 1;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-}
-
-.production-section {
-  padding: 56px 48px 64px;
-}
-
-.production-list {
-  display: grid;
-  margin-top: 34px;
-  border-top: 1px solid var(--border);
-}
-
-.production-list article {
-  display: grid;
-  grid-template-columns: 180px minmax(0, 0.9fr) minmax(0, 1.1fr);
-  gap: 28px;
-  align-items: start;
-  border-bottom: 1px solid var(--border);
-  padding: 22px 0;
-}
-
-.production-list h3 {
-  font-size: 20px;
 }
 
 @mixin dark-site-theme {
@@ -790,8 +751,7 @@ h1 {
 
   .feature-strip,
   .showcase-section,
-  .agent-outcomes-section,
-  .production-section {
+  .agent-outcomes-section {
     width: min(100% - 32px, 720px);
   }
 
@@ -818,8 +778,7 @@ h1 {
     padding: 40px 18px 48px;
   }
 
-  .agent-outcomes-section,
-  .production-section {
+  .agent-outcomes-section {
     padding: 48px 24px;
   }
 
@@ -830,25 +789,22 @@ h1 {
   .agent-outcome-card-large {
     grid-row: auto;
     min-height: 0;
+    border-right: 0;
+    border-bottom: 1px solid var(--border);
   }
 
   .agent-demo-visual {
     min-height: 300px;
   }
 
-  .production-list article {
-    grid-template-columns: minmax(0, 1fr);
-    gap: 12px;
-  }
 }
 
 @media (max-width: 640px) {
-  .brand-name,
-  .ask-trigger span:last-child {
-    display: none;
+  .brand-mark {
+    display: block;
   }
 
-  .brand::after {
+  .ask-trigger span:last-child {
     display: none;
   }
 
@@ -865,19 +821,17 @@ h1 {
     padding: 32px 24px;
   }
 
-  .agent-outcomes-heading p,
-  .production-heading p {
+  .agent-outcomes-heading p {
     font-size: 16px;
   }
 
-  .agent-outcomes-heading h2,
-  .production-heading h2 {
+  .agent-outcomes-heading h2 {
     font-size: 2rem;
     line-height: 1.08;
   }
 
   .agent-outcomes-grid {
-    gap: 12px;
+    gap: 0;
     margin-top: 28px;
   }
 
@@ -896,21 +850,11 @@ h1 {
     padding: 20px;
   }
 
-  .agent-outcome-card h3,
-  .production-list h3 {
+  .agent-outcome-card h3 {
     font-size: 19px;
   }
 
-  .agent-outcome-card p,
-  .production-list p {
+  .agent-outcome-card p {
     font-size: 15px;
-  }
-
-  .production-list {
-    margin-top: 28px;
-  }
-
-  .production-list article {
-    padding: 18px 0;
   }
 }
