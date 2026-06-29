@@ -10,6 +10,7 @@ export * from './lib/types';
 export * from './lib/code-block';
 export * from './lib/confirmation';
 export * from './lib/conversation';
+export * from './lib/context';
 export * from './lib/markdown';
 export * from './lib/message';
 export * from './lib/reasoning';

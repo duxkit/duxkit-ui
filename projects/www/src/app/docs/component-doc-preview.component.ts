@@ -1,5 +1,6 @@
 import { Component, input } from '@angular/core';
 import { HlmButton } from '@duxkit/ui/helm/button';
+import type { LanguageModelUsage } from 'ai';
 import {
   Attachment,
   type AiAttachmentPart,
@@ -29,6 +30,16 @@ import {
   Conversation,
   ConversationContent,
   ConversationScrollAnchor,
+  Context,
+  ContextCacheUsage,
+  ContextContent,
+  ContextContentBody,
+  ContextContentFooter,
+  ContextContentHeader,
+  ContextInputUsage,
+  ContextOutputUsage,
+  ContextReasoningUsage,
+  ContextTrigger,
   Message,
   MessageActions,
   MessageActionsCopy,
@@ -90,6 +101,24 @@ export const componentPreviewSnippets: Record<ComponentDocSlug, string> = {
     Restore checkpoint
   </button>
 </ai-checkpoint>`,
+  context: `<ai-context
+  [usedTokens]="40000"
+  [maxTokens]="128000"
+  [usage]="contextUsage"
+  modelId="openai:gpt-4o-mini"
+>
+  <button aiContextTrigger hlmBtn variant="ghost" size="sm"></button>
+  <ai-context-content>
+    <ai-context-content-header />
+    <ai-context-content-body>
+      <ai-context-input-usage />
+      <ai-context-output-usage />
+      <ai-context-reasoning-usage />
+      <ai-context-cache-usage />
+    </ai-context-content-body>
+    <ai-context-content-footer />
+  </ai-context-content>
+</ai-context>`,
   attachment: `<ai-attachments class="w-[640px]" variant="grid">
   @for (attachment of attachmentParts; track attachmentKey(attachment)) {
     <ai-attachment [data]="attachment">
@@ -262,6 +291,16 @@ export const attachmentPreviewSnippets: Record<AttachmentsVariant, string> = {
     Conversation,
     ConversationContent,
     ConversationScrollAnchor,
+    Context,
+    ContextCacheUsage,
+    ContextContent,
+    ContextContentBody,
+    ContextContentFooter,
+    ContextContentHeader,
+    ContextInputUsage,
+    ContextOutputUsage,
+    ContextReasoningUsage,
+    ContextTrigger,
     HlmButton,
     Message,
     MessageActions,
@@ -330,6 +369,27 @@ export const attachmentPreviewSnippets: Record<AttachmentsVariant, string> = {
             Restore checkpoint
           </button>
         </ai-checkpoint>
+      }
+
+      @case ('context') {
+        <ai-context
+          [usedTokens]="40000"
+          [maxTokens]="128000"
+          [usage]="contextUsage"
+          modelId="openai:gpt-4o-mini"
+        >
+          <button aiContextTrigger hlmBtn variant="ghost" size="sm"></button>
+          <ai-context-content>
+            <ai-context-content-header />
+            <ai-context-content-body>
+              <ai-context-input-usage />
+              <ai-context-output-usage />
+              <ai-context-reasoning-usage />
+              <ai-context-cache-usage />
+            </ai-context-content-body>
+            <ai-context-content-footer />
+          </ai-context-content>
+        </ai-context>
       }
 
       @case ('attachment') {
@@ -529,6 +589,20 @@ export class ComponentDocPreview {
 export class ExampleCounter {
   protected readonly count = signal(0);
 }`;
+  protected readonly contextUsage: LanguageModelUsage = {
+    inputTokens: 32_000,
+    inputTokenDetails: {
+      cacheReadTokens: 4_000,
+      cacheWriteTokens: 0,
+      noCacheTokens: 28_000,
+    },
+    outputTokens: 8_000,
+    outputTokenDetails: {
+      reasoningTokens: 1_500,
+      textTokens: 6_500,
+    },
+    totalTokens: 41_500,
+  };
   protected readonly sources = [
     {
       href: 'https://docs.stripe.com/api',

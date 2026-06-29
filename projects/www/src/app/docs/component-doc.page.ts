@@ -23,6 +23,8 @@ const componentImports: Record<ComponentDocSlug, string> = {
     "import { Conversation, ConversationContent, ConversationScrollAnchor } from 'duxkit-ai';",
   message: "import { Message, MessageContent } from 'duxkit-ai';",
   checkpoint: "import { Checkpoint, CheckpointIcon, CheckpointTrigger } from 'duxkit-ai';",
+  context:
+    "import { Context, ContextContent, ContextContentBody, ContextContentFooter, ContextContentHeader, ContextInputUsage, ContextOutputUsage, ContextTrigger } from 'duxkit-ai';",
   attachment:
     "import { Attachment, AttachmentPreview, AttachmentRemove, Attachments } from 'duxkit-ai';",
   'chain-of-thought':
@@ -53,6 +55,17 @@ const anatomySnippets: Record<ComponentDocSlug, string> = {
   <ai-checkpoint-icon />
   <button aiCheckpointTrigger>Restore checkpoint</button>
 </ai-checkpoint>`,
+  context: `<ai-context [usedTokens]="40000" [maxTokens]="128000" [usage]="usage" modelId="openai:gpt-4o-mini">
+  <button aiContextTrigger></button>
+  <ai-context-content>
+    <ai-context-content-header />
+    <ai-context-content-body>
+      <ai-context-input-usage />
+      <ai-context-output-usage />
+    </ai-context-content-body>
+    <ai-context-content-footer />
+  </ai-context-content>
+</ai-context>`,
   attachment: `<ai-attachments variant="grid">
   @for (attachment of attachments; track attachmentKey(attachment)) {
     <ai-attachment [data]="attachment" (removed)="removeAttachment(attachment)">

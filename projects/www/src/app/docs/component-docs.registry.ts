@@ -21,6 +21,11 @@ export const componentDocs = [
     description: 'Conversation restore point primitive for reverting to earlier chat state.',
   },
   {
+    slug: 'context',
+    title: 'Context',
+    description: 'Context window usage, token breakdown, and model cost estimate primitives.',
+  },
+  {
     slug: 'attachment',
     title: 'Attachment',
     description: 'Composable file and source-document previews for AI SDK message parts.',

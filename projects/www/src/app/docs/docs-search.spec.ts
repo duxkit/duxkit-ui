@@ -28,6 +28,11 @@ describe('docs search', () => {
     expect(searchComponentDocs('restore trigger is pressed').map((item) => item.slug)).toContain(
       'checkpoint',
     );
+    expect(searchComponentDocs('context').map((item) => item.slug)).toContain('context');
+    expect(searchComponentDocs('ai-context').map((item) => item.slug)).toContain('context');
+    expect(searchComponentDocs('ContextTrigger').map((item) => item.slug)).toContain('context');
+    expect(searchComponentDocs('usedTokens').map((item) => item.slug)).toContain('context');
+    expect(searchComponentDocs('Model identifier').map((item) => item.slug)).toContain('context');
     expect(searchComponentDocs('ReasoningContent').map((item) => item.slug)).toContain('reasoning');
     expect(searchComponentDocs('collapsedMaxHeight').map((item) => item.slug)).toEqual(
       expect.arrayContaining(['reasoning', 'chain-of-thought']),
