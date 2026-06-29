@@ -7,7 +7,7 @@ import { footerLinkGroups } from './footer-link-groups';
   imports: [HlmButton, RouterLink],
   selector: 'app-footer',
   template: `
-    <footer class="site-footer mt-4">
+    <footer class="site-footer">
       <div class="site-footer-container">
         <section class="site-footer-cta" aria-labelledby="site-footer-title">
           <h2 id="site-footer-title">Build your next Angular AI surface.</h2>
