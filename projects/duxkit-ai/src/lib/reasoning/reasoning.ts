@@ -47,12 +47,15 @@ export class Reasoning {
     effect(() => {
       const isStreaming = this.isStreaming();
 
-      if (isStreaming && !this.wasStreaming) {
+      const startedStreaming = isStreaming && !this.wasStreaming;
+      const finishedStreaming = !isStreaming && this.wasStreaming;
+
+      if (startedStreaming) {
         this.startedAt.set(Date.now());
         this.endedAt.set(null);
       }
 
-      if (!isStreaming && this.wasStreaming) {
+      if (finishedStreaming) {
         this.endedAt.set(Date.now());
       }
 
@@ -62,7 +65,14 @@ export class Reasoning {
         return;
       }
 
-      this.collapsible.expanded.set(isStreaming);
+      if (startedStreaming) {
+        this.collapsible.expanded.set(true);
+        return;
+      }
+
+      if (finishedStreaming) {
+        this.collapsible.expanded.set(false);
+      }
     });
   }
 

@@ -1,9 +1,10 @@
 import { NgOptimizedImage } from '@angular/common';
 import { Component } from '@angular/core';
 import { RouterLink } from '@angular/router';
+import { HlmButton } from '@duxkit/ui/helm/button';
 
 @Component({
-  imports: [NgOptimizedImage, RouterLink],
+  imports: [HlmButton, NgOptimizedImage, RouterLink],
   template: `
     <section class="min-h-[calc(100dvh-65px)] overflow-hidden px-6 py-10">
       <div class="mx-auto flex min-h-[calc(100dvh-145px)] w-full max-w-xl flex-col justify-center">
@@ -29,15 +30,10 @@ import { RouterLink } from '@angular/router';
         </h1>
 
         <p class="mt-6 max-w-xl text-muted-foreground text-lg leading-8">
-          The page you are looking for does not exist or has moved.
+          The page you are looking for does not exist or has flown away.
         </p>
 
-        <a
-          class="mt-9 inline-flex min-h-10 w-fit items-center rounded-lg bg-primary px-4 text-primary-foreground text-sm font-semibold no-underline"
-          routerLink="/"
-        >
-          Back home
-        </a>
+        <a hlmBtn class="mt-9 w-fit" routerLink="/"> Back home </a>
       </div>
     </section>
   `,

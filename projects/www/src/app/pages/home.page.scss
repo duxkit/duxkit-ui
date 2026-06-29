@@ -1,3 +1,41 @@
+.hero-title {
+  position: relative;
+  display: inline-block;
+}
+
+.hero-title::after {
+  content: '';
+  position: absolute;
+  top: -0.66em;
+  right: -1.4em;
+  width: clamp(58px, 8vw, 112px);
+  aspect-ratio: 2 / 1;
+  background-image: url('/dux_logomark.png');
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: contain;
+  filter: none;
+  pointer-events: none;
+}
+
+:host-context(html[data-theme='dark']) .hero-title::after {
+  filter: invert(1);
+}
+
+@media (max-width: 640px) {
+  .hero-title::after {
+    top: -0.42em;
+    right: -0.64em;
+    width: 58px;
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  :host-context(html:not([data-theme='light'])) .hero-title::after {
+    filter: invert(1);
+  }
+}
+
 .conversation-perspective {
   position: relative;
   isolation: isolate;
