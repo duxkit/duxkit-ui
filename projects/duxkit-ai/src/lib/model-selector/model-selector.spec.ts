@@ -317,6 +317,8 @@ describe('ModelSelector', () => {
     expect(logo?.width).toBe(12);
     expect(logo?.height).toBe(12);
     expect(logo?.classList).toContain('size-4');
+    expect(logo?.classList).toContain('dark:invert');
+    expect(logo?.classList).toContain('in-data-[theme=dark]:invert');
   });
 
   it('throws a clear error when dialog pieces are used outside the root', async () => {

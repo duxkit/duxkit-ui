@@ -2,7 +2,7 @@ import { Component, computed, input } from '@angular/core';
 import { twMerge } from 'tailwind-merge';
 import type { ModelSelectorProvider } from './model-selector.types';
 
-export const modelSelectorLogoClasses = 'size-4 dark:invert';
+export const modelSelectorLogoClasses = 'size-3 dark:invert in-data-[theme=dark]:invert';
 
 @Component({
   selector: 'ai-model-selector-logo',
@@ -11,13 +11,7 @@ export const modelSelectorLogoClasses = 'size-4 dark:invert';
     class: 'contents',
   },
   template: `
-    <img
-      [alt]="computedAlt()"
-      [class]="classes()"
-      height="12"
-      [src]="src()"
-      width="12"
-    />
+    <img [alt]="computedAlt()" [class]="classes()" height="12" [src]="src()" width="12" />
   `,
 })
 export class ModelSelectorLogo {
