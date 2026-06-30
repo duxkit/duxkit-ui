@@ -1,8 +1,38 @@
 # DuxKit AI
 
-Angular AI UI primitives built on the Vercel AI SDK, Angular signals, Spartan UI, Tailwind CSS, and Nx.
+Angular AI UI primitives for teams building chat, agent, tool-call, reasoning, and generated-output interfaces with Angular and the AI SDK.
 
-This repository is an Nx workspace containing the publishable component library, a local playground, and a starter marketing/docs site.
+The package is for Angular applications that want composable UI primitives instead of a full chat application shell. It is not a backend framework, provider SDK, design system replacement, or hosted AI product.
+
+The project is pre-1.0 and currently targets Angular 22+, `@ai-sdk/angular` 2+, and AI SDK 6+.
+
+## Install
+
+```bash
+pnpm add duxkit-ai
+```
+
+Consumers must also configure Tailwind CSS v4 and the Spartan Tailwind preset. See the package README in `projects/duxkit-ai/README.md` for setup details.
+
+## Basic Usage
+
+```ts
+import { Conversation, ConversationContent, Message, MessageContent } from 'duxkit-ai';
+```
+
+```html
+<ai-conversation>
+  <ai-conversation-content>
+    <ai-message from="assistant">
+      <ai-message-content>Hello from DuxKit AI.</ai-message-content>
+    </ai-message>
+  </ai-conversation-content>
+</ai-conversation>
+```
+
+Docs: <https://duxkit.com>
+
+## Repository
 
 ## Workspace
 
@@ -335,3 +365,15 @@ For a faster library-only check:
 pnpm build:lib
 pnpm nx test duxkit-ai -- --watch=false
 ```
+
+## Contributing
+
+See `CONTRIBUTING.md` for setup, scope, and PR expectations.
+
+## Security
+
+See `SECURITY.md` for supported versions and vulnerability reporting.
+
+## License
+
+MIT. See `LICENSE`.

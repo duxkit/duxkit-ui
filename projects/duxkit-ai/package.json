@@ -1,6 +1,28 @@
 {
   "name": "duxkit-ai",
   "version": "0.0.1",
+  "description": "Angular AI UI primitives for AI SDK interfaces.",
+  "license": "MIT",
+  "author": "Liam Langstaff",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/liam-langstaff/duxkit.git",
+    "directory": "projects/duxkit-ai"
+  },
+  "homepage": "https://duxkit.com",
+  "bugs": {
+    "url": "https://github.com/liam-langstaff/duxkit/issues"
+  },
+  "keywords": [
+    "angular",
+    "ai",
+    "ai-sdk",
+    "chat",
+    "components",
+    "signals",
+    "tailwindcss",
+    "spartan"
+  ],
   "peerDependencies": {
     "@angular/cdk": ">=22.0.2 <23.0.0",
     "@angular/common": "^22.0.4",

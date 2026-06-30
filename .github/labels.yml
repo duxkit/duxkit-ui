@@ -1,0 +1,24 @@
+- name: bug
+  color: d73a4a
+  description: Something is not working.
+- name: docs
+  color: 0075ca
+  description: Documentation improvements.
+- name: component
+  color: 5319e7
+  description: Library primitive or component work.
+- name: accessibility
+  color: 0e8a16
+  description: Accessibility behavior, semantics, or WCAG fixes.
+- name: good first issue
+  color: 7057ff
+  description: Small, well-scoped task for new contributors.
+- name: help wanted
+  color: 008672
+  description: Maintainer would welcome community help.
+- name: question
+  color: d876e3
+  description: Needs clarification or support discussion.
+- name: wontfix
+  color: ffffff
+  description: Intentionally not planned.
