@@ -29,6 +29,8 @@ const componentImports: Record<ComponentDocSlug, string> = {
     "import { Context, ContextContent, ContextContentBody, ContextContentFooter, ContextContentHeader, ContextInputUsage, ContextOutputUsage, ContextTrigger } from 'duxkit-ai';",
   'model-selector':
     "import { ModelSelector, ModelSelectorContent, ModelSelectorEmpty, ModelSelectorGroup, ModelSelectorInput, ModelSelectorItem, ModelSelectorList, ModelSelectorLogo, ModelSelectorName, ModelSelectorShortcut, ModelSelectorTrigger } from 'duxkit-ai';",
+  'prompt-input':
+    "import { ModelSelector, ModelSelectorContent, ModelSelectorEmpty, ModelSelectorGroup, ModelSelectorInput, ModelSelectorItem, ModelSelectorList, ModelSelectorLogo, ModelSelectorName, ModelSelectorTrigger, PromptInput, PromptInputAddAttachment, PromptInputAttachments, PromptInputSubmit, PromptInputTextarea, PromptInputToolbar, PromptInputTools } from 'duxkit-ai';",
   attachment:
     "import { Attachment, AttachmentPreview, AttachmentRemove, Attachments } from 'duxkit-ai';",
   'chain-of-thought':
@@ -88,6 +90,34 @@ const anatomySnippets: Record<ComponentDocSlug, string> = {
     </ai-model-selector-list>
   </ai-model-selector-content>
 </ai-model-selector>`,
+  'prompt-input': `<form aiPromptInput (promptSubmit)="sendMessage($event)">
+  <textarea aiPromptInputTextarea placeholder="Ask a question..."></textarea>
+  <ai-prompt-input-attachments />
+  <ai-prompt-input-toolbar>
+    <ai-prompt-input-tools>
+      <ai-model-selector>
+        <button aiModelSelectorTrigger>
+          <ai-model-selector-logo provider="openai" />
+          <ai-model-selector-name>GPT-4.1</ai-model-selector-name>
+        </button>
+        <ai-model-selector-content>
+          <ai-model-selector-input placeholder="Search models..." />
+          <ai-model-selector-list>
+            <ai-model-selector-empty>No models found.</ai-model-selector-empty>
+            <ai-model-selector-group heading="OpenAI">
+              <button aiModelSelectorItem value="gpt-4.1 GPT-4.1 openai OpenAI">
+                <ai-model-selector-logo provider="openai" />
+                <ai-model-selector-name>GPT-4.1</ai-model-selector-name>
+              </button>
+            </ai-model-selector-group>
+          </ai-model-selector-list>
+        </ai-model-selector-content>
+      </ai-model-selector>
+      <button aiPromptInputAddAttachment>Add attachment</button>
+    </ai-prompt-input-tools>
+    <button aiPromptInputSubmit></button>
+  </ai-prompt-input-toolbar>
+</form>`,
   attachment: `<ai-attachments variant="grid">
   @for (attachment of attachments; track attachmentKey(attachment)) {
     <ai-attachment [data]="attachment" (removed)="removeAttachment(attachment)">

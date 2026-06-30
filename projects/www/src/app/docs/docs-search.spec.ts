@@ -33,6 +33,11 @@ describe('docs search', () => {
     expect(searchComponentDocs('ContextTrigger').map((item) => item.slug)).toContain('context');
     expect(searchComponentDocs('usedTokens').map((item) => item.slug)).toContain('context');
     expect(searchComponentDocs('Model identifier').map((item) => item.slug)).toContain('context');
+    expect(searchComponentDocs('prompt input').map((item) => item.slug)).toContain('prompt-input');
+    expect(searchComponentDocs('aiPromptInputTextarea').map((item) => item.slug)).toContain(
+      'prompt-input',
+    );
+    expect(searchComponentDocs('promptSubmit').map((item) => item.slug)).toContain('prompt-input');
     expect(searchComponentDocs('ReasoningContent').map((item) => item.slug)).toContain('reasoning');
     expect(searchComponentDocs('collapsedMaxHeight').map((item) => item.slug)).toEqual(
       expect.arrayContaining(['reasoning', 'chain-of-thought']),

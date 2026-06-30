@@ -2,6 +2,7 @@ import { Component, input } from '@angular/core';
 import { HlmButton } from '@duxkit/ui/helm/button';
 import type { LanguageModelUsage } from 'ai';
 import {
+  type AiPromptSubmit,
   Attachment,
   type AiAttachmentPart,
   type AiToolPart,
@@ -55,6 +56,13 @@ import {
   ModelSelectorName,
   ModelSelectorShortcut,
   ModelSelectorTrigger,
+  PromptInput,
+  PromptInputAddAttachment,
+  PromptInputAttachments,
+  PromptInputSubmit,
+  PromptInputTextarea,
+  PromptInputToolbar,
+  PromptInputTools,
   Reasoning,
   ReasoningContent,
   ReasoningTrigger,
@@ -158,6 +166,38 @@ export const componentPreviewSnippets: Record<ComponentDocSlug, string> = {
     </ai-model-selector-list>
   </ai-model-selector-content>
 </ai-model-selector>`,
+  'prompt-input': `<form aiPromptInput class="w-[640px]" (promptSubmit)="recordPromptSubmit($event)">
+  <textarea aiPromptInputTextarea placeholder="Ask a question..."></textarea>
+  <ai-prompt-input-attachments />
+  <ai-prompt-input-toolbar>
+    <ai-prompt-input-tools>
+      <ai-model-selector>
+        <button aiModelSelectorTrigger hlmBtn class="justify-between" variant="outline" size="sm">
+          <ai-model-selector-logo provider="openai" />
+          <ai-model-selector-name>GPT-4.1</ai-model-selector-name>
+        </button>
+        <ai-model-selector-content>
+          <ai-model-selector-input placeholder="Search models..." />
+          <ai-model-selector-list>
+            <ai-model-selector-empty>No models found.</ai-model-selector-empty>
+            @for (group of modelSelectorGroups; track group.provider) {
+              <ai-model-selector-group [heading]="group.heading">
+                @for (model of group.models; track model.id) {
+                  <button aiModelSelectorItem [value]="modelSelectorSearchValue(model)">
+                    <ai-model-selector-logo [provider]="model.providerSlug ?? model.provider" />
+                    <ai-model-selector-name>{{ model.name }}</ai-model-selector-name>
+                  </button>
+                }
+              </ai-model-selector-group>
+            }
+          </ai-model-selector-list>
+        </ai-model-selector-content>
+      </ai-model-selector>
+      <button aiPromptInputAddAttachment hlmBtn variant="ghost" size="icon-sm"></button>
+    </ai-prompt-input-tools>
+    <button aiPromptInputSubmit hlmBtn size="icon-sm"></button>
+  </ai-prompt-input-toolbar>
+</form>`,
   attachment: `<ai-attachments class="w-[640px]" variant="grid">
   @for (attachment of attachmentParts; track attachmentKey(attachment)) {
     <ai-attachment [data]="attachment">
@@ -356,6 +396,13 @@ export const attachmentPreviewSnippets: Record<AttachmentsVariant, string> = {
     ModelSelectorName,
     ModelSelectorShortcut,
     ModelSelectorTrigger,
+    PromptInput,
+    PromptInputAddAttachment,
+    PromptInputAttachments,
+    PromptInputSubmit,
+    PromptInputTextarea,
+    PromptInputToolbar,
+    PromptInputTools,
     Reasoning,
     ReasoningContent,
     ReasoningTrigger,
@@ -485,6 +532,49 @@ export const attachmentPreviewSnippets: Record<AttachmentsVariant, string> = {
             </ai-attachment>
           }
         </ai-attachments>
+      }
+
+      @case ('prompt-input') {
+        <form aiPromptInput class="w-[640px]" (promptSubmit)="recordPromptSubmit($event)">
+          <textarea aiPromptInputTextarea placeholder="Ask a question..."></textarea>
+          <ai-prompt-input-attachments />
+          <ai-prompt-input-toolbar>
+            <ai-prompt-input-tools>
+              <ai-model-selector>
+                <button
+                  aiModelSelectorTrigger
+                  hlmBtn
+                  class="justify-between"
+                  variant="outline"
+                  size="sm"
+                >
+                  <ai-model-selector-logo provider="openai" />
+                  <ai-model-selector-name>GPT-4.1</ai-model-selector-name>
+                </button>
+                <ai-model-selector-content>
+                  <ai-model-selector-input placeholder="Search models..." />
+                  <ai-model-selector-list>
+                    <ai-model-selector-empty>No models found.</ai-model-selector-empty>
+                    @for (group of modelSelectorGroups; track group.provider) {
+                      <ai-model-selector-group [heading]="group.heading">
+                        @for (model of group.models; track model.id) {
+                          <button aiModelSelectorItem [value]="modelSelectorSearchValue(model)">
+                            <ai-model-selector-logo
+                              [provider]="model.providerSlug ?? model.provider"
+                            />
+                            <ai-model-selector-name>{{ model.name }}</ai-model-selector-name>
+                          </button>
+                        }
+                      </ai-model-selector-group>
+                    }
+                  </ai-model-selector-list>
+                </ai-model-selector-content>
+              </ai-model-selector>
+              <button aiPromptInputAddAttachment hlmBtn variant="ghost" size="icon-sm"></button>
+            </ai-prompt-input-tools>
+            <button aiPromptInputSubmit hlmBtn size="icon-sm"></button>
+          </ai-prompt-input-toolbar>
+        </form>
       }
 
       @case ('chain-of-thought') {
@@ -773,6 +863,10 @@ export class ExampleCounter {
 
   protected modelSelectorSearchValue(model: ModelSelectorModel): string {
     return createModelSelectorSearchValue(model);
+  }
+
+  protected recordPromptSubmit(_event: AiPromptSubmit): void {
+    return;
   }
 
   protected readonly weatherToolPart: AiToolPart = {
