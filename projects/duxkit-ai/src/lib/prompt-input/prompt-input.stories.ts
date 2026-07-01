@@ -15,13 +15,16 @@ import {
   groupModelSelectorModels,
   ModelSelector,
   ModelSelectorContent,
+  ModelSelectorDescription,
   ModelSelectorEmpty,
   ModelSelectorGroup,
+  ModelSelectorGroupHeading,
   ModelSelectorInput,
   ModelSelectorItem,
   ModelSelectorList,
   ModelSelectorLogo,
   ModelSelectorName,
+  ModelSelectorTitle,
   ModelSelectorTrigger,
   type ModelSelectorModel,
 } from '../model-selector';
@@ -51,13 +54,16 @@ const meta: Meta = {
         HlmButton,
         ModelSelector,
         ModelSelectorContent,
+        ModelSelectorDescription,
         ModelSelectorEmpty,
         ModelSelectorGroup,
+        ModelSelectorGroupHeading,
         ModelSelectorInput,
         ModelSelectorItem,
         ModelSelectorList,
         ModelSelectorLogo,
         ModelSelectorName,
+        ModelSelectorTitle,
         ModelSelectorTrigger,
         PromptInput,
         PromptInputAddAttachment,
@@ -87,11 +93,14 @@ const meta: Meta = {
                 <ai-model-selector-name>GPT-4.1</ai-model-selector-name>
               </button>
               <ai-model-selector-content>
+                <h2 aiModelSelectorTitle class="sr-only">Choose a model</h2>
+                <p aiModelSelectorDescription class="sr-only">Search and select an AI model.</p>
                 <ai-model-selector-input placeholder="Search models..." />
                 <ai-model-selector-list>
                   <ai-model-selector-empty>No models found.</ai-model-selector-empty>
                   @for (group of groups; track group.provider) {
-                    <ai-model-selector-group [heading]="group.heading">
+                    <ai-model-selector-group>
+                      <ai-model-selector-group-heading>{{ group.heading }}</ai-model-selector-group-heading>
                       @for (model of group.models; track model.id) {
                         <button aiModelSelectorItem [value]="searchValue(model)">
                           <ai-model-selector-logo [provider]="model.providerSlug ?? model.provider" />
@@ -134,11 +143,14 @@ export const Streaming: Story = {
                 <ai-model-selector-name>GPT-4.1</ai-model-selector-name>
               </button>
               <ai-model-selector-content>
+                <h2 aiModelSelectorTitle class="sr-only">Choose a model</h2>
+                <p aiModelSelectorDescription class="sr-only">Search and select an AI model.</p>
                 <ai-model-selector-input placeholder="Search models..." />
                 <ai-model-selector-list>
                   <ai-model-selector-empty>No models found.</ai-model-selector-empty>
                   @for (group of groups; track group.provider) {
-                    <ai-model-selector-group [heading]="group.heading">
+                    <ai-model-selector-group>
+                      <ai-model-selector-group-heading>{{ group.heading }}</ai-model-selector-group-heading>
                       @for (model of group.models; track model.id) {
                         <button aiModelSelectorItem [value]="searchValue(model)">
                           <ai-model-selector-logo [provider]="model.providerSlug ?? model.provider" />

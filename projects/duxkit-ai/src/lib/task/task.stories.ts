@@ -22,7 +22,7 @@ const meta: Meta = {
     props: args,
     template: `
       <ai-task class="w-[560px]" [expanded]="expanded">
-        <button aiTaskTrigger>Searched the workspace</button>
+        <button aiTaskTrigger></button>
         <ai-task-content>
           <ai-task-item>
             Matched reasoning usage in <ai-task-item-file>reasoning-content.ts</ai-task-item-file>

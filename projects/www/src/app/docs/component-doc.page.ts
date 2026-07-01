@@ -23,18 +23,20 @@ const packagePublished = false;
 const componentImports: Record<ComponentDocSlug, string> = {
   conversation:
     "import { Conversation, ConversationContent, ConversationScrollAnchor } from 'duxkit-ai';",
-  message: "import { Message, MessageContent } from 'duxkit-ai';",
+  message: "import { Message, MessageActions, MessageContent, MessageCopy } from 'duxkit-ai';",
   checkpoint: "import { Checkpoint, CheckpointIcon, CheckpointTrigger } from 'duxkit-ai';",
   context:
     "import { Context, ContextContent, ContextContentBody, ContextContentFooter, ContextContentHeader, ContextInputUsage, ContextOutputUsage, ContextTrigger } from 'duxkit-ai';",
   'model-selector':
-    "import { ModelSelector, ModelSelectorContent, ModelSelectorEmpty, ModelSelectorGroup, ModelSelectorInput, ModelSelectorItem, ModelSelectorList, ModelSelectorLogo, ModelSelectorName, ModelSelectorShortcut, ModelSelectorTrigger } from 'duxkit-ai';",
+    "import { ModelSelector, ModelSelectorContent, ModelSelectorDescription, ModelSelectorEmpty, ModelSelectorGroup, ModelSelectorGroupHeading, ModelSelectorInput, ModelSelectorItem, ModelSelectorList, ModelSelectorLogo, ModelSelectorName, ModelSelectorShortcut, ModelSelectorTitle, ModelSelectorTrigger } from 'duxkit-ai';",
   'prompt-input':
-    "import { ModelSelector, ModelSelectorContent, ModelSelectorEmpty, ModelSelectorGroup, ModelSelectorInput, ModelSelectorItem, ModelSelectorList, ModelSelectorLogo, ModelSelectorName, ModelSelectorTrigger, PromptInput, PromptInputAddAttachment, PromptInputAttachments, PromptInputSubmit, PromptInputTextarea, PromptInputToolbar, PromptInputTools } from 'duxkit-ai';",
+    "import { ModelSelector, ModelSelectorContent, ModelSelectorDescription, ModelSelectorEmpty, ModelSelectorGroup, ModelSelectorGroupHeading, ModelSelectorInput, ModelSelectorItem, ModelSelectorList, ModelSelectorLogo, ModelSelectorName, ModelSelectorTitle, ModelSelectorTrigger, PromptInput, PromptInputAddAttachment, PromptInputAttachments, PromptInputSubmit, PromptInputTextarea, PromptInputToolbar, PromptInputTools } from 'duxkit-ai';",
+  queue:
+    "import { Queue, QueueItem, QueueItemAction, QueueItemActions, QueueItemAttachment, QueueItemContent, QueueItemDescription, QueueItemFile, QueueItemImage, QueueItemIndicator, QueueList, QueueSection, QueueSectionContent, QueueSectionCount, QueueSectionLabel, QueueSectionTrigger } from 'duxkit-ai';",
   attachment:
     "import { Attachment, AttachmentPreview, AttachmentRemove, Attachments } from 'duxkit-ai';",
   'chain-of-thought':
-    "import { ChainOfThought, ChainOfThoughtContent, ChainOfThoughtStep, ChainOfThoughtTrigger } from 'duxkit-ai';",
+    "import { ChainOfThought, ChainOfThoughtContent, ChainOfThoughtImage, ChainOfThoughtImageCaption, ChainOfThoughtStep, ChainOfThoughtStepDescription, ChainOfThoughtStepIcon, ChainOfThoughtStepLabel, ChainOfThoughtTrigger } from 'duxkit-ai';",
   task: "import { Task, TaskContent, TaskItem, TaskItemFile, TaskTrigger } from 'duxkit-ai';",
   tool: "import { Tool, ToolContent, ToolTrigger } from 'duxkit-ai';",
   reasoning: "import { Reasoning, ReasoningContent, ReasoningTrigger } from 'duxkit-ai';",
@@ -78,10 +80,13 @@ const anatomySnippets: Record<ComponentDocSlug, string> = {
     <ai-model-selector-name>GPT-4.1</ai-model-selector-name>
   </button>
   <ai-model-selector-content>
+    <h2 aiModelSelectorTitle class="sr-only">Choose a model</h2>
+    <p aiModelSelectorDescription class="sr-only">Search and select an AI model.</p>
     <ai-model-selector-input placeholder="Search models..." />
     <ai-model-selector-list>
       <ai-model-selector-empty>No models found.</ai-model-selector-empty>
-      <ai-model-selector-group heading="OpenAI">
+      <ai-model-selector-group>
+        <ai-model-selector-group-heading>OpenAI</ai-model-selector-group-heading>
         <button aiModelSelectorItem value="gpt-4.1 GPT-4.1 openai OpenAI">
           <ai-model-selector-logo provider="openai" />
           <ai-model-selector-name>GPT-4.1</ai-model-selector-name>
@@ -101,10 +106,13 @@ const anatomySnippets: Record<ComponentDocSlug, string> = {
           <ai-model-selector-name>GPT-4.1</ai-model-selector-name>
         </button>
         <ai-model-selector-content>
+          <h2 aiModelSelectorTitle class="sr-only">Choose a model</h2>
+          <p aiModelSelectorDescription class="sr-only">Search and select an AI model.</p>
           <ai-model-selector-input placeholder="Search models..." />
           <ai-model-selector-list>
             <ai-model-selector-empty>No models found.</ai-model-selector-empty>
-            <ai-model-selector-group heading="OpenAI">
+            <ai-model-selector-group>
+              <ai-model-selector-group-heading>OpenAI</ai-model-selector-group-heading>
               <button aiModelSelectorItem value="gpt-4.1 GPT-4.1 openai OpenAI">
                 <ai-model-selector-logo provider="openai" />
                 <ai-model-selector-name>GPT-4.1</ai-model-selector-name>
@@ -118,6 +126,35 @@ const anatomySnippets: Record<ComponentDocSlug, string> = {
     <button aiPromptInputSubmit></button>
   </ai-prompt-input-toolbar>
 </form>`,
+  queue: `<ai-queue>
+  <ai-queue-section>
+    <button aiQueueSectionTrigger>
+      <ai-queue-section-label>
+        <span aiQueueSectionCount>{{ items.length }}</span>
+        <span>queued tasks</span>
+      </ai-queue-section-label>
+    </button>
+    <ai-queue-section-content>
+      <ai-queue-list>
+        @for (item of items; track item.id) {
+          <ai-queue-item>
+            <div class="flex items-start gap-3">
+              <span aiQueueItemIndicator [completed]="item.status === 'completed'"></span>
+              <span aiQueueItemContent [completed]="item.status === 'completed'">
+                {{ item.title }}
+              </span>
+            </div>
+            @if (item.description) {
+              <ai-queue-item-description [completed]="item.status === 'completed'">
+                {{ item.description }}
+              </ai-queue-item-description>
+            }
+          </ai-queue-item>
+        }
+      </ai-queue-list>
+    </ai-queue-section-content>
+  </ai-queue-section>
+</ai-queue>`,
   attachment: `<ai-attachments variant="grid">
   @for (attachment of attachments; track attachmentKey(attachment)) {
     <ai-attachment [data]="attachment" (removed)="removeAttachment(attachment)">
@@ -127,9 +164,15 @@ const anatomySnippets: Record<ComponentDocSlug, string> = {
   }
 </ai-attachments>`,
   'chain-of-thought': `<ai-chain-of-thought>
-  <button aiChainOfThoughtTrigger>Reviewed context</button>
+  <button aiChainOfThoughtTrigger></button>
   <ai-chain-of-thought-content>
-    <ai-chain-of-thought-step label="Read files" status="complete" />
+    <ai-chain-of-thought-step status="complete">
+      <ai-chain-of-thought-step-icon>✓</ai-chain-of-thought-step-icon>
+      <ai-chain-of-thought-step-label>Read files</ai-chain-of-thought-step-label>
+      <ai-chain-of-thought-step-description>
+        Read matching docs.
+      </ai-chain-of-thought-step-description>
+    </ai-chain-of-thought-step>
   </ai-chain-of-thought-content>
 </ai-chain-of-thought>`,
   task: `<ai-task>

@@ -14,9 +14,7 @@ describe('docs search', () => {
     expect(searchComponentDocs('ConversationScrollAnchor').map((item) => item.slug)).toContain(
       'conversation',
     );
-    expect(searchComponentDocs('MessageActionsThumbsUp').map((item) => item.slug)).toContain(
-      'message',
-    );
+    expect(searchComponentDocs('MessageThumbsUp').map((item) => item.slug)).toContain('message');
     expect(searchComponentDocs('checkpoint').map((item) => item.slug)).toContain('checkpoint');
     expect(searchComponentDocs('ai-checkpoint').map((item) => item.slug)).toContain('checkpoint');
     expect(searchComponentDocs('CheckpointTrigger').map((item) => item.slug)).toContain(
@@ -79,6 +77,6 @@ describe('docs search', () => {
     expect(message).toBeDefined();
     expect(normalizeSearchText('ReasoningContent')).toBe('reasoning content');
     expect(matchesDocsSearchText(reasoning?.searchText ?? '', 'ReasoningContent')).toBe(true);
-    expect(matchesDocsSearchText(message?.searchText ?? '', 'MessageActionsThumbsUp')).toBe(true);
+    expect(matchesDocsSearchText(message?.searchText ?? '', 'MessageThumbsUp')).toBe(true);
   });
 });

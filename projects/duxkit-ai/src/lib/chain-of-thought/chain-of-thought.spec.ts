@@ -5,9 +5,13 @@ import {
   ChainOfThought,
   ChainOfThoughtContent,
   ChainOfThoughtImage,
+  ChainOfThoughtImageCaption,
   ChainOfThoughtSearchResult,
   ChainOfThoughtSearchResults,
   ChainOfThoughtStep,
+  ChainOfThoughtStepDescription,
+  ChainOfThoughtStepIcon,
+  ChainOfThoughtStepLabel,
   ChainOfThoughtTrigger,
 } from './';
 
@@ -16,9 +20,13 @@ import {
     ChainOfThought,
     ChainOfThoughtContent,
     ChainOfThoughtImage,
+    ChainOfThoughtImageCaption,
     ChainOfThoughtSearchResult,
     ChainOfThoughtSearchResults,
     ChainOfThoughtStep,
+    ChainOfThoughtStepDescription,
+    ChainOfThoughtStepIcon,
+    ChainOfThoughtStepLabel,
     ChainOfThoughtTrigger,
   ],
   template: `
@@ -26,27 +34,34 @@ import {
       <button aiChainOfThoughtTrigger class="custom-trigger">Thinking trace</button>
 
       <ai-chain-of-thought-content class="custom-content">
-        <ai-chain-of-thought-step
-          class="custom-step"
-          status="active"
-          icon="lucideSearch"
-          label="Searching documentation"
-          description="Looking for the relevant API surface."
-        >
+        <ai-chain-of-thought-step class="custom-step" status="active">
+          <ai-chain-of-thought-step-icon>
+            <span data-testid="custom-icon">I</span>
+          </ai-chain-of-thought-step-icon>
+          <ai-chain-of-thought-step-label>
+            <span data-testid="custom-label">Searching documentation</span>
+          </ai-chain-of-thought-step-label>
+          <ai-chain-of-thought-step-description>
+            <span data-testid="custom-description">Looking for the relevant API surface.</span>
+          </ai-chain-of-thought-step-description>
           <ai-chain-of-thought-search-results>
             <span aiChainOfThoughtSearchResult>AI SDK</span>
             <span aiChainOfThoughtSearchResult>Angular</span>
           </ai-chain-of-thought-search-results>
         </ai-chain-of-thought-step>
 
-        <ai-chain-of-thought-step
-          status="pending"
-          label="Summarising findings"
-          description="Preparing the answer."
-        />
+        <ai-chain-of-thought-step status="pending">
+          <ai-chain-of-thought-step-label>Summarising findings</ai-chain-of-thought-step-label>
+          <ai-chain-of-thought-step-description>
+            Preparing the answer.
+          </ai-chain-of-thought-step-description>
+        </ai-chain-of-thought-step>
 
-        <ai-chain-of-thought-image caption="Generated preview">
+        <ai-chain-of-thought-image>
           <div class="preview">Preview</div>
+          <ai-chain-of-thought-image-caption>
+            Generated <strong>preview</strong>
+          </ai-chain-of-thought-image-caption>
         </ai-chain-of-thought-image>
       </ai-chain-of-thought-content>
     </ai-chain-of-thought>
@@ -69,12 +84,19 @@ class StreamingHost {
 }
 
 @Component({
-  imports: [ChainOfThought, ChainOfThoughtContent, ChainOfThoughtStep, ChainOfThoughtTrigger],
+  imports: [
+    ChainOfThought,
+    ChainOfThoughtContent,
+    ChainOfThoughtStep,
+    ChainOfThoughtStepLabel,
+    ChainOfThoughtTrigger,
+  ],
   template: `
     <ai-chain-of-thought [expanded]="true">
       <button aiChainOfThoughtTrigger></button>
       <ai-chain-of-thought-content>
-        <ai-chain-of-thought-step collapsedMaxHeight="120px" [pinToBottom]="true" label="Long step">
+        <ai-chain-of-thought-step collapsedMaxHeight="120px" [pinToBottom]="true">
+          <ai-chain-of-thought-step-label>Long step</ai-chain-of-thought-step-label>
           <p>Line one</p>
           <p>Line two</p>
           <p>Line three</p>
@@ -84,6 +106,18 @@ class StreamingHost {
   `,
 })
 class ClampedStepHost {}
+
+@Component({
+  imports: [ChainOfThought, ChainOfThoughtTrigger],
+  template: `
+    <ai-chain-of-thought>
+      <button aiChainOfThoughtTrigger>
+        <span data-testid="custom-chain-trigger">Custom chain trigger</span>
+      </button>
+    </ai-chain-of-thought>
+  `,
+})
+class CustomTriggerHost {}
 
 describe('ChainOfThought', () => {
   let fixture: ComponentFixture<Host>;
@@ -110,12 +144,35 @@ describe('ChainOfThought', () => {
     expect(element.querySelector('ai-chain-of-thought-content')?.textContent).toContain(
       'Looking for the relevant API surface.',
     );
+    expect(element.querySelector('[data-testid="custom-icon"]')?.textContent).toContain('I');
+    expect(element.querySelector('[data-testid="custom-label"]')?.textContent).toContain(
+      'Searching documentation',
+    );
+    expect(element.querySelector('[data-testid="custom-description"]')?.textContent).toContain(
+      'Looking for the relevant API surface.',
+    );
     expect(element.querySelector('ai-chain-of-thought-search-results')?.textContent).toContain(
       'AI SDK',
     );
     expect(element.querySelector('ai-chain-of-thought-image')?.textContent).toContain(
       'Generated preview',
     );
+    expect(element.querySelector('ai-chain-of-thought-image strong')?.textContent).toContain(
+      'preview',
+    );
+  });
+
+  it('uses fully custom trigger content when projected', async () => {
+    const customFixture = TestBed.createComponent(CustomTriggerHost);
+    customFixture.detectChanges();
+    await customFixture.whenStable();
+
+    const trigger = customFixture.nativeElement.querySelector(
+      'button[aichainofthoughttrigger]',
+    ) as HTMLButtonElement | null;
+
+    expect(trigger?.textContent).toContain('Custom chain trigger');
+    expect(trigger?.querySelector('ng-icon')).toBeNull();
   });
 
   it('applies defaults while preserving consumer classes', () => {

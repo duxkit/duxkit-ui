@@ -2,6 +2,7 @@ import {
   AfterViewInit,
   Component,
   computed,
+  contentChild,
   effect,
   ElementRef,
   input,
@@ -13,13 +14,13 @@ import { NgIcon, provideIcons } from '@ng-icons/core';
 import {
   lucideCircleCheck,
   lucideCircleDashed,
-  lucideDot,
   lucideGlobe,
   lucideImage,
   lucideLoaderCircle,
   lucideSearch,
 } from '@ng-icons/lucide';
 import { twMerge } from 'tailwind-merge';
+import { ChainOfThoughtStepIcon } from './chain-of-thought-step-icon';
 
 export type ChainOfThoughtStepStatus = 'complete' | 'active' | 'pending';
 
@@ -29,6 +30,12 @@ const statusClasses: Record<ChainOfThoughtStepStatus, string> = {
   pending: 'text-muted-foreground/50',
 };
 
+const statusIcons: Record<ChainOfThoughtStepStatus, string> = {
+  active: 'lucideLoaderCircle',
+  complete: 'lucideCircleCheck',
+  pending: 'lucideCircleDashed',
+};
+
 @Component({
   selector: '[aiChainOfThoughtStep],ai-chain-of-thought-step',
   imports: [NgIcon],
@@ -36,7 +43,6 @@ const statusClasses: Record<ChainOfThoughtStepStatus, string> = {
     provideIcons({
       lucideCircleCheck,
       lucideCircleDashed,
-      lucideDot,
       lucideGlobe,
       lucideImage,
       lucideLoaderCircle,
@@ -49,44 +55,50 @@ const statusClasses: Record<ChainOfThoughtStepStatus, string> = {
   },
   template: `
     <div class="relative mt-0.5 shrink-0">
-      <ng-icon [name]="icon()" style="--ng-icon__size: 16px" [class.animate-spin]="spinning()" />
+      <ng-content select="[aiChainOfThoughtStepIcon],ai-chain-of-thought-step-icon" />
+      @if (stepIcon() === undefined) {
+        <ng-icon
+          [name]="defaultIcon()"
+          style="--ng-icon__size: 16px"
+          [class.animate-spin]="spinning()"
+        />
+      }
       <div class="absolute top-7 bottom-0 left-1/2 -mx-px w-px bg-border"></div>
     </div>
 
-    <div class="min-w-0 flex-1 space-y-2 overflow-hidden">
-      @if (label() !== undefined) {
-        <div>{{ label() }}</div>
-      }
+    <div class="min-w-0 flex-1 overflow-hidden">
+      <div class="grid min-w-0 gap-2">
+        <ng-content select="[aiChainOfThoughtStepLabel],ai-chain-of-thought-step-label" />
+        <ng-content
+          select="[aiChainOfThoughtStepDescription],ai-chain-of-thought-step-description"
+        />
 
-      @if (description() !== undefined) {
-        <div class="text-muted-foreground text-xs">{{ description() }}</div>
-      }
-
-      <div class="relative min-w-0">
-        <div
-          #clampedContent
-          class="min-w-0"
-          [class.overflow-hidden]="isClamped()"
-          [style.max-height]="contentMaxHeight()"
-          [style.mask-image]="contentMaskImage()"
-          [style.-webkit-mask-image]="contentMaskImage()"
-        >
-          <ng-content />
-        </div>
-
-        @if (showClampOverlay()) {
+        <div class="relative min-w-0">
           <div
-            class="pointer-events-none absolute inset-x-0 bottom-0 flex justify-center pt-12 pb-1"
+            #clampedContent
+            class="min-w-0"
+            [class.overflow-hidden]="isClamped()"
+            [style.max-height]="contentMaxHeight()"
+            [style.mask-image]="contentMaskImage()"
+            [style.-webkit-mask-image]="contentMaskImage()"
           >
-            <button
-              type="button"
-              class="pointer-events-auto rounded-md border border-border bg-background/90 px-2.5 py-1 font-medium text-muted-foreground text-xs shadow-sm transition-colors hover:text-foreground"
-              (click)="expandContent()"
-            >
-              {{ showMoreLabel() }}
-            </button>
+            <ng-content />
           </div>
-        }
+
+          @if (showClampOverlay()) {
+            <div
+              class="pointer-events-none absolute inset-x-0 bottom-0 flex justify-center pt-12 pb-1"
+            >
+              <button
+                type="button"
+                class="pointer-events-auto rounded-md border border-border bg-background/90 px-2.5 py-1 font-medium text-muted-foreground text-xs shadow-sm transition-colors hover:text-foreground"
+                (click)="expandContent()"
+              >
+                {{ showMoreLabel() }}
+              </button>
+            </div>
+          }
+        </div>
       </div>
 
       @if (showCollapseControl()) {
@@ -104,12 +116,6 @@ const statusClasses: Record<ChainOfThoughtStepStatus, string> = {
   `,
 })
 export class ChainOfThoughtStep implements AfterViewInit, OnDestroy {
-  /** Lucide icon name shown beside the step. */
-  public readonly icon = input('lucideDot');
-  /** Primary step label. */
-  public readonly label = input<string | undefined>();
-  /** Secondary text shown below the step label. */
-  public readonly description = input<string | undefined>();
   /** Visual status used to style the step marker. */
   public readonly status = input<ChainOfThoughtStepStatus>('complete');
   /** Maximum collapsed content height before the show more control appears. */
@@ -123,12 +129,14 @@ export class ChainOfThoughtStep implements AfterViewInit, OnDestroy {
   /** Additional classes merged onto the step root element. */
   public readonly userClass = input<string | undefined>(undefined, { alias: 'class' });
   private readonly clampedContent = viewChild<ElementRef<HTMLElement>>('clampedContent');
+  protected readonly stepIcon = contentChild(ChainOfThoughtStepIcon);
   private resizeObserver: ResizeObserver | undefined;
   private mutationObserver: MutationObserver | undefined;
 
   protected readonly expanded = signal(false);
   protected readonly hasOverflow = signal(false);
-  protected readonly spinning = computed(() => this.icon() === 'lucideLoaderCircle');
+  protected readonly defaultIcon = computed(() => statusIcons[this.status()]);
+  protected readonly spinning = computed(() => this.defaultIcon() === 'lucideLoaderCircle');
   protected readonly isClamped = computed(
     () => this.collapsedMaxHeight() !== undefined && !this.expanded(),
   );

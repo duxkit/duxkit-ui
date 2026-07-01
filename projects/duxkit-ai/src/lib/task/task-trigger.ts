@@ -15,16 +15,16 @@ import { Task } from './task';
     '(click)': 'task.disableAutoToggle()',
   },
   template: `
-    <ng-icon name="lucideSearch" style="--ng-icon__size: 16px" />
-    <span class="min-w-0 truncate text-sm">
-      <ng-content />
-    </span>
-    <ng-icon
-      name="lucideChevronDown"
-      class="transition-transform"
-      style="--ng-icon__size: 16px"
-      [class.rotate-180]="expanded()"
-    />
+    <ng-content>
+      <ng-icon name="lucideSearch" style="--ng-icon__size: 16px" />
+      <span class="min-w-0 truncate text-left">{{ triggerLabel() }}</span>
+      <ng-icon
+        name="lucideChevronDown"
+        class="transition-transform"
+        style="--ng-icon__size: 16px"
+        [class.rotate-180]="expanded()"
+      />
+    </ng-content>
   `,
 })
 export class TaskTrigger {
@@ -35,6 +35,7 @@ export class TaskTrigger {
   private readonly collapsible = inject(BrnCollapsible);
 
   protected readonly expanded = this.collapsible.expanded;
+  protected readonly triggerLabel = computed(() => 'Task');
   protected readonly classes = computed(() =>
     twMerge(
       'group flex w-full cursor-pointer items-center gap-2 text-muted-foreground text-sm transition-colors hover:text-foreground',

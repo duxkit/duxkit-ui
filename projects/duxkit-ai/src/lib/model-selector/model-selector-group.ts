@@ -15,16 +15,13 @@ export const modelSelectorGroupHeadingClasses =
     '[class]': 'classes()',
   },
   template: `
-    <div data-slot="model-selector-group-heading" [class]="headingClasses">{{ heading() }}</div>
+    <ng-content select="[aiModelSelectorGroupHeading],ai-model-selector-group-heading" />
     <ng-content />
   `,
 })
 export class ModelSelectorGroup {
-  /** Visible provider group heading. */
-  public readonly heading = input.required<string>();
   /** Additional classes merged onto the model selector group. */
   public readonly userClass = input<string | undefined>(undefined, { alias: 'class' });
 
-  protected readonly headingClasses = modelSelectorGroupHeadingClasses;
   protected readonly classes = computed(() => twMerge(modelSelectorGroupClasses, this.userClass()));
 }

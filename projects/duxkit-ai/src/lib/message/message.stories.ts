@@ -1,13 +1,32 @@
 import type { Meta, StoryObj } from '@storybook/angular';
 import { moduleMetadata } from '@storybook/angular';
-import { MessageActions, MessageActionsCopy, MessageContent } from './';
+import { HlmButton } from '@duxkit/ui/helm/button';
+import { NgIcon, provideIcons } from '@ng-icons/core';
+import { lucideCopy, lucideThumbsDown, lucideThumbsUp } from '@ng-icons/lucide';
+import {
+  MessageActions,
+  MessageContent,
+  MessageCopy,
+  MessageThumbsDown,
+  MessageThumbsUp,
+} from './';
 import { Message } from './message';
 
 const meta: Meta = {
   title: 'Components/Message',
   decorators: [
     moduleMetadata({
-      imports: [Message, MessageContent, MessageActions, MessageActionsCopy],
+      imports: [
+        HlmButton,
+        Message,
+        MessageActions,
+        MessageContent,
+        MessageCopy,
+        MessageThumbsDown,
+        MessageThumbsUp,
+        NgIcon,
+      ],
+      providers: [provideIcons({ lucideCopy, lucideThumbsDown, lucideThumbsUp })],
     }),
   ],
   tags: ['autodocs'],
@@ -29,7 +48,15 @@ const meta: Meta = {
         <ai-message [from]="from">
           <ai-message-content [markdown]="markdown" />
           <ai-message-actions>
-            <ai-message-actions-copy />
+            <button aiMessageCopy hlmBtn size="icon-sm" variant="ghost" aria-label="Copy message">
+              <ng-icon name="lucideCopy" />
+            </button>
+            <button aiMessageThumbsUp hlmBtn size="icon-sm" variant="ghost" aria-label="Good response">
+              <ng-icon name="lucideThumbsUp" />
+            </button>
+            <button aiMessageThumbsDown hlmBtn size="icon-sm" variant="ghost" aria-label="Bad response">
+              <ng-icon name="lucideThumbsDown" />
+            </button>
           </ai-message-actions>
         </ai-message>
       </div>

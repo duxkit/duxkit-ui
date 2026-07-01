@@ -16,22 +16,24 @@ import { Shimmer } from '../shimmer';
     '(click)': 'chainOfThought.disableAutoToggle()',
   },
   template: `
-    <ng-icon name="lucideBrain" style="--ng-icon__size: 16px" />
-    @if (chainOfThought.isStreaming()) {
-      <span aiShimmer class="min-w-0 truncate text-left">
-        <ng-content>{{ triggerLabel() }}</ng-content>
-      </span>
-    } @else {
-      <span class="min-w-0 truncate text-left">
-        <ng-content>{{ triggerLabel() }}</ng-content>
-      </span>
-    }
-    <ng-icon
-      name="lucideChevronDown"
-      class="transition-transform"
-      style="--ng-icon__size: 16px"
-      [class.rotate-180]="expanded()"
-    />
+    <ng-content>
+      <ng-icon name="lucideBrain" style="--ng-icon__size: 16px" />
+      @if (chainOfThought.isStreaming()) {
+        <span aiShimmer class="min-w-0 truncate text-left">
+          {{ triggerLabel() }}
+        </span>
+      } @else {
+        <span class="min-w-0 truncate text-left">
+          {{ triggerLabel() }}
+        </span>
+      }
+      <ng-icon
+        name="lucideChevronDown"
+        class="transition-transform"
+        style="--ng-icon__size: 16px"
+        [class.rotate-180]="expanded()"
+      />
+    </ng-content>
   `,
 })
 export class ChainOfThoughtTrigger {

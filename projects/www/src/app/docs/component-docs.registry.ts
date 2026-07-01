@@ -36,6 +36,11 @@ export const componentDocs = [
     description: 'Composable chat prompt form with textarea, attachments, and submit controls.',
   },
   {
+    slug: 'queue',
+    title: 'Queue',
+    description: 'Composable queued work display for pending messages, tasks, and attachments.',
+  },
+  {
     slug: 'attachment',
     title: 'Attachment',
     description: 'Composable file and source-document previews for AI SDK message parts.',

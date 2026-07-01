@@ -1,12 +1,10 @@
-import { Component, computed, input } from '@angular/core';
-import {
-  BrnDialogContent,
-  BrnDialogDescription,
-  BrnDialogTitle,
-} from '@spartan-ng/brain/dialog';
+import { Component, computed, contentChild, input } from '@angular/core';
+import { BrnDialogContent, BrnDialogDescription, BrnDialogTitle } from '@spartan-ng/brain/dialog';
 import { BrnCommand, provideBrnCommandConfig } from '@spartan-ng/brain/command';
 import { twMerge } from 'tailwind-merge';
+import { ModelSelectorDescription } from './model-selector-description';
 import { injectModelSelector } from './model-selector-root';
+import { ModelSelectorTitle } from './model-selector-title';
 import { modelSelectorFuzzyFilter } from './model-selector.types';
 
 export const modelSelectorContentClasses =
@@ -27,9 +25,15 @@ export const modelSelectorCommandClasses = 'flex size-full flex-col overflow-hid
   template: `
     <ng-template brnDialogContent>
       <div data-slot="model-selector-content" [class]="classes()">
-        <h2 brnDialogTitle class="sr-only">{{ title() }}</h2>
-        @if (description(); as descriptionText) {
-          <p brnDialogDescription class="sr-only">{{ descriptionText }}</p>
+        @if (title() !== undefined) {
+          <div brnDialogTitle>
+            <ng-content select="[aiModelSelectorTitle],ai-model-selector-title" />
+          </div>
+        }
+        @if (description() !== undefined) {
+          <div brnDialogDescription>
+            <ng-content select="[aiModelSelectorDescription],ai-model-selector-description" />
+          </div>
         }
         <div [class]="commandClasses">
           <ng-content />
@@ -39,12 +43,10 @@ export const modelSelectorCommandClasses = 'flex size-full flex-col overflow-hid
   `,
 })
 export class ModelSelectorContent {
-  /** Accessible dialog title rendered visually hidden by default. */
-  public readonly title = input<string>('Model Selector');
-  /** Accessible dialog description rendered visually hidden when provided. */
-  public readonly description = input<string | undefined>(undefined);
   /** Additional classes merged onto the dialog content surface. */
   public readonly userClass = input<string | undefined>(undefined, { alias: 'class' });
+  protected readonly title = contentChild(ModelSelectorTitle);
+  protected readonly description = contentChild(ModelSelectorDescription);
 
   protected readonly commandClasses = modelSelectorCommandClasses;
   protected readonly classes = computed(() =>

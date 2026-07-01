@@ -16,6 +16,18 @@ class Host {
   readonly isStreaming = signal(false);
 }
 
+@Component({
+  imports: [Reasoning, ReasoningTrigger],
+  template: `
+    <ai-reasoning>
+      <button aiReasoningTrigger>
+        <span data-testid="custom-reasoning-trigger">Custom reasoning trigger</span>
+      </button>
+    </ai-reasoning>
+  `,
+})
+class CustomTriggerHost {}
+
 describe('ReasoningTrigger', () => {
   let fixture: ComponentFixture<Host>;
 
@@ -46,5 +58,18 @@ describe('ReasoningTrigger', () => {
     fixture.detectChanges();
 
     expect((fixture.nativeElement as HTMLElement).textContent).toContain('Thought for 1 minute');
+  });
+
+  it('uses fully custom trigger content when projected', async () => {
+    const customFixture = TestBed.createComponent(CustomTriggerHost);
+    customFixture.detectChanges();
+    await customFixture.whenStable();
+
+    const trigger = customFixture.nativeElement.querySelector(
+      'button[aireasoningtrigger]',
+    ) as HTMLButtonElement | null;
+
+    expect(trigger?.textContent).toContain('Custom reasoning trigger');
+    expect(trigger?.querySelector('ng-icon')).toBeNull();
   });
 });

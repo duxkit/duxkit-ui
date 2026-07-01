@@ -1,6 +1,8 @@
 import type { Meta, StoryObj } from '@storybook/angular';
 import { moduleMetadata } from '@storybook/angular';
 import { HlmButton } from '@duxkit/ui/helm/button';
+import { NgIcon, provideIcons } from '@ng-icons/core';
+import { lucideCircleCheck, lucideCircleDashed, lucideLoaderCircle } from '@ng-icons/lucide';
 import {
   Confirmation,
   ConfirmationAction,
@@ -13,9 +15,13 @@ import {
   ChainOfThought,
   ChainOfThoughtContent,
   ChainOfThoughtImage,
+  ChainOfThoughtImageCaption,
   ChainOfThoughtSearchResult,
   ChainOfThoughtSearchResults,
   ChainOfThoughtStep,
+  ChainOfThoughtStepDescription,
+  ChainOfThoughtStepIcon,
+  ChainOfThoughtStepLabel,
   ChainOfThoughtTrigger,
 } from './';
 
@@ -48,9 +54,13 @@ const meta: Meta = {
         ChainOfThought,
         ChainOfThoughtContent,
         ChainOfThoughtImage,
+        ChainOfThoughtImageCaption,
         ChainOfThoughtSearchResult,
         ChainOfThoughtSearchResults,
         ChainOfThoughtStep,
+        ChainOfThoughtStepDescription,
+        ChainOfThoughtStepIcon,
+        ChainOfThoughtStepLabel,
         ChainOfThoughtTrigger,
         Confirmation,
         ConfirmationAction,
@@ -58,7 +68,9 @@ const meta: Meta = {
         ConfirmationRequest,
         ConfirmationTitle,
         HlmButton,
+        NgIcon,
       ],
+      providers: [provideIcons({ lucideCircleCheck, lucideCircleDashed, lucideLoaderCircle })],
     }),
   ],
   tags: ['autodocs'],
@@ -88,19 +100,24 @@ const meta: Meta = {
       >
         <button aiChainOfThoughtTrigger></button>
         <ai-chain-of-thought-content>
-          <ai-chain-of-thought-step
-            status="complete"
-            icon="lucideCircleCheck"
-            label="Parsed the request"
-            description="Identified the Angular components needed for the response."
-          />
+          <ai-chain-of-thought-step status="complete">
+            <ai-chain-of-thought-step-icon>
+              <ng-icon name="lucideCircleCheck" />
+            </ai-chain-of-thought-step-icon>
+            <ai-chain-of-thought-step-label>Parsed the request</ai-chain-of-thought-step-label>
+            <ai-chain-of-thought-step-description>
+              Identified the Angular components needed for the response.
+            </ai-chain-of-thought-step-description>
+          </ai-chain-of-thought-step>
 
-          <ai-chain-of-thought-step
-            status="active"
-            icon="lucideLoaderCircle"
-            label="Checked relevant sources"
-            description="Collected the component API shape and matching usage patterns."
-          >
+          <ai-chain-of-thought-step status="active">
+            <ai-chain-of-thought-step-icon>
+              <ng-icon name="lucideLoaderCircle" class="animate-spin" />
+            </ai-chain-of-thought-step-icon>
+            <ai-chain-of-thought-step-label>Checked relevant sources</ai-chain-of-thought-step-label>
+            <ai-chain-of-thought-step-description>
+              Collected the component API shape and matching usage patterns.
+            </ai-chain-of-thought-step-description>
             <ai-chain-of-thought-search-results>
               <span aiChainOfThoughtSearchResult>AI Elements</span>
               <span aiChainOfThoughtSearchResult>Angular signals</span>
@@ -108,12 +125,14 @@ const meta: Meta = {
             </ai-chain-of-thought-search-results>
           </ai-chain-of-thought-step>
 
-          <ai-chain-of-thought-step
-            status="active"
-            icon="lucideCircleDashed"
-            label="Request permission"
-            description="Ask before running the tool that changes user data."
-          >
+          <ai-chain-of-thought-step status="active">
+            <ai-chain-of-thought-step-icon>
+              <ng-icon name="lucideCircleDashed" />
+            </ai-chain-of-thought-step-icon>
+            <ai-chain-of-thought-step-label>Request permission</ai-chain-of-thought-step-label>
+            <ai-chain-of-thought-step-description>
+              Ask before running the tool that changes user data.
+            </ai-chain-of-thought-step-description>
             <ai-confirmation [part]="approvalPart">
               <ai-confirmation-request>
                 <ai-confirmation-title />
@@ -128,17 +147,23 @@ const meta: Meta = {
             </ai-confirmation>
           </ai-chain-of-thought-step>
 
-          <ai-chain-of-thought-step
-            status="pending"
-            icon="lucideCircleDashed"
-            label="Generate final answer"
-            description="Prepare a concise implementation summary for the user."
-          />
+          <ai-chain-of-thought-step status="pending">
+            <ai-chain-of-thought-step-icon>
+              <ng-icon name="lucideCircleDashed" />
+            </ai-chain-of-thought-step-icon>
+            <ai-chain-of-thought-step-label>Generate final answer</ai-chain-of-thought-step-label>
+            <ai-chain-of-thought-step-description>
+              Prepare a concise implementation summary for the user.
+            </ai-chain-of-thought-step-description>
+          </ai-chain-of-thought-step>
 
-          <ai-chain-of-thought-image caption="Optional media preview attached to a thought step.">
+          <ai-chain-of-thought-image>
             <div class="flex h-32 w-full items-center justify-center rounded-md border border-border bg-background text-muted-foreground text-sm">
               Preview
             </div>
+            <ai-chain-of-thought-image-caption>
+              Optional media preview attached to a thought step.
+            </ai-chain-of-thought-image-caption>
           </ai-chain-of-thought-image>
         </ai-chain-of-thought-content>
       </ai-chain-of-thought>
@@ -171,13 +196,14 @@ export const ClampedStep: Story = {
       >
         <button aiChainOfThoughtTrigger>Thought for 12 seconds</button>
         <ai-chain-of-thought-content>
-          <ai-chain-of-thought-step
-            status="complete"
-            icon="lucideCircleCheck"
-            label="Reasoning"
-            description="Long reasoning can be collapsed to keep the message compact."
-            collapsedMaxHeight="120px"
-          >
+          <ai-chain-of-thought-step status="complete" collapsedMaxHeight="120px">
+            <ai-chain-of-thought-step-icon>
+              <ng-icon name="lucideCircleCheck" />
+            </ai-chain-of-thought-step-icon>
+            <ai-chain-of-thought-step-label>Reasoning</ai-chain-of-thought-step-label>
+            <ai-chain-of-thought-step-description>
+              Long reasoning can be collapsed to keep the message compact.
+            </ai-chain-of-thought-step-description>
             <p class="m-0 leading-relaxed">{{ longThought }}</p>
             <p class="mt-2 mb-0 leading-relaxed">{{ longThought }}</p>
           </ai-chain-of-thought-step>
@@ -204,12 +230,16 @@ export const PinnedClampedStep: Story = {
         <ai-chain-of-thought-content>
           <ai-chain-of-thought-step
             status="active"
-            icon="lucideLoaderCircle"
-            label="Streaming reasoning"
-            description="When pinned, the clamped viewport follows the newest generated text."
             collapsedMaxHeight="120px"
             [pinToBottom]="true"
           >
+            <ai-chain-of-thought-step-icon>
+              <ng-icon name="lucideLoaderCircle" class="animate-spin" />
+            </ai-chain-of-thought-step-icon>
+            <ai-chain-of-thought-step-label>Streaming reasoning</ai-chain-of-thought-step-label>
+            <ai-chain-of-thought-step-description>
+              When pinned, the clamped viewport follows the newest generated text.
+            </ai-chain-of-thought-step-description>
             <p class="m-0 leading-relaxed">{{ longThought }}</p>
             <p class="mt-2 mb-0 leading-relaxed">{{ longThought }}</p>
           </ai-chain-of-thought-step>

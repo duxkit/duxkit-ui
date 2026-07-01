@@ -2,7 +2,13 @@ import { Component, computed, input } from '@angular/core';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { lucidePaperclip } from '@ng-icons/lucide';
 import { twMerge } from 'tailwind-merge';
-import { Attachment, AttachmentPreview, AttachmentRemove, Attachments } from '../attachment';
+import {
+  Attachment,
+  AttachmentName,
+  AttachmentPreview,
+  AttachmentRemove,
+  Attachments,
+} from '../attachment';
 import { promptInputButtonVariants } from './prompt-input-button';
 import { injectPromptInput } from './prompt-input-root';
 import type { PromptInputButtonVariants } from './prompt-input-button';
@@ -46,7 +52,7 @@ export class PromptInputAddAttachment {
 
 @Component({
   selector: '[aiPromptInputAttachments],ai-prompt-input-attachments',
-  imports: [Attachment, AttachmentPreview, AttachmentRemove, Attachments],
+  imports: [Attachment, AttachmentName, AttachmentPreview, AttachmentRemove, Attachments],
   host: {
     '[class]': 'classes()',
   },
@@ -56,6 +62,7 @@ export class PromptInputAddAttachment {
         @for (file of promptInput.files(); track file.id) {
           <ai-attachment [data]="file" (removed)="promptInput.removeFile(file.id)">
             <ai-attachment-preview>
+              <ai-attachment-name>{{ file.filename ?? file.url }}</ai-attachment-name>
               <button aiAttachmentRemove></button>
             </ai-attachment-preview>
           </ai-attachment>

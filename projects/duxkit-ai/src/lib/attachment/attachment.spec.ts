@@ -6,9 +6,12 @@ import { beforeEach, describe, expect, it } from 'vitest';
 
 import {
   Attachment,
+  AttachmentMediaType,
+  AttachmentName,
   Attachments,
   AttachmentPreview,
   AttachmentRemove,
+  AttachmentThumbnail,
   getAttachmentName,
 } from './';
 
@@ -103,6 +106,39 @@ class InlinePreviewRemoveHost {
   readonly attachment = imagePart;
 }
 
+@Component({
+  imports: [
+    Attachment,
+    AttachmentMediaType,
+    AttachmentName,
+    AttachmentPreview,
+    AttachmentRemove,
+    AttachmentThumbnail,
+    Attachments,
+  ],
+  template: `
+    <ai-attachments>
+      <ai-attachment [data]="attachment">
+        <ai-attachment-preview>
+          <ai-attachment-thumbnail>
+            <span data-testid="custom-thumbnail">T</span>
+          </ai-attachment-thumbnail>
+          <ai-attachment-name>
+            <span data-testid="custom-name">Custom name</span>
+          </ai-attachment-name>
+          <ai-attachment-media-type>
+            <span data-testid="custom-media-type">Custom type</span>
+          </ai-attachment-media-type>
+          <button aiAttachmentRemove></button>
+        </ai-attachment-preview>
+      </ai-attachment>
+    </ai-attachments>
+  `,
+})
+class CustomPreviewHost {
+  readonly attachment = imagePart;
+}
+
 describe('Attachment', () => {
   let fixture: ComponentFixture<Host>;
 
@@ -173,6 +209,28 @@ describe('Attachment', () => {
     expect(previews[0]?.classList).toContain('custom-preview');
   });
 
+  it('renders projected preview slots when provided', async () => {
+    await TestBed.resetTestingModule()
+      .configureTestingModule({
+        imports: [CustomPreviewHost],
+      })
+      .compileComponents();
+
+    const customFixture = TestBed.createComponent(CustomPreviewHost);
+    customFixture.detectChanges();
+    await customFixture.whenStable();
+
+    const element = customFixture.nativeElement as HTMLElement;
+
+    expect(element.querySelector('[data-testid="custom-thumbnail"]')?.textContent).toContain('T');
+    expect(element.querySelector('[data-testid="custom-name"]')?.textContent).toContain(
+      'Custom name',
+    );
+    expect(element.querySelector('[data-testid="custom-media-type"]')?.textContent).toContain(
+      'Custom type',
+    );
+  });
+
   it('renders inline previews with Spartan Brain hover-card hooks', () => {
     fixture.componentInstance.variant.set('inline');
     fixture.detectChanges();
@@ -183,6 +241,8 @@ describe('Attachment', () => {
     const hoverCard = preview?.querySelector('[brnHoverCard]');
     const trigger = preview?.querySelector('[brnHoverCardTrigger]');
 
+    expect(firstAttachment?.classList).toContain('border-border');
+    expect(firstAttachment?.classList).toContain('bg-background');
     expect(preview?.getAttribute('data-variant')).toBe('inline');
     expect(hoverCard).not.toBeNull();
     expect(trigger).not.toBeNull();

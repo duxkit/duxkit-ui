@@ -10,19 +10,17 @@ import { twMerge } from 'tailwind-merge';
     <div
       class="relative flex max-h-[22rem] items-center justify-center overflow-hidden rounded-lg bg-muted p-3"
     >
-      <ng-content />
+      <ng-content
+        select=":not([aiChainOfThoughtImageCaption]):not(ai-chain-of-thought-image-caption)"
+      />
     </div>
 
-    @if (caption() !== undefined) {
-      <p class="m-0 text-muted-foreground text-xs">{{ caption() }}</p>
-    }
+    <ng-content select="[aiChainOfThoughtImageCaption],ai-chain-of-thought-image-caption" />
   `,
 })
 export class ChainOfThoughtImage {
-  /** Optional caption rendered below the image content. */
-  public readonly caption = input<string | undefined>();
   /** Additional classes merged onto the image wrapper element. */
   public readonly userClass = input<string | undefined>(undefined, { alias: 'class' });
 
-  protected readonly classes = computed(() => twMerge('mt-2 space-y-2', this.userClass()));
+  protected readonly classes = computed(() => twMerge('mt-2 grid gap-2', this.userClass()));
 }

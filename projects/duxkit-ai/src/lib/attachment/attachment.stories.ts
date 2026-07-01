@@ -1,7 +1,12 @@
 import type { Meta, StoryObj } from '@storybook/angular';
 import { moduleMetadata } from '@storybook/angular';
 import type { FileUIPart, SourceDocumentUIPart } from 'ai';
-import { Attachment, AttachmentPreview, AttachmentRemove, Attachments } from './';
+import {
+  Attachment,
+  AttachmentPreview,
+  AttachmentRemove,
+  Attachments,
+} from './';
 
 type AttachmentStoryPart = FileUIPart | SourceDocumentUIPart;
 

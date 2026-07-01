@@ -11,14 +11,14 @@ import {
 } from './attachment.types';
 
 export const attachmentVariants = cva(
-  'group relative min-w-0 border border-border bg-background text-foreground transition-colors',
+  'group relative min-w-0 text-foreground transition-colors',
   {
     variants: {
       variant: {
-        grid: 'flex size-24 flex-col overflow-hidden rounded-xl hover:bg-muted/40',
+        grid: 'flex size-24 flex-col overflow-hidden rounded-xl border border-transparent bg-muted hover:bg-muted/80',
         inline:
-          'inline-flex h-8 max-w-full cursor-pointer select-none items-center gap-1.5 rounded-md px-1.5 font-medium text-sm hover:bg-muted/60 dark:hover:bg-muted/40',
-        list: 'flex items-center gap-3 rounded-lg p-3 hover:bg-muted/40',
+          'inline-flex h-8 max-w-full cursor-pointer select-none items-center gap-1.5 rounded-md border border-border bg-background px-1.5 font-medium text-sm hover:bg-muted/60 dark:hover:bg-muted/40',
+        list: 'flex items-center gap-3 rounded-lg border border-border bg-background p-3 hover:bg-muted/40',
       },
     },
     defaultVariants: {

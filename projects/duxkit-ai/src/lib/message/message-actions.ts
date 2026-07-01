@@ -1,15 +1,4 @@
-import {
-  Component,
-  computed,
-  Directive,
-  inject,
-  input,
-  output,
-  signal,
-  ViewEncapsulation,
-} from '@angular/core';
-import { NgIcon, provideIcons } from '@ng-icons/core';
-import { lucideCheck, lucideCopy, lucideThumbsDown, lucideThumbsUp } from '@ng-icons/lucide';
+import { computed, Directive, inject, input } from '@angular/core';
 import { cva, type VariantProps } from 'class-variance-authority';
 import { twMerge } from 'tailwind-merge';
 import { Message } from './message';
@@ -32,27 +21,6 @@ export const messageActionsVariants = cva(
 
 export type MessageActionsVariants = VariantProps<typeof messageActionsVariants>;
 
-const feedbackButtonClasses = cva('', {
-  variants: {
-    active: {
-      true: 'bg-muted text-foreground',
-      false: '',
-    },
-  },
-  defaultVariants: {
-    active: false,
-  },
-});
-
-const messageActionButtonClasses =
-  'inline-flex size-6 items-center justify-center rounded-md border-0 bg-transparent p-0 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground disabled:pointer-events-none disabled:opacity-50';
-
-const feedbackIconStyles = `
-  .ai-message-actions-feedback-icon-active svg path:first-child {
-    fill: currentColor;
-  }
-`;
-
 @Directive({
   selector: 'ai-message-actions,[aiMessageActions]',
   host: {
@@ -74,119 +42,5 @@ export class MessageActions {
       }),
       this.userClass(),
     ),
-  );
-}
-
-@Component({
-  selector: 'ai-message-actions-copy',
-  imports: [NgIcon],
-  providers: [provideIcons({ lucideCheck, lucideCopy })],
-  template: `
-    <button
-      type="button"
-      [class]="buttonClasses"
-      [disabled]="!canCopy()"
-      [title]="label()"
-      [attr.aria-label]="label()"
-      (click)="copy()"
-    >
-      <ng-icon [name]="copied() ? 'lucideCheck' : 'lucideCopy'" style="--ng-icon__size: 16px" />
-    </button>
-  `,
-})
-export class MessageActionsCopy {
-  /** Text copied by the action; falls back to registered message content when omitted. */
-  public readonly text = input<string | undefined>();
-  /** Emits the copied text after a successful copy action. */
-  public readonly copiedChange = output<string>();
-
-  private readonly message = inject(Message);
-
-  protected readonly copied = signal(false);
-  protected readonly buttonClasses = messageActionButtonClasses;
-  protected readonly copyText = computed(() => this.text() ?? this.message.copyText());
-  protected readonly canCopy = computed(() => this.copyText().trim().length > 0);
-  protected readonly label = computed(() => (this.copied() ? 'Copied message' : 'Copy message'));
-
-  protected async copy(): Promise<void> {
-    const text = this.copyText().trim();
-
-    if (text.length === 0) {
-      return;
-    }
-
-    await globalThis.navigator?.clipboard?.writeText(text);
-
-    this.copied.set(true);
-    this.copiedChange.emit(text);
-    globalThis.setTimeout(() => this.copied.set(false), 1400);
-  }
-}
-
-@Component({
-  selector: 'ai-message-actions-thumbs-up',
-  imports: [NgIcon],
-  providers: [provideIcons({ lucideThumbsUp })],
-  encapsulation: ViewEncapsulation.None,
-  styles: [feedbackIconStyles],
-  template: `
-    <button
-      type="button"
-      [class]="classes()"
-      title="Thumbs up"
-      aria-label="Thumbs up"
-      [attr.aria-pressed]="active()"
-      (click)="thumbsUp.emit()"
-    >
-      <ng-icon
-        name="lucideThumbsUp"
-        style="--ng-icon__size: 16px"
-        [class.ai-message-actions-feedback-icon-active]="active()"
-      />
-    </button>
-  `,
-})
-export class MessageActionsThumbsUp {
-  /** Whether the thumbs up action is currently selected. */
-  public readonly active = input(false);
-  /** Emits when the thumbs up action is pressed. */
-  public readonly thumbsUp = output<void>();
-
-  protected readonly classes = computed(() =>
-    twMerge(messageActionButtonClasses, feedbackButtonClasses({ active: this.active() })),
-  );
-}
-
-@Component({
-  selector: 'ai-message-actions-thumbs-down',
-  imports: [NgIcon],
-  providers: [provideIcons({ lucideThumbsDown })],
-  encapsulation: ViewEncapsulation.None,
-  styles: [feedbackIconStyles],
-  template: `
-    <button
-      type="button"
-      [class]="classes()"
-      title="Thumbs down"
-      aria-label="Thumbs down"
-      [attr.aria-pressed]="active()"
-      (click)="thumbsDown.emit()"
-    >
-      <ng-icon
-        name="lucideThumbsDown"
-        style="--ng-icon__size: 16px"
-        [class.ai-message-actions-feedback-icon-active]="active()"
-      />
-    </button>
-  `,
-})
-export class MessageActionsThumbsDown {
-  /** Whether the thumbs down action is currently selected. */
-  public readonly active = input(false);
-  /** Emits when the thumbs down action is pressed. */
-  public readonly thumbsDown = output<void>();
-
-  protected readonly classes = computed(() =>
-    twMerge(messageActionButtonClasses, feedbackButtonClasses({ active: this.active() })),
   );
 }

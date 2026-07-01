@@ -320,9 +320,7 @@ describe('PromptInput', () => {
 
     expect(submitted?.text).toBe('Use this image');
     expect(submitted?.files.map((part) => (part as FileUIPart).filename)).toEqual(['diagram.png']);
-    expect((submitted?.files[0] as FileUIPart | undefined)?.url).toBe(
-      'data:image/png;base64,eA==',
-    );
+    expect((submitted?.files[0] as FileUIPart | undefined)?.url).toBe('data:image/png;base64,eA==');
     expect(textarea.value).toBe('');
     expect(fixture.componentInstance.promptInput().files()).toEqual([]);
     expect(URL.revokeObjectURL).toHaveBeenCalledWith('blob:prompt-input-1');

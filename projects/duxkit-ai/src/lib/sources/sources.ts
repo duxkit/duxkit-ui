@@ -20,6 +20,6 @@ export class Sources {
   public readonly userClass = input<string | undefined>(undefined, { alias: 'class' });
 
   protected readonly classes = computed(() =>
-    twMerge('not-prose mb-4 text-blue-500 text-xs', this.userClass()),
+    twMerge('not-prose mb-4 text-muted-foreground text-xs', this.userClass()),
   );
 }

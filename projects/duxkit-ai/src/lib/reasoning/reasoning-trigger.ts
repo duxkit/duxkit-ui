@@ -15,16 +15,21 @@ import { lucideBrain, lucideChevronDown } from '@ng-icons/lucide';
     '(click)': 'reasoning.disableAutoToggle()',
   },
   template: `
-    <ng-icon name="lucideBrain" style="--ng-icon__size: 16px" />
-    <span [class.ai-reasoning-trigger-label-shimmer]="reasoning.isStreaming()">
-      <ng-content>{{ triggerLabel() }}</ng-content>
-    </span>
-    <ng-icon
-      name="lucideChevronDown"
-      class="transition-transform"
-      style="--ng-icon__size: 16px"
-      [class.rotate-180]="expanded()"
-    />
+    <ng-content>
+      <ng-icon name="lucideBrain" style="--ng-icon__size: 16px" />
+      <span
+        class="min-w-0 truncate text-left"
+        [class.ai-reasoning-trigger-label-shimmer]="reasoning.isStreaming()"
+      >
+        {{ triggerLabel() }}
+      </span>
+      <ng-icon
+        name="lucideChevronDown"
+        class="transition-transform"
+        style="--ng-icon__size: 16px"
+        [class.rotate-180]="expanded()"
+      />
+    </ng-content>
   `,
   styles: `
     .ai-reasoning-trigger-label-shimmer {

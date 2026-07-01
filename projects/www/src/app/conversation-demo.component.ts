@@ -10,6 +10,8 @@ import {
   signal,
 } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
+import { NgIcon, provideIcons } from '@ng-icons/core';
+import { lucideCircleCheck, lucideGlobe, lucideLoaderCircle } from '@ng-icons/lucide';
 import {
   type AiAttachmentPart,
   type AiToolPart,
@@ -21,6 +23,9 @@ import {
   ChainOfThoughtSearchResult,
   ChainOfThoughtSearchResults,
   ChainOfThoughtStep,
+  ChainOfThoughtStepDescription,
+  ChainOfThoughtStepIcon,
+  ChainOfThoughtStepLabel,
   ChainOfThoughtTrigger,
   Checkpoint,
   CheckpointIcon,
@@ -154,7 +159,11 @@ const notesSaveApprovedPart: AiToolPart = {
     ChainOfThoughtSearchResult,
     ChainOfThoughtSearchResults,
     ChainOfThoughtStep,
+    ChainOfThoughtStepDescription,
+    ChainOfThoughtStepIcon,
+    ChainOfThoughtStepLabel,
     ChainOfThoughtTrigger,
+    NgIcon,
     Attachment,
     AttachmentPreview,
     Attachments,
@@ -186,6 +195,7 @@ const notesSaveApprovedPart: AiToolPart = {
     ToolContent,
     ToolTrigger,
   ],
+  providers: [provideIcons({ lucideCircleCheck, lucideGlobe, lucideLoaderCircle })],
   selector: 'app-conversation-demo',
   template: `
     <div class="conversation-perspective" aria-label="Conversation demo preview">
@@ -223,21 +233,36 @@ const notesSaveApprovedPart: AiToolPart = {
                     <button aiChainOfThoughtTrigger></button>
                     <ai-chain-of-thought-content>
                       @if (introTripStep() !== 'hidden') {
-                        <ai-chain-of-thought-step
-                          [status]="stepStatus(introTripStep())"
-                          [icon]="stepIcon(introTripStep(), 'lucideCircleCheck')"
-                          label="Understand the trip"
-                          description="Quiet Lisbon weekend, good food, nice hotel, fewer tourist traps."
-                        />
+                        <ai-chain-of-thought-step [status]="stepStatus(introTripStep())">
+                          <ai-chain-of-thought-step-icon>
+                            <ng-icon
+                              [name]="stepIcon(introTripStep(), 'lucideCircleCheck')"
+                              [class.animate-spin]="introTripStep() === 'active'"
+                            />
+                          </ai-chain-of-thought-step-icon>
+                          <ai-chain-of-thought-step-label>
+                            Understand the trip
+                          </ai-chain-of-thought-step-label>
+                          <ai-chain-of-thought-step-description>
+                            Quiet Lisbon weekend, good food, nice hotel, fewer tourist traps.
+                          </ai-chain-of-thought-step-description>
+                        </ai-chain-of-thought-step>
                       }
 
                       @if (introNeighborhoodStep() !== 'hidden') {
-                        <ai-chain-of-thought-step
-                          [status]="stepStatus(introNeighborhoodStep())"
-                          [icon]="stepIcon(introNeighborhoodStep(), 'lucideCircleCheck')"
-                          label="Compare neighborhoods"
-                          description="Favor calm areas with restaurants and refundable stays."
-                        >
+                        <ai-chain-of-thought-step [status]="stepStatus(introNeighborhoodStep())">
+                          <ai-chain-of-thought-step-icon>
+                            <ng-icon
+                              [name]="stepIcon(introNeighborhoodStep(), 'lucideCircleCheck')"
+                              [class.animate-spin]="introNeighborhoodStep() === 'active'"
+                            />
+                          </ai-chain-of-thought-step-icon>
+                          <ai-chain-of-thought-step-label>
+                            Compare neighborhoods
+                          </ai-chain-of-thought-step-label>
+                          <ai-chain-of-thought-step-description>
+                            Favor calm areas with restaurants and refundable stays.
+                          </ai-chain-of-thought-step-description>
                           <ai-reasoning-content
                             class="agent-reasoning-note"
                             markdown="Prioritize Principe Real, Estrela, and Lapa. Look for walkable restaurants, a calm hotel, and refundable availability."
@@ -268,12 +293,19 @@ const notesSaveApprovedPart: AiToolPart = {
                   <ai-chain-of-thought [isStreaming]="dinnerSearchStep() === 'active'">
                     <button aiChainOfThoughtTrigger></button>
                     <ai-chain-of-thought-content>
-                      <ai-chain-of-thought-step
-                        [status]="stepStatus(dinnerSearchStep())"
-                        [icon]="stepIcon(dinnerSearchStep(), 'lucideGlobe')"
-                        label="Search nearby dinner spots"
-                        description="Find relaxed restaurants near Principe Real."
-                      >
+                      <ai-chain-of-thought-step [status]="stepStatus(dinnerSearchStep())">
+                        <ai-chain-of-thought-step-icon>
+                          <ng-icon
+                            [name]="stepIcon(dinnerSearchStep(), 'lucideGlobe')"
+                            [class.animate-spin]="dinnerSearchStep() === 'active'"
+                          />
+                        </ai-chain-of-thought-step-icon>
+                        <ai-chain-of-thought-step-label>
+                          Search nearby dinner spots
+                        </ai-chain-of-thought-step-label>
+                        <ai-chain-of-thought-step-description>
+                          Find relaxed restaurants near Principe Real.
+                        </ai-chain-of-thought-step-description>
                         <ai-chain-of-thought-search-results>
                           @if (visibleDinnerSearchSources().length === 0) {
                             <span class="search-source-loading text-muted-foreground">

@@ -13,9 +13,13 @@ import {
   ChainOfThought,
   ChainOfThoughtContent,
   ChainOfThoughtImage,
+  ChainOfThoughtImageCaption,
   ChainOfThoughtSearchResult,
   ChainOfThoughtSearchResults,
   ChainOfThoughtStep,
+  ChainOfThoughtStepDescription,
+  ChainOfThoughtStepIcon,
+  ChainOfThoughtStepLabel,
   ChainOfThoughtTrigger,
   Checkpoint,
   CheckpointIcon,
@@ -43,18 +47,21 @@ import {
   ContextTrigger,
   Message,
   MessageActions,
-  MessageActionsCopy,
   MessageContent,
+  MessageCopy,
   ModelSelector,
   ModelSelectorContent,
+  ModelSelectorDescription,
   ModelSelectorEmpty,
   ModelSelectorGroup,
+  ModelSelectorGroupHeading,
   ModelSelectorInput,
   ModelSelectorItem,
   ModelSelectorList,
   ModelSelectorLogo,
   ModelSelectorName,
   ModelSelectorShortcut,
+  ModelSelectorTitle,
   ModelSelectorTrigger,
   PromptInput,
   PromptInputAddAttachment,
@@ -63,6 +70,21 @@ import {
   PromptInputTextarea,
   PromptInputToolbar,
   PromptInputTools,
+  Queue,
+  QueueItem,
+  QueueItemAction,
+  QueueItemActions,
+  QueueItemAttachment,
+  QueueItemContent,
+  QueueItemDescription,
+  QueueItemFile,
+  QueueItemIndicator,
+  QueueList,
+  QueueSection,
+  QueueSectionContent,
+  QueueSectionCount,
+  QueueSectionLabel,
+  QueueSectionTrigger,
   Reasoning,
   ReasoningContent,
   ReasoningTrigger,
@@ -107,7 +129,7 @@ export const componentPreviewSnippets: Record<ComponentDocSlug, string> = {
   <ai-message from="assistant">
     <ai-message-content [markdown]="messageMarkdown" />
     <ai-message-actions>
-      <ai-message-actions-copy />
+      <button aiMessageCopy aria-label="Copy message">Copy</button>
     </ai-message-actions>
   </ai-message>
 </div>`,
@@ -147,11 +169,14 @@ export const componentPreviewSnippets: Record<ComponentDocSlug, string> = {
     <ai-model-selector-name>GPT-4.1</ai-model-selector-name>
   </button>
   <ai-model-selector-content>
+    <h2 aiModelSelectorTitle class="sr-only">Choose a model</h2>
+    <p aiModelSelectorDescription class="sr-only">Search and select an AI model.</p>
     <ai-model-selector-input placeholder="Search models..." />
     <ai-model-selector-list>
       <ai-model-selector-empty>No models found.</ai-model-selector-empty>
       @for (group of modelSelectorGroups; track group.provider) {
-        <ai-model-selector-group [heading]="group.heading">
+        <ai-model-selector-group>
+          <ai-model-selector-group-heading>{{ group.heading }}</ai-model-selector-group-heading>
           @for (model of group.models; track model.id) {
             <button aiModelSelectorItem [value]="modelSelectorSearchValue(model)">
               <ai-model-selector-logo [provider]="model.providerSlug ?? model.provider" />
@@ -177,11 +202,14 @@ export const componentPreviewSnippets: Record<ComponentDocSlug, string> = {
           <ai-model-selector-name>GPT-4.1</ai-model-selector-name>
         </button>
         <ai-model-selector-content>
+          <h2 aiModelSelectorTitle class="sr-only">Choose a model</h2>
+          <p aiModelSelectorDescription class="sr-only">Search and select an AI model.</p>
           <ai-model-selector-input placeholder="Search models..." />
           <ai-model-selector-list>
             <ai-model-selector-empty>No models found.</ai-model-selector-empty>
             @for (group of modelSelectorGroups; track group.provider) {
-              <ai-model-selector-group [heading]="group.heading">
+              <ai-model-selector-group>
+                <ai-model-selector-group-heading>{{ group.heading }}</ai-model-selector-group-heading>
                 @for (model of group.models; track model.id) {
                   <button aiModelSelectorItem [value]="modelSelectorSearchValue(model)">
                     <ai-model-selector-logo [provider]="model.providerSlug ?? model.provider" />
@@ -198,6 +226,52 @@ export const componentPreviewSnippets: Record<ComponentDocSlug, string> = {
     <button aiPromptInputSubmit hlmBtn size="icon-sm"></button>
   </ai-prompt-input-toolbar>
 </form>`,
+  queue: `<ai-queue class="w-[560px]">
+  <ai-queue-section [expanded]="true">
+    <button aiQueueSectionTrigger>
+      <ai-queue-section-label>
+        <span aiQueueSectionCount>3</span>
+        <span>queued tasks</span>
+      </ai-queue-section-label>
+    </button>
+    <ai-queue-section-content>
+      <ai-queue-list>
+        <ai-queue-item>
+          <div class="flex items-start gap-3">
+            <span aiQueueItemIndicator></span>
+            <span aiQueueItemContent>Search the workspace for queue-related APIs</span>
+            <span aiQueueItemActions>
+              <button aiQueueItemAction hlmBtn variant="outline" aria-label="Remove search task">Remove</button>
+            </span>
+          </div>
+          <ai-queue-item-description>
+            Inspect existing task and reasoning primitives.
+          </ai-queue-item-description>
+        </ai-queue-item>
+
+        <ai-queue-item>
+          <div class="flex items-start gap-3">
+            <span aiQueueItemIndicator></span>
+            <span aiQueueItemContent>Attach the generated plan to the next message</span>
+          </div>
+          <ai-queue-item-attachment>
+            <ai-queue-item-file>implementation-plan.md</ai-queue-item-file>
+          </ai-queue-item-attachment>
+        </ai-queue-item>
+
+        <ai-queue-item>
+          <div class="flex items-start gap-3">
+            <span aiQueueItemIndicator [completed]="true"></span>
+            <span aiQueueItemContent [completed]="true">Validate public exports</span>
+          </div>
+          <ai-queue-item-description [completed]="true">
+            Confirm docs metadata can discover every piece.
+          </ai-queue-item-description>
+        </ai-queue-item>
+      </ai-queue-list>
+    </ai-queue-section-content>
+  </ai-queue-section>
+</ai-queue>`,
   attachment: `<ai-attachments class="w-[640px]" variant="grid">
   @for (attachment of attachmentParts; track attachmentKey(attachment)) {
     <ai-attachment [data]="attachment">
@@ -209,19 +283,20 @@ export const componentPreviewSnippets: Record<ComponentDocSlug, string> = {
   'chain-of-thought': `<ai-chain-of-thought class="w-[560px]" [expanded]="true" [autoToggle]="false" [isStreaming]="false">
   <button aiChainOfThoughtTrigger></button>
   <ai-chain-of-thought-content>
-    <ai-chain-of-thought-step
-      status="complete"
-      icon="lucideCircleCheck"
-      label="Parsed the request"
-      description="Identified the Angular components needed for the response."
-    />
+    <ai-chain-of-thought-step status="complete">
+      <ai-chain-of-thought-step-icon>1</ai-chain-of-thought-step-icon>
+      <ai-chain-of-thought-step-label>Parsed the request</ai-chain-of-thought-step-label>
+      <ai-chain-of-thought-step-description>
+        Identified the Angular components needed for the response.
+      </ai-chain-of-thought-step-description>
+    </ai-chain-of-thought-step>
 
-    <ai-chain-of-thought-step
-      status="active"
-      icon="lucideLoaderCircle"
-      label="Checked relevant sources"
-      description="Collected the component API shape and matching usage patterns."
-    >
+    <ai-chain-of-thought-step status="active">
+      <ai-chain-of-thought-step-icon>2</ai-chain-of-thought-step-icon>
+      <ai-chain-of-thought-step-label>Checked relevant sources</ai-chain-of-thought-step-label>
+      <ai-chain-of-thought-step-description>
+        Collected the component API shape and matching usage patterns.
+      </ai-chain-of-thought-step-description>
       <ai-chain-of-thought-search-results>
         <span aiChainOfThoughtSearchResult>AI Elements</span>
         <span aiChainOfThoughtSearchResult>Angular signals</span>
@@ -229,12 +304,12 @@ export const componentPreviewSnippets: Record<ComponentDocSlug, string> = {
       </ai-chain-of-thought-search-results>
     </ai-chain-of-thought-step>
 
-    <ai-chain-of-thought-step
-      status="active"
-      icon="lucideCircleDashed"
-      label="Request permission"
-      description="Ask before running the tool that changes user data."
-    >
+    <ai-chain-of-thought-step status="active">
+      <ai-chain-of-thought-step-icon>3</ai-chain-of-thought-step-icon>
+      <ai-chain-of-thought-step-label>Request permission</ai-chain-of-thought-step-label>
+      <ai-chain-of-thought-step-description>
+        Ask before running the tool that changes user data.
+      </ai-chain-of-thought-step-description>
       <ai-confirmation [part]="chainApprovalPart">
         <ai-confirmation-request>
           <ai-confirmation-title />
@@ -247,15 +322,19 @@ export const componentPreviewSnippets: Record<ComponentDocSlug, string> = {
       </ai-confirmation>
     </ai-chain-of-thought-step>
 
-    <ai-chain-of-thought-step
-      status="pending"
-      icon="lucideCircleDashed"
-      label="Generate final answer"
-      description="Prepare a concise implementation summary for the user."
-    />
+    <ai-chain-of-thought-step status="pending">
+      <ai-chain-of-thought-step-icon>4</ai-chain-of-thought-step-icon>
+      <ai-chain-of-thought-step-label>Generate final answer</ai-chain-of-thought-step-label>
+      <ai-chain-of-thought-step-description>
+        Prepare a concise implementation summary for the user.
+      </ai-chain-of-thought-step-description>
+    </ai-chain-of-thought-step>
 
-    <ai-chain-of-thought-image caption="Optional media preview attached to a thought step.">
+    <ai-chain-of-thought-image>
       <div class="flex h-32 w-full items-center justify-center rounded-md border border-border bg-background text-muted-foreground text-sm">Preview</div>
+      <ai-chain-of-thought-image-caption>
+        Optional media preview attached to a thought step.
+      </ai-chain-of-thought-image-caption>
     </ai-chain-of-thought-image>
   </ai-chain-of-thought-content>
 </ai-chain-of-thought>`,
@@ -352,9 +431,13 @@ export const attachmentPreviewSnippets: Record<AttachmentsVariant, string> = {
     ChainOfThought,
     ChainOfThoughtContent,
     ChainOfThoughtImage,
+    ChainOfThoughtImageCaption,
     ChainOfThoughtSearchResult,
     ChainOfThoughtSearchResults,
     ChainOfThoughtStep,
+    ChainOfThoughtStepDescription,
+    ChainOfThoughtStepIcon,
+    ChainOfThoughtStepLabel,
     ChainOfThoughtTrigger,
     Checkpoint,
     CheckpointIcon,
@@ -383,18 +466,21 @@ export const attachmentPreviewSnippets: Record<AttachmentsVariant, string> = {
     HlmButton,
     Message,
     MessageActions,
-    MessageActionsCopy,
     MessageContent,
+    MessageCopy,
     ModelSelector,
     ModelSelectorContent,
+    ModelSelectorDescription,
     ModelSelectorEmpty,
     ModelSelectorGroup,
+    ModelSelectorGroupHeading,
     ModelSelectorInput,
     ModelSelectorItem,
     ModelSelectorList,
     ModelSelectorLogo,
     ModelSelectorName,
     ModelSelectorShortcut,
+    ModelSelectorTitle,
     ModelSelectorTrigger,
     PromptInput,
     PromptInputAddAttachment,
@@ -403,6 +489,21 @@ export const attachmentPreviewSnippets: Record<AttachmentsVariant, string> = {
     PromptInputTextarea,
     PromptInputToolbar,
     PromptInputTools,
+    Queue,
+    QueueItem,
+    QueueItemAction,
+    QueueItemActions,
+    QueueItemAttachment,
+    QueueItemContent,
+    QueueItemDescription,
+    QueueItemFile,
+    QueueItemIndicator,
+    QueueList,
+    QueueSection,
+    QueueSectionContent,
+    QueueSectionCount,
+    QueueSectionLabel,
+    QueueSectionTrigger,
     Reasoning,
     ReasoningContent,
     ReasoningTrigger,
@@ -447,7 +548,7 @@ export const attachmentPreviewSnippets: Record<AttachmentsVariant, string> = {
           <ai-message from="assistant">
             <ai-message-content [markdown]="messageMarkdown" />
             <ai-message-actions>
-              <ai-message-actions-copy />
+              <button aiMessageCopy aria-label="Copy message">Copy</button>
             </ai-message-actions>
           </ai-message>
         </div>
@@ -496,11 +597,16 @@ export const attachmentPreviewSnippets: Record<AttachmentsVariant, string> = {
             <ai-model-selector-name>GPT-4.1</ai-model-selector-name>
           </button>
           <ai-model-selector-content>
+            <h2 aiModelSelectorTitle class="sr-only">Choose a model</h2>
+            <p aiModelSelectorDescription class="sr-only">Search and select an AI model.</p>
             <ai-model-selector-input placeholder="Search models..." />
             <ai-model-selector-list>
               <ai-model-selector-empty>No models found.</ai-model-selector-empty>
               @for (group of modelSelectorGroups; track group.provider) {
-                <ai-model-selector-group [heading]="group.heading">
+                <ai-model-selector-group>
+                  <ai-model-selector-group-heading>{{
+                    group.heading
+                  }}</ai-model-selector-group-heading>
                   @for (model of group.models; track model.id) {
                     <button aiModelSelectorItem [value]="modelSelectorSearchValue(model)">
                       <ai-model-selector-logo [provider]="model.providerSlug ?? model.provider" />
@@ -552,11 +658,16 @@ export const attachmentPreviewSnippets: Record<AttachmentsVariant, string> = {
                   <ai-model-selector-name>GPT-4.1</ai-model-selector-name>
                 </button>
                 <ai-model-selector-content>
+                  <h2 aiModelSelectorTitle class="sr-only">Choose a model</h2>
+                  <p aiModelSelectorDescription class="sr-only">Search and select an AI model.</p>
                   <ai-model-selector-input placeholder="Search models..." />
                   <ai-model-selector-list>
                     <ai-model-selector-empty>No models found.</ai-model-selector-empty>
                     @for (group of modelSelectorGroups; track group.provider) {
-                      <ai-model-selector-group [heading]="group.heading">
+                      <ai-model-selector-group>
+                        <ai-model-selector-group-heading>{{
+                          group.heading
+                        }}</ai-model-selector-group-heading>
                         @for (model of group.models; track model.id) {
                           <button aiModelSelectorItem [value]="modelSelectorSearchValue(model)">
                             <ai-model-selector-logo
@@ -586,18 +697,21 @@ export const attachmentPreviewSnippets: Record<AttachmentsVariant, string> = {
         >
           <button aiChainOfThoughtTrigger></button>
           <ai-chain-of-thought-content>
-            <ai-chain-of-thought-step
-              status="complete"
-              icon="lucideCircleCheck"
-              label="Parsed the request"
-              description="Identified the Angular components needed for the response."
-            />
-            <ai-chain-of-thought-step
-              status="active"
-              icon="lucideLoaderCircle"
-              label="Checked relevant sources"
-              description="Collected the component API shape and matching usage patterns."
-            >
+            <ai-chain-of-thought-step status="complete">
+              <ai-chain-of-thought-step-icon>1</ai-chain-of-thought-step-icon>
+              <ai-chain-of-thought-step-label>Parsed the request</ai-chain-of-thought-step-label>
+              <ai-chain-of-thought-step-description>
+                Identified the Angular components needed for the response.
+              </ai-chain-of-thought-step-description>
+            </ai-chain-of-thought-step>
+            <ai-chain-of-thought-step status="active">
+              <ai-chain-of-thought-step-icon>2</ai-chain-of-thought-step-icon>
+              <ai-chain-of-thought-step-label
+                >Checked relevant sources</ai-chain-of-thought-step-label
+              >
+              <ai-chain-of-thought-step-description>
+                Collected the component API shape and matching usage patterns.
+              </ai-chain-of-thought-step-description>
               <ai-chain-of-thought-search-results>
                 <span aiChainOfThoughtSearchResult>AI Elements</span>
                 <span aiChainOfThoughtSearchResult>Angular signals</span>
@@ -605,12 +719,12 @@ export const attachmentPreviewSnippets: Record<AttachmentsVariant, string> = {
               </ai-chain-of-thought-search-results>
             </ai-chain-of-thought-step>
 
-            <ai-chain-of-thought-step
-              status="active"
-              icon="lucideCircleDashed"
-              label="Request permission"
-              description="Ask before running the tool that changes user data."
-            >
+            <ai-chain-of-thought-step status="active">
+              <ai-chain-of-thought-step-icon>3</ai-chain-of-thought-step-icon>
+              <ai-chain-of-thought-step-label>Request permission</ai-chain-of-thought-step-label>
+              <ai-chain-of-thought-step-description>
+                Ask before running the tool that changes user data.
+              </ai-chain-of-thought-step-description>
               <ai-confirmation [part]="chainApprovalPart">
                 <ai-confirmation-request>
                   <ai-confirmation-title />
@@ -625,22 +739,82 @@ export const attachmentPreviewSnippets: Record<AttachmentsVariant, string> = {
               </ai-confirmation>
             </ai-chain-of-thought-step>
 
-            <ai-chain-of-thought-step
-              status="pending"
-              icon="lucideCircleDashed"
-              label="Generate final answer"
-              description="Prepare a concise implementation summary for the user."
-            />
+            <ai-chain-of-thought-step status="pending">
+              <ai-chain-of-thought-step-icon>4</ai-chain-of-thought-step-icon>
+              <ai-chain-of-thought-step-label>Generate final answer</ai-chain-of-thought-step-label>
+              <ai-chain-of-thought-step-description>
+                Prepare a concise implementation summary for the user.
+              </ai-chain-of-thought-step-description>
+            </ai-chain-of-thought-step>
 
-            <ai-chain-of-thought-image caption="Optional media preview attached to a thought step.">
+            <ai-chain-of-thought-image>
               <div
                 class="flex h-32 w-full items-center justify-center rounded-md border border-border bg-background text-muted-foreground text-sm"
               >
                 Preview
               </div>
+              <ai-chain-of-thought-image-caption>
+                Optional media preview attached to a thought step.
+              </ai-chain-of-thought-image-caption>
             </ai-chain-of-thought-image>
           </ai-chain-of-thought-content>
         </ai-chain-of-thought>
+      }
+
+      @case ('queue') {
+        <ai-queue class="w-[560px]">
+          <ai-queue-section [expanded]="true">
+            <button aiQueueSectionTrigger>
+              <ai-queue-section-label>
+                <span aiQueueSectionCount>3</span>
+                <span>queued tasks</span>
+              </ai-queue-section-label>
+            </button>
+            <ai-queue-section-content>
+              <ai-queue-list>
+                <ai-queue-item>
+                  <div class="flex items-start gap-3">
+                    <span aiQueueItemIndicator></span>
+                    <span aiQueueItemContent>Search the workspace for queue-related APIs</span>
+                    <span aiQueueItemActions>
+                      <button
+                        aiQueueItemAction
+                        hlmBtn
+                        variant="outline"
+                        aria-label="Remove search task"
+                      >
+                        Remove
+                      </button>
+                    </span>
+                  </div>
+                  <ai-queue-item-description>
+                    Inspect existing task and reasoning primitives.
+                  </ai-queue-item-description>
+                </ai-queue-item>
+
+                <ai-queue-item>
+                  <div class="flex items-start gap-3">
+                    <span aiQueueItemIndicator></span>
+                    <span aiQueueItemContent>Attach the generated plan to the next message</span>
+                  </div>
+                  <ai-queue-item-attachment>
+                    <ai-queue-item-file>implementation-plan.md</ai-queue-item-file>
+                  </ai-queue-item-attachment>
+                </ai-queue-item>
+
+                <ai-queue-item>
+                  <div class="flex items-start gap-3">
+                    <span aiQueueItemIndicator [completed]="true"></span>
+                    <span aiQueueItemContent [completed]="true">Validate public exports</span>
+                  </div>
+                  <ai-queue-item-description [completed]="true">
+                    Confirm docs metadata can discover every piece.
+                  </ai-queue-item-description>
+                </ai-queue-item>
+              </ai-queue-list>
+            </ai-queue-section-content>
+          </ai-queue-section>
+        </ai-queue>
       }
 
       @case ('task') {

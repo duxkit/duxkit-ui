@@ -45,6 +45,18 @@ class StreamingHost {
   readonly isStreaming = signal(false);
 }
 
+@Component({
+  imports: [Task, TaskTrigger],
+  template: `
+    <ai-task>
+      <button aiTaskTrigger>
+        <span data-testid="custom-task-trigger">Custom task trigger</span>
+      </button>
+    </ai-task>
+  `,
+})
+class CustomTriggerHost {}
+
 describe('Task', () => {
   let fixture: ComponentFixture<Host>;
 
@@ -74,6 +86,19 @@ describe('Task', () => {
     expect(item?.classList).toContain('custom-item');
     expect(file?.classList).toContain('rounded-md');
     expect(file?.classList).toContain('custom-file');
+  });
+
+  it('uses fully custom trigger content when projected', async () => {
+    const customFixture = TestBed.createComponent(CustomTriggerHost);
+    customFixture.detectChanges();
+    await customFixture.whenStable();
+
+    const trigger = customFixture.nativeElement.querySelector(
+      'button[aitasktrigger]',
+    ) as HTMLButtonElement | null;
+
+    expect(trigger?.textContent).toContain('Custom task trigger');
+    expect(trigger?.querySelector('ng-icon')).toBeNull();
   });
 
   it('is open by default and toggles from the trigger', async () => {

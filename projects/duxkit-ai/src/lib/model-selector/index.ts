@@ -1,7 +1,9 @@
 export * from './model-selector';
 export * from './model-selector-content';
+export * from './model-selector-description';
 export * from './model-selector-empty';
 export * from './model-selector-group';
+export * from './model-selector-group-heading';
 export * from './model-selector-input';
 export * from './model-selector-item';
 export * from './model-selector-list';
@@ -11,5 +13,6 @@ export * from './model-selector-name';
 export * from './model-selector-root';
 export * from './model-selector-separator';
 export * from './model-selector-shortcut';
+export * from './model-selector-title';
 export * from './model-selector-trigger';
 export * from './model-selector.types';

@@ -5,14 +5,17 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 import {
   ModelSelector,
   ModelSelectorContent,
+  ModelSelectorDescription,
   ModelSelectorEmpty,
   ModelSelectorGroup,
+  ModelSelectorGroupHeading,
   ModelSelectorInput,
   ModelSelectorItem,
   ModelSelectorList,
   ModelSelectorLogo,
   ModelSelectorName,
   ModelSelectorShortcut,
+  ModelSelectorTitle,
   ModelSelectorTrigger,
   createModelSelectorSearchValue,
   groupModelSelectorModels,
@@ -79,33 +82,38 @@ describe('model selector helpers', () => {
     HlmButton,
     ModelSelector,
     ModelSelectorContent,
+    ModelSelectorDescription,
     ModelSelectorEmpty,
     ModelSelectorGroup,
+    ModelSelectorGroupHeading,
     ModelSelectorInput,
     ModelSelectorItem,
     ModelSelectorList,
     ModelSelectorLogo,
     ModelSelectorName,
     ModelSelectorShortcut,
+    ModelSelectorTitle,
     ModelSelectorTrigger,
   ],
   template: `
-    <ai-model-selector
-      class="custom-selector"
-      [open]="open()"
-      (openChange)="open.set($event)"
-    >
+    <ai-model-selector class="custom-selector" [open]="open()" (openChange)="open.set($event)">
       <button aiModelSelectorTrigger hlmBtn variant="outline" class="custom-trigger">
         <ai-model-selector-logo provider="openai" />
         <ai-model-selector-name>GPT-4.1</ai-model-selector-name>
       </button>
 
-      <ai-model-selector-content class="custom-content" title="Choose a model">
+      <ai-model-selector-content class="custom-content">
+        <h2 aiModelSelectorTitle class="sr-only">Choose a model</h2>
+        <p aiModelSelectorDescription class="sr-only">Pick the provider and model for this chat.</p>
         <ai-model-selector-input inputId="model-search" placeholder="Search models..." />
         <ai-model-selector-list>
           <ai-model-selector-empty>No models found.</ai-model-selector-empty>
           @for (group of groups(); track group.provider) {
-            <ai-model-selector-group [heading]="group.heading">
+            <ai-model-selector-group>
+              <div aiModelSelectorGroupHeading>
+                <span>{{ group.heading }}</span>
+                <span data-testid="model-count">{{ group.models.length }}</span>
+              </div>
               @for (model of group.models; track model.id) {
                 <button
                   aiModelSelectorItem
@@ -243,6 +251,7 @@ describe('ModelSelector', () => {
     expect(fixture.componentInstance.open()).toBe(true);
     expect(content.classList).toContain('custom-content');
     expect(content.textContent).toContain('Choose a model');
+    expect(content.textContent).toContain('Pick the provider and model for this chat.');
     expect(content.querySelector('#model-search')?.getAttribute('role')).toBe('combobox');
     expect(content.querySelector('#model-search')?.getAttribute('placeholder')).toBe(
       'Search models...',
@@ -258,6 +267,7 @@ describe('ModelSelector', () => {
     const options = content.querySelectorAll<HTMLButtonElement>('[role="option"]');
 
     expect(content.textContent).toContain('OpenAI');
+    expect(content.querySelector('[data-testid="model-count"]')?.textContent).toContain('1');
     expect(content.textContent).toContain('Anthropic');
     expect(content.textContent).toContain('M1');
     expect(options.length).toBe(3);
