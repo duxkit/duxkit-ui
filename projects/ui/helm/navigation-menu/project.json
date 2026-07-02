@@ -1,0 +1,8 @@
+{
+  "name": "navigation-menu",
+  "$schema": "../../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "projects/ui/helm/navigation-menu/src",
+  "prefix": "hlm",
+  "projectType": "library",
+  "tags": []
+}

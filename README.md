@@ -57,6 +57,10 @@ playground
 www
 ```
 
+## Workspace conventions
+
+File and folder ownership rules are documented in [docs/workspace-conventions.md](docs/workspace-conventions.md).
+
 ## Stack
 
 - Angular 22

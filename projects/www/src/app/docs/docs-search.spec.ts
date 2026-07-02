@@ -1,3 +1,4 @@
+import '@angular/compiler';
 import { describe, expect, it } from 'vitest';
 import {
   componentDocsSearchIndex,
@@ -6,6 +7,8 @@ import {
   searchComponentDocs,
 } from './docs-search';
 import { componentDocs } from './component-docs.registry';
+import { anatomySnippets, componentImports } from './component-doc-snippets';
+import { componentPreviewSnippets } from './component-doc-preview.component';
 
 describe('docs search', () => {
   it('matches component docs by title, selector, export, and API metadata', () => {
@@ -78,5 +81,15 @@ describe('docs search', () => {
     expect(normalizeSearchText('ReasoningContent')).toBe('reasoning content');
     expect(matchesDocsSearchText(reasoning?.searchText ?? '', 'ReasoningContent')).toBe(true);
     expect(matchesDocsSearchText(message?.searchText ?? '', 'MessageThumbsUp')).toBe(true);
+  });
+});
+
+describe('component docs snippets', () => {
+  it('keeps import, anatomy, and preview snippets for every registered component doc', () => {
+    for (const doc of componentDocs) {
+      expect(componentImports[doc.slug]).toContain("from 'duxkit-ai'");
+      expect(anatomySnippets[doc.slug].trim().length).toBeGreaterThan(0);
+      expect(componentPreviewSnippets[doc.slug].trim().length).toBeGreaterThan(0);
+    }
   });
 });

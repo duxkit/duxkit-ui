@@ -14,6 +14,7 @@
     "build:playground": "pnpm build:lib && CI=1 nx build playground --progress=false",
     "build:www": "nx build www",
     "docs:generate-metadata": "node scripts/generate-docs-api-metadata.mjs",
+    "check:conventions": "node scripts/check-workspace-conventions.mjs",
     "watch": "nx build duxkit-ai --watch --configuration development",
     "test": "nx run-many -t test",
     "test:ci": "CI=1 nx run-many -t test -- --watch=false"

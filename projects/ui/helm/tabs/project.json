@@ -1,0 +1,8 @@
+{
+  "name": "tabs",
+  "$schema": "../../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "projects/ui/helm/tabs/src",
+  "prefix": "hlm",
+  "projectType": "library",
+  "tags": []
+}
