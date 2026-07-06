@@ -5,6 +5,7 @@ import { confirmationResponseStates } from './confirmation.types';
 @Component({
   selector: '[aiConfirmationAccepted],ai-confirmation-accepted',
   host: {
+    class: 'grid gap-2',
     '[hidden]': '!visible()',
   },
   template: `

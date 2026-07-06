@@ -1,230 +1,320 @@
 import { Component, computed, signal } from '@angular/core';
 import { Chat } from '@ai-sdk/angular';
+import { HlmButton } from '@duxkit/ui/helm/button';
+import { HlmIcon } from '@duxkit/ui/helm/icon';
+import { NgIcon, provideIcons } from '@ng-icons/core';
+import { lucideCopy, lucideThumbsDown, lucideThumbsUp } from '@ng-icons/lucide';
 import {
-  getToolName,
   lastAssistantMessageIsCompleteWithApprovalResponses,
+  type FileUIPart,
   type UIMessage,
 } from 'ai';
 import {
+  type AiAttachmentPart,
+  type AiPromptSubmit,
   type AiToolPart,
+  Attachment,
+  AttachmentPreview,
+  Attachments,
   ChainOfThought,
   ChainOfThoughtContent,
+  ChainOfThoughtSearchResult,
+  ChainOfThoughtSearchResults,
   ChainOfThoughtStep,
-  type ChainOfThoughtStepStatus,
+  ChainOfThoughtStepDescription,
+  ChainOfThoughtStepLabel,
   ChainOfThoughtTrigger,
   Confirmation,
   ConfirmationAction,
   ConfirmationActions,
+  ConfirmationAccepted,
+  ConfirmationRejected,
   ConfirmationRequest,
   ConfirmationTitle,
+  Context,
+  ContextCacheUsage,
+  ContextContent,
+  ContextContentBody,
+  ContextContentFooter,
+  ContextContentHeader,
+  ContextIcon,
+  ContextInputUsage,
+  ContextOutputUsage,
+  ContextReasoningUsage,
+  ContextTrigger,
   Conversation,
   ConversationContent,
   ConversationScrollAnchor,
+  createModelSelectorSearchValue,
+  groupModelSelectorModels,
   Message,
   MessageActions,
-  MessageActionsCopy,
-  MessageActionsThumbsDown,
-  MessageActionsThumbsUp,
   MessageContent,
-  ReasoningContent,
+  MessageCopy,
+  MessageThumbsDown,
+  MessageThumbsUp,
+  ModelSelector,
+  ModelSelectorContent,
+  ModelSelectorDescription,
+  ModelSelectorEmpty,
+  ModelSelectorGroup,
+  ModelSelectorGroupHeading,
+  ModelSelectorInput,
+  ModelSelectorItem,
+  ModelSelectorList,
+  ModelSelectorLogo,
+  ModelSelectorName,
+  ModelSelectorShortcut,
+  ModelSelectorTitle,
+  type ModelSelectorModel,
+  ModelSelectorTrigger,
+  PromptInput,
+  PromptInputAddAttachment,
+  PromptInputAttachments,
+  PromptInputSubmit,
+  PromptInputTextarea,
+  PromptInputToolbar,
+  PromptInputTools,
+  Shimmer,
+  Source,
+  Sources,
+  SourcesContent,
+  SourcesTrigger,
   Tool,
   ToolContent,
   ToolTrigger,
 } from 'duxkit-ai';
-import { HlmButton } from '@duxkit/ui/helm/button';
 
 type MessagePart = UIMessage['parts'][number];
+
+interface ChatSource {
+  readonly href: string;
+  readonly title: string;
+}
+
+const availableModels = [
+  {
+    id: 'qwen3:4b',
+    name: 'Qwen 3 4B',
+    provider: 'openrouter',
+    providerLabel: 'Local Ollama',
+    providerSlug: 'openrouter',
+    description: 'Default local playground model',
+  },
+  {
+    id: 'qwen3.5:4b',
+    name: 'Qwen 3.5 4B',
+    provider: 'openrouter',
+    providerLabel: 'Local Ollama',
+    providerSlug: 'openrouter',
+    description: 'Alternate local playground model',
+  },
+] as const satisfies readonly ModelSelectorModel[];
+
+const modelGroups = groupModelSelectorModels(availableModels);
 
 @Component({
   selector: 'app-root',
   imports: [
-    Conversation,
-    ConversationContent,
-    ConversationScrollAnchor,
-    Message,
-    MessageActions,
-    MessageActionsCopy,
-    MessageActionsThumbsDown,
-    MessageActionsThumbsUp,
-    MessageContent,
+    Attachment,
+    AttachmentPreview,
+    Attachments,
     ChainOfThought,
     ChainOfThoughtContent,
+    ChainOfThoughtSearchResult,
+    ChainOfThoughtSearchResults,
     ChainOfThoughtStep,
+    ChainOfThoughtStepDescription,
+    ChainOfThoughtStepLabel,
     ChainOfThoughtTrigger,
     Confirmation,
     ConfirmationAction,
     ConfirmationActions,
+    ConfirmationAccepted,
+    ConfirmationRejected,
     ConfirmationRequest,
     ConfirmationTitle,
+    Context,
+    ContextCacheUsage,
+    ContextContent,
+    ContextContentBody,
+    ContextContentFooter,
+    ContextContentHeader,
+    ContextIcon,
+    ContextInputUsage,
+    ContextOutputUsage,
+    ContextReasoningUsage,
+    ContextTrigger,
+    Conversation,
+    ConversationContent,
+    ConversationScrollAnchor,
+    HlmIcon,
     HlmButton,
-    ReasoningContent,
+    Message,
+    MessageActions,
+    MessageContent,
+    MessageCopy,
+    MessageThumbsDown,
+    MessageThumbsUp,
+    ModelSelector,
+    ModelSelectorContent,
+    ModelSelectorDescription,
+    ModelSelectorEmpty,
+    ModelSelectorGroup,
+    ModelSelectorGroupHeading,
+    ModelSelectorInput,
+    ModelSelectorItem,
+    ModelSelectorList,
+    ModelSelectorLogo,
+    ModelSelectorName,
+    ModelSelectorShortcut,
+    ModelSelectorTitle,
+    ModelSelectorTrigger,
+    NgIcon,
+    PromptInput,
+    PromptInputAddAttachment,
+    PromptInputAttachments,
+    PromptInputSubmit,
+    PromptInputTextarea,
+    PromptInputToolbar,
+    PromptInputTools,
+    Shimmer,
+    Source,
+    Sources,
+    SourcesContent,
+    SourcesTrigger,
     Tool,
     ToolContent,
     ToolTrigger,
   ],
+  providers: [provideIcons({ lucideCopy, lucideThumbsDown, lucideThumbsUp })],
   templateUrl: './app.html',
   styleUrl: './app.scss',
 })
 export class App {
-  protected readonly prompt = signal('');
   protected readonly messageFeedback = signal<Record<string, 'up' | 'down'>>({});
-  protected readonly canSubmit = computed(
-    () => this.prompt().trim().length > 0 && this.chat.status === 'ready',
-  );
+  protected readonly selectedModel = signal<ModelSelectorModel>(availableModels[0]);
+  protected readonly fileError = signal<string | undefined>(undefined);
+  protected readonly modelGroups = modelGroups;
+  protected readonly modelSearchValue = createModelSelectorSearchValue;
 
   protected readonly chat = new Chat({
     sendAutomaticallyWhen: lastAssistantMessageIsCompleteWithApprovalResponses,
   });
 
-  constructor() {
-    void this.loadPersistedMessages();
-  }
+  protected readonly estimatedTokenUsage = computed(() => {
+    const text = this.chat.messages
+      .flatMap((message) => message.parts)
+      .filter((part): part is MessagePart & { type: 'text'; text: string } => part.type === 'text')
+      .map((part) => part.text)
+      .join(' ');
+    const tokenEstimate = Math.max(0, Math.ceil(text.length / 4));
+    const inputTokens = Math.ceil(tokenEstimate * 0.55);
+    const outputTokens = Math.max(0, tokenEstimate - inputTokens);
 
-  protected updatePrompt(event: Event): void {
-    const target = event.target as HTMLTextAreaElement;
-    this.prompt.set(target.value);
-  }
+    return {
+      inputTokens,
+      outputTokens,
+      inputTokenDetails: {
+        noCacheTokens: inputTokens,
+        cacheReadTokens: Math.ceil(inputTokens * 0.08),
+        cacheWriteTokens: 0,
+      },
+      outputTokenDetails: {
+        textTokens: Math.max(0, outputTokens - Math.ceil(outputTokens * 0.15)),
+        reasoningTokens: Math.ceil(outputTokens * 0.15),
+      },
+      totalTokens: tokenEstimate,
+    };
+  });
 
-  protected async sendMessage(): Promise<void> {
-    const text = this.prompt().trim();
+  protected readonly estimatedUsedTokens = computed(() =>
+    Math.max(1, this.estimatedTokenUsage().totalTokens),
+  );
 
-    if (text.length === 0 || this.chat.status !== 'ready') {
+  protected async sendPrompt(event: AiPromptSubmit): Promise<void> {
+    const text = event.text.trim();
+    const files = event.files.filter((file): file is FileUIPart => file.type === 'file');
+
+    if (this.chat.status !== 'ready' || (text.length === 0 && files.length === 0)) {
       return;
     }
 
-    this.prompt.set('');
-    await this.chat.sendMessage({ text });
+    this.fileError.set(undefined);
+    await this.chat.sendMessage({
+      text,
+      files,
+    });
+  }
+
+  protected stopResponse(): void {
+    this.chat.stop();
+  }
+
+  protected recordFileError(event: { message: string }): void {
+    this.fileError.set(event.message);
+  }
+
+  protected setSelectedModel(model: ModelSelectorModel): void {
+    if (!model.disabled) {
+      this.selectedModel.set(model);
+    }
   }
 
   protected setMessageFeedback(messageId: string, feedback: 'up' | 'down'): void {
     this.messageFeedback.update((current) => ({ ...current, [messageId]: feedback }));
   }
 
-  protected useToolExample(): void {
-    this.prompt.set('Use the getWeather tool for London in celsius, then summarize the result.');
+  protected messageText(message: UIMessage): string {
+    return message.parts
+      .filter((part): part is MessagePart & { type: 'text'; text: string } => part.type === 'text')
+      .map((part) => part.text)
+      .join('\n\n');
   }
 
-  protected hasChainOfThought(message: UIMessage): boolean {
-    return message.parts.some((part) => part.type === 'reasoning' || this.isToolPart(part));
-  }
-
-  protected chainOfThoughtExpanded(message: UIMessage, lastMessage: boolean): boolean {
-    return (
-      (lastMessage && this.chat.status === 'streaming') ||
-      message.parts.some((part) => this.isApprovalRequestedToolPart(part))
+  protected messageAttachments(message: UIMessage): readonly AiAttachmentPart[] {
+    return message.parts.filter(
+      (part): part is AiAttachmentPart => part.type === 'file' || part.type === 'source-document',
     );
   }
 
-  protected reasoningStepStatus(lastMessage: boolean, lastPart: boolean): ChainOfThoughtStepStatus {
-    return lastMessage && this.chat.status === 'streaming' && lastPart ? 'active' : 'complete';
-  }
-
-  protected reasoningStepIcon(lastMessage: boolean, lastPart: boolean): string {
-    return this.reasoningStepStatus(lastMessage, lastPart) === 'active'
-      ? 'lucideLoaderCircle'
-      : 'lucideCircleCheck';
-  }
-
-  protected toolStepStatus(part: AiToolPart): ChainOfThoughtStepStatus {
-    switch (part.state) {
-      case 'output-available':
-      case 'output-error':
-        return 'complete';
-      case 'approval-requested':
-      case 'approval-responded':
-      case 'input-available':
-      case 'input-streaming':
-        return 'active';
-      default:
-        return 'pending';
-    }
-  }
-
-  protected toolStepIcon(part: AiToolPart): string {
-    return this.toolStepStatus(part) === 'active' ? 'lucideLoaderCircle' : 'lucideCircleCheck';
-  }
-
-  protected toolStepLabel(part: AiToolPart): string {
-    return `Use ${getToolName(part)}`;
-  }
-
-  protected toolStepDescription(part: AiToolPart): string {
-    const toolInput = this.describeToolInput(part);
-
-    switch (part.state) {
-      case 'approval-requested':
-        return toolInput === undefined
-          ? 'Waiting for permission before running the tool.'
-          : `Waiting for permission to run with ${toolInput}.`;
-      case 'approval-responded':
-        return part.approval?.approved === false
-          ? 'Permission was denied.'
-          : 'Permission was approved.';
-      case 'input-streaming':
-        return 'Generating tool input.';
-      case 'input-available':
-        return toolInput === undefined ? 'Tool input is ready.' : `Tool input ready: ${toolInput}.`;
-      case 'output-available':
-        return this.describeToolOutput(part) ?? 'Tool output received.';
-      case 'output-error':
-        return part.errorText;
-      default:
-        return part.state.replaceAll('-', ' ');
-    }
-  }
-
-  private describeToolInput(part: AiToolPart): string | undefined {
-    const input = part.input;
-
-    if (input === undefined || input === null || typeof input !== 'object') {
-      return undefined;
+  protected attachmentKey(attachment: AiAttachmentPart): string {
+    if (attachment.type === 'file') {
+      return attachment.url;
     }
 
-    if ('city' in input && typeof input.city === 'string') {
-      const unit = 'unit' in input && typeof input.unit === 'string' ? ` in ${input.unit}` : '';
-      return `${input.city}${unit}`;
-    }
-
-    return JSON.stringify(input);
+    return attachment.title || attachment.filename || JSON.stringify(attachment);
   }
 
-  private describeToolOutput(part: AiToolPart): string | undefined {
-    if (part.state !== 'output-available') {
-      return undefined;
+  protected messageSources(message: UIMessage): readonly ChatSource[] {
+    const sources = new Map<string, ChatSource>();
+    const urlPattern = /\bhttps?:\/\/[^\s<>)"']+/gi;
+
+    for (const part of message.parts) {
+      if (part.type === 'source-url') {
+        sources.set(part.url, { href: part.url, title: part.title ?? part.url });
+      }
+
+      if (part.type === 'text') {
+        for (const [url] of part.text.matchAll(urlPattern)) {
+          sources.set(url, { href: url, title: url.replace(/^https?:\/\//, '') });
+        }
+      }
     }
 
-    const output = part.output;
+    return Array.from(sources.values());
+  }
 
-    if (output === undefined || output === null || typeof output !== 'object') {
-      return undefined;
-    }
+  protected hasChainOfThought(message: UIMessage): boolean {
+    return message.parts.some((part) => part.type === 'reasoning');
+  }
 
-    if (
-      'city' in output &&
-      typeof output.city === 'string' &&
-      'temperature' in output &&
-      typeof output.temperature === 'number'
-    ) {
-      const unit = 'unit' in output && typeof output.unit === 'string' ? output.unit : undefined;
-      const condition =
-        'condition' in output && typeof output.condition === 'string'
-          ? ` and ${output.condition}`
-          : '';
-
-      return `Received ${output.temperature}${unit === 'fahrenheit' ? 'F' : 'C'} for ${output.city}${condition}.`;
-    }
-
-    return 'Tool output received.';
+  protected chainOfThoughtExpanded(lastMessage: boolean): boolean {
+    return lastMessage && this.chat.status === 'streaming';
   }
 
   protected isToolPart(part: MessagePart): part is AiToolPart {
     return part.type === 'dynamic-tool' || part.type.startsWith('tool-');
-  }
-
-  protected isApprovalRequestedToolPart(
-    part: MessagePart,
-  ): part is AiToolPart & { state: 'approval-requested' } {
-    return this.isToolPart(part) && part.state === 'approval-requested';
   }
 
   protected respondToToolApproval(part: AiToolPart, approved: boolean): void {
@@ -239,25 +329,5 @@ export class App {
       approved,
       reason: approved ? 'Approved from the playground UI.' : 'Denied from the playground UI.',
     });
-  }
-
-  private async loadPersistedMessages(): Promise<void> {
-    try {
-      const response = await fetch('/api/chat');
-
-      if (!response.ok) {
-        return;
-      }
-
-      const body = (await response.json()) as { messages?: UIMessage[] };
-
-      if (!Array.isArray(body.messages)) {
-        return;
-      }
-
-      this.chat.messages = body.messages;
-    } catch (error) {
-      console.error('Failed to load persisted chat.', error);
-    }
   }
 }

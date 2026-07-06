@@ -4,6 +4,7 @@ import { Confirmation } from './confirmation';
 @Component({
   selector: '[aiConfirmationRequest],ai-confirmation-request',
   host: {
+    class: 'grid gap-2',
     '[hidden]': '!visible()',
   },
   template: `

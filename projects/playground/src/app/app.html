@@ -1,159 +1,290 @@
-<main class="playground-shell">
-  <section class="chat-panel" aria-label="AI chat playground">
-    <header class="chat-header">
-      <div>
-        <p class="eyebrow">Ollama playground</p>
-        <h1>DuxKit AI</h1>
-      </div>
+<main class="chat-app container max-w-3xl max-h-[100vh]">
+  <h1 class="sr-only">DuxKit Chat</h1>
 
-      <span class="status" [class.status-busy]="chat.status !== 'ready'">
-        {{ chat.status }}
-      </span>
-    </header>
-
-    <ai-conversation>
-      <ai-conversation-content class="message-list p-2" aria-live="polite">
-        @if (chat.messages.length === 0) {
-          <p class="empty-state">
-            Send a prompt to test local streaming through the Angular AI SDK adapter.
+  <ai-conversation class="chat-conversation" aria-label="DuxKit AI playground chat">
+    <ai-conversation-content class="chat-scroll" aria-live="polite">
+      @if (chat.messages.length === 0) {
+        <section class="empty-chat" aria-labelledby="empty-title">
+          <p id="empty-title" aiShimmer class="empty-title">What can I help with?</p>
+          <p class="empty-copy">
+            Use the local model, attach files, test a tool call, or ask for code.
           </p>
-        }
+        </section>
+      }
 
-        @for (message of chat.messages; track message.id; let lastMessage = $last) {
-          <ai-message
-            class="group"
-            [from]="message.role"
-            [attr.tabindex]="message.role === 'user' ? 0 : null"
-          >
-            @if (message.role === 'assistant' && hasChainOfThought(message)) {
-              <ai-chain-of-thought
-                class="mb-2"
-                [expanded]="chainOfThoughtExpanded(message, lastMessage)"
-                [autoToggle]="false"
-                [isStreaming]="lastMessage && chat.status === 'streaming'"
-              >
-                <button aiChainOfThoughtTrigger></button>
-                <ai-chain-of-thought-content>
-                  @for (part of message.parts; track $index; let lastPart = $last) {
-                    @if (part.type === 'reasoning') {
-                      <ai-chain-of-thought-step
-                        [status]="reasoningStepStatus(lastMessage, lastPart)"
-                        [icon]="reasoningStepIcon(lastMessage, lastPart)"
-                        [pinToBottom]="lastMessage && lastPart && chat.status === 'streaming'"
-                        collapsedMaxHeight="160px"
-                        label="Thinking"
-                      >
-                        <ai-reasoning-content [markdown]="part.text" />
-                      </ai-chain-of-thought-step>
-                    }
 
-                    @if (isToolPart(part)) {
-                      <ai-chain-of-thought-step
-                        [status]="toolStepStatus(part)"
-                        [icon]="toolStepIcon(part)"
-                        [label]="toolStepLabel(part)"
-                        [description]="toolStepDescription(part)"
-                      >
-                        <ai-tool [part]="part">
-                          <button aiToolTrigger></button>
-                          <ai-tool-content />
-                          @if (part.state === 'approval-requested') {
-                            <ai-confirmation [part]="part">
-                              <ai-confirmation-request>
-                                <ai-confirmation-title />
-                                <p class="confirmation-copy">
-                                  Allow this tool to run with the generated input?
-                                </p>
-                                <ai-confirmation-actions>
-                                  <button
-                                    aiConfirmationAction
-                                    hlmBtn
-                                    variant="outline"
-                                    (click)="respondToToolApproval(part, false)"
-                                  >
-                                    Deny
-                                  </button>
-                                  <button
-                                    aiConfirmationAction
-                                    hlmBtn
-                                    (click)="respondToToolApproval(part, true)"
-                                  >
-                                    Allow
-                                  </button>
-                                </ai-confirmation-actions>
-                              </ai-confirmation-request>
-                            </ai-confirmation>
+      @for (message of chat.messages; track message.id; let lastMessage = $last) {
+        <ai-message
+          class="message-row group"
+          [from]="message.role"
+          [attr.data-role]="message.role"
+          [attr.aria-label]="message.role + ' message'"
+        >
+          @if (messageAttachments(message).length > 0) {
+            <ai-attachments class="message-attachments" variant="inline">
+              @for (attachment of messageAttachments(message); track attachmentKey(attachment)) {
+                <ai-attachment [data]="attachment">
+                  <ai-attachment-preview />
+                </ai-attachment>
+              }
+            </ai-attachments>
+          }
+
+          @if (message.role === 'assistant' && hasChainOfThought(message)) {
+            <ai-chain-of-thought
+              class="message-reasoning"
+              [expanded]="chainOfThoughtExpanded(lastMessage)"
+              [autoToggle]="true"
+              [isStreaming]="lastMessage && chat.status === 'streaming'"
+            >
+              <button aiChainOfThoughtTrigger></button>
+              <ai-chain-of-thought-content>
+                @for (part of message.parts; track $index) {
+                  @if (part.type === 'reasoning') {
+                    <ai-chain-of-thought-step
+                      [status]="lastMessage && chat.status === 'streaming' ? 'active' : 'complete'"
+                      [pinToBottom]="lastMessage && chat.status === 'streaming'"
+                    >
+                      <ai-chain-of-thought-step-label>
+                        {{
+                          lastMessage && chat.status === 'streaming' ? 'Reasoning' : 'Reasoned'
+                        }}
+                      </ai-chain-of-thought-step-label>
+                      <ai-chain-of-thought-step-description class="reasoning-copy">
+                        {{ part.text }}
+                      </ai-chain-of-thought-step-description>
+                      @if (messageSources(message).length > 0) {
+                        <ai-chain-of-thought-search-results>
+                          @for (source of messageSources(message); track source.href) {
+                            <span aiChainOfThoughtSearchResult>{{ source.title }}</span>
                           }
-                        </ai-tool>
-                      </ai-chain-of-thought-step>
-                    }
+                        </ai-chain-of-thought-search-results>
+                      }
+                    </ai-chain-of-thought-step>
                   }
-                </ai-chain-of-thought-content>
-              </ai-chain-of-thought>
-            }
+                }
+              </ai-chain-of-thought-content>
+            </ai-chain-of-thought>
+          }
 
+          @if (message.role === 'assistant') {
             @for (part of message.parts; track $index) {
-              @if (part.type === 'text' && part.text.trim().length > 0) {
-                <ai-message-content [markdown]="part.text" />
+              @if (isToolPart(part)) {
+                <ai-tool class="message-tool" [part]="part">
+                  <button aiToolTrigger></button>
+                  <ai-tool-content />
+
+                  @if (part.state === 'approval-requested') {
+                    <ai-confirmation [part]="part" class="confirmation">
+                      <ai-confirmation-request>
+                        <ai-confirmation-title />
+                        <p class="confirmation-copy">
+                          Allow this tool to run with the generated input?
+                        </p>
+                        <ai-confirmation-actions>
+                          <button
+                            aiConfirmationAction
+                            hlmBtn
+                            variant="outline"
+                            size="sm"
+                            type="button"
+                            (click)="respondToToolApproval(part, false)"
+                          >
+                            Deny
+                          </button>
+                          <button
+                            aiConfirmationAction
+                            hlmBtn
+                            size="sm"
+                            type="button"
+                            (click)="respondToToolApproval(part, true)"
+                          >
+                            Allow
+                          </button>
+                        </ai-confirmation-actions>
+                      </ai-confirmation-request>
+                      <ai-confirmation-accepted>
+                        <ai-confirmation-title />
+                      </ai-confirmation-accepted>
+                      <ai-confirmation-rejected>
+                        <ai-confirmation-title />
+                      </ai-confirmation-rejected>
+                    </ai-confirmation>
+                  }
+                </ai-tool>
               }
             }
+          }
 
-            @if (message.role === 'user') {
-              <ai-message-actions
-                class="invisible group-hover:visible group-focus:visible group-focus-within:visible"
+          @if (messageText(message).trim().length > 0) {
+            <ai-message-content class="message-content" [markdown]="messageText(message)" />
+          }
+
+          @if (message.role === 'assistant' && messageSources(message).length > 0) {
+            <ai-sources class="message-sources" [expanded]="false">
+              <button aiSourcesTrigger [count]="messageSources(message).length"></button>
+              <ai-sources-content>
+                @for (source of messageSources(message); track source.href) {
+                  <a aiSource [href]="source.href" [title]="source.title"></a>
+                }
+              </ai-sources-content>
+            </ai-sources>
+          }
+
+          @if (message.role === 'user') {
+            <ai-message-actions class="message-actions">
+              <button aiMessageCopy hlmBtn size="icon-sm" variant="ghost" aria-label="Copy message">
+                <ng-icon hlmIcon size="sm" name="lucideCopy" aria-hidden="true" />
+              </button>
+            </ai-message-actions>
+          }
+
+          @if (message.role === 'assistant' && lastMessage && chat.status === 'ready') {
+            <ai-message-actions class="message-actions">
+              <button aiMessageCopy hlmBtn size="icon-sm" variant="ghost" aria-label="Copy message">
+                <ng-icon hlmIcon size="sm" name="lucideCopy" aria-hidden="true" />
+              </button>
+              <button
+                aiMessageThumbsUp
+                hlmBtn
+                size="icon-sm"
+                variant="ghost"
+                aria-label="Good response"
+                [active]="messageFeedback()[message.id] === 'up'"
+                (thumbsUp)="setMessageFeedback(message.id, 'up')"
               >
-                <ai-message-actions-copy />
-              </ai-message-actions>
-            }
+                <ng-icon hlmIcon size="sm" name="lucideThumbsUp" aria-hidden="true" />
+              </button>
+              <button
+                aiMessageThumbsDown
+                hlmBtn
+                size="icon-sm"
+                variant="ghost"
+                aria-label="Bad response"
+                [active]="messageFeedback()[message.id] === 'down'"
+                (thumbsDown)="setMessageFeedback(message.id, 'down')"
+              >
+                <ng-icon hlmIcon size="sm" name="lucideThumbsDown" aria-hidden="true" />
+              </button>
+            </ai-message-actions>
+          }
+        </ai-message>
+      }
 
-            @if (message.role === 'assistant' && lastMessage && chat.status === 'ready') {
-              <ai-message-actions>
-                <ai-message-actions-copy />
-                <ai-message-actions-thumbs-up
-                  [active]="messageFeedback()[message.id] === 'up'"
-                  (thumbsUp)="setMessageFeedback(message.id, 'up')"
-                />
-                <ai-message-actions-thumbs-down
-                  [active]="messageFeedback()[message.id] === 'down'"
-                  (thumbsDown)="setMessageFeedback(message.id, 'down')"
-                />
-              </ai-message-actions>
-            }
-          </ai-message>
-        }
+      <div aiConversationScrollAnchor></div>
+    </ai-conversation-content>
+  </ai-conversation>
 
-        <div aiConversationScrollAnchor></div>
-      </ai-conversation-content>
-    </ai-conversation>
-
+  <section class="composer-region" aria-label="Message composer">
     @if (chat.error) {
       <p class="error" role="alert">
         The local model request failed. Check that Ollama is running and the model is pulled.
       </p>
     }
 
-    <div class="example-actions">
-      <button type="button" (click)="useToolExample()" [disabled]="chat.status !== 'ready'">
-        Use tool example
-      </button>
-    </div>
+    @if (fileError()) {
+      <p class="error" role="alert">{{ fileError() }}</p>
+    }
 
-    <form class="composer" (submit)="sendMessage(); $event.preventDefault()">
-      <label class="sr-only" for="prompt">Message</label>
+    <form
+      aiPromptInput
+      class="composer"
+      accept="image/*,.txt,.md,.json,.csv,.pdf"
+      [multiple]="true"
+      [maxFiles]="5"
+      [maxFileSize]="4_000_000"
+      [status]="chat.status"
+      (promptSubmit)="sendPrompt($event)"
+      (fileError)="recordFileError($event)"
+    >
       <textarea
-        id="prompt"
-        rows="3"
-        [value]="prompt()"
-        (input)="updatePrompt($event)"
-        [disabled]="chat.status !== 'ready'"
-        placeholder="Ask your local model something..."
+        aiPromptInputTextarea
+        aria-label="Message DuxKit Chat"
+        placeholder="Message DuxKit Chat..."
       ></textarea>
 
-      @if (chat.status === 'ready') {
-        <button type="submit" [disabled]="!canSubmit()">Send</button>
-      } @else {
-        <button type="button" (click)="chat.stop()">Stop</button>
-      }
+      <ai-prompt-input-attachments />
+
+      <ai-prompt-input-toolbar>
+        <ai-prompt-input-tools>
+          <ai-model-selector>
+            <button aiModelSelectorTrigger hlmBtn class="model-trigger" variant="outline" size="sm">
+              <ai-model-selector-logo
+                [provider]="selectedModel().providerSlug ?? selectedModel().provider"
+              />
+              <ai-model-selector-name>{{ selectedModel().name }}</ai-model-selector-name>
+            </button>
+            <ai-model-selector-content>
+              <h2 aiModelSelectorTitle class="sr-only">Choose a model</h2>
+              <p aiModelSelectorDescription class="sr-only">Search and select an AI model.</p>
+              <ai-model-selector-input placeholder="Search models..." />
+              <ai-model-selector-list>
+                <ai-model-selector-empty>No models found.</ai-model-selector-empty>
+                @for (group of modelGroups; track group.provider) {
+                  <ai-model-selector-group>
+                    <ai-model-selector-group-heading>{{
+                      group.heading
+                    }}</ai-model-selector-group-heading>
+                    @for (model of group.models; track model.id) {
+                      <button
+                        aiModelSelectorItem
+                        [value]="modelSearchValue(model)"
+                        (click)="setSelectedModel(model)"
+                      >
+                        <ai-model-selector-logo [provider]="model.providerSlug ?? model.provider" />
+                        <ai-model-selector-name>{{ model.name }}</ai-model-selector-name>
+                        <ai-model-selector-shortcut>{{
+                          model.providerLabel
+                        }}</ai-model-selector-shortcut>
+                      </button>
+                    }
+                  </ai-model-selector-group>
+                }
+              </ai-model-selector-list>
+            </ai-model-selector-content>
+          </ai-model-selector>
+
+          <button
+            aiPromptInputAddAttachment
+            hlmBtn
+            variant="ghost"
+            size="icon-sm"
+            type="button"
+            ariaLabel="Attach files"
+          ></button>
+
+          <ai-context
+            class="context-meter"
+            [usedTokens]="estimatedUsedTokens()"
+            [maxTokens]="128000"
+            [usage]="estimatedTokenUsage()"
+            [modelId]="selectedModel().id"
+          >
+            <button aiContextTrigger hlmBtn variant="ghost" size="sm" type="button">
+              <ai-context-icon />
+              Context
+            </button>
+            <ai-context-content>
+              <ai-context-content-header />
+              <ai-context-content-body>
+                <ai-context-input-usage />
+                <ai-context-output-usage />
+                <ai-context-reasoning-usage />
+                <ai-context-cache-usage />
+              </ai-context-content-body>
+              <ai-context-content-footer />
+            </ai-context-content>
+          </ai-context>
+        </ai-prompt-input-tools>
+
+        <button
+          aiPromptInputSubmit
+          hlmBtn
+          size="icon-sm"
+          [status]="chat.status"
+          (stop)="stopResponse()"
+        ></button>
+      </ai-prompt-input-toolbar>
     </form>
   </section>
 </main>
