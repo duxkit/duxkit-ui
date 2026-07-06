@@ -21,6 +21,7 @@ This design covers:
 - A new introduction page under `/docs`.
 - Sidebar structure for both sections.
 - Search routing updates needed after component routes move.
+- Use of Spartan-generated primitives for the mobile drawer and FAQ accordion.
 
 This design does not cover:
 
@@ -182,9 +183,7 @@ This should stay conceptual and not drift into installation documentation.
 
 The FAQ should be built with Spartan primitives rather than hand-rolled disclosure UI.
 
-Recommended primitive choice:
-
-- Spartan collapsible or accordion, whichever best matches the existing workspace patterns and available private UI helpers
+For this pass, the FAQ should use the Spartan `accordion` component generated through `@spartan-ng/cli:ui`.
 
 The FAQ entries for this pass are fixed:
 
@@ -215,6 +214,23 @@ A reasonable decomposition is:
 
 This avoids over-abstraction while keeping each route family clear.
 
+## Spartan Dependencies
+
+The new UI added in this pass should come from Spartan-generated primitives rather than custom drawer or disclosure implementations.
+
+Required additions:
+
+- mobile navigation drawer should use the Spartan `drawer` component generated through `@spartan-ng/cli:ui`
+- introduction FAQ should use the Spartan `accordion` component generated through `@spartan-ng/cli:ui`
+
+Before implementation, use the workspace runner to confirm current Spartan context and installed components:
+
+```bash
+npx nx g @spartan-ng/cli:info --json
+```
+
+At the time of this design, `accordion` and `drawer` are available but not yet installed in this workspace.
+
 ## Accessibility
 
 The navigation changes must preserve keyboard and screen reader usability.
@@ -227,18 +243,6 @@ Requirements:
 - section sidebars remain understandable as navigational landmarks
 
 The introduction FAQ should also preserve accessible disclosure semantics through Spartan primitives rather than custom scripting.
-
-## Testing
-
-This work should add or update focused tests for:
-
-- route generation and active-state behavior where existing tests already cover similar concerns
-- header navigation links rendering the new route targets
-- search result routing changing from `/docs/components/:slug` to `/components/:slug`
-- docs and components shells rendering the correct sidebar structure
-- introduction page rendering the expected sections and FAQ entries
-
-Tests should stay focused on navigation structure and content presence, not visual styling details.
 
 ## Open Questions Resolved
 
