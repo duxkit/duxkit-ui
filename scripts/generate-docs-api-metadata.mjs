@@ -7,9 +7,15 @@ import { format, resolveConfig } from 'prettier';
 import ts from 'typescript';
 
 const repoRoot = resolve(dirname(fileURLToPath(import.meta.url)), '..');
-const docsRegistryPath = join(repoRoot, 'projects/www/src/app/docs/component-docs.registry.ts');
+const docsRegistryPath = join(
+  repoRoot,
+  'projects/www/src/app/routes/docs/data/component-docs.registry.ts',
+);
 const sourceRoot = join(repoRoot, 'projects/duxkit-ai/src/lib');
-const outputPath = join(repoRoot, 'projects/www/src/app/docs/component-api-metadata.generated.ts');
+const outputPath = join(
+  repoRoot,
+  'projects/www/src/app/routes/docs/data/component-api-metadata.generated.ts',
+);
 
 const docsRegistrySource = readFileSync(docsRegistryPath, 'utf8');
 const docsRegistryFile = ts.createSourceFile(

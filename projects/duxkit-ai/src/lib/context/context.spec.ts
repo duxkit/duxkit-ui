@@ -4,7 +4,9 @@ import { HlmButton } from '@duxkit/ui/helm/button';
 import type { LanguageModelUsage } from 'ai';
 
 import {
+  AI_CONTEXT_COST_CALCULATOR,
   Context,
+  type ContextCostCalculator,
   ContextCacheUsage,
   ContextContent,
   ContextContentBody,
@@ -16,6 +18,14 @@ import {
   ContextReasoningUsage,
   ContextTrigger,
 } from './';
+
+const testCostCalculator: ContextCostCalculator = ({ kind }) => {
+  if (kind === 'total') {
+    return 1.23;
+  }
+
+  return 0.12;
+};
 
 const usage: LanguageModelUsage = {
   inputTokens: 32_000,
@@ -112,6 +122,7 @@ describe('Context', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [Host],
+      providers: [{ provide: AI_CONTEXT_COST_CALCULATOR, useValue: testCostCalculator }],
     }).compileComponents();
 
     fixture = TestBed.createComponent(Host);
@@ -168,8 +179,31 @@ describe('Context', () => {
     expect(body?.textContent).toContain('4K');
     expect(footer?.classList).toContain('px-4');
     expect(footer?.textContent).toContain('Total cost');
-    expect(footer?.textContent).toContain('$');
+    expect(footer?.textContent).toContain('$1.23');
+    expect(body?.textContent).toContain('$0.12');
     expect(element.querySelector('ai-context-input-usage')?.classList).toContain('custom-input');
+  });
+
+  it('renders token usage without cost text when no calculator is provided', async () => {
+    await TestBed.resetTestingModule()
+      .configureTestingModule({
+        imports: [Host],
+      })
+      .compileComponents();
+
+    const noCostFixture = TestBed.createComponent(Host);
+    noCostFixture.detectChanges();
+    await noCostFixture.whenStable();
+
+    const element = noCostFixture.nativeElement as HTMLElement;
+    const body = element.querySelector('ai-context-content-body');
+    const footer = element.querySelector('ai-context-content-footer');
+
+    expect(body?.textContent).toContain('Input');
+    expect(body?.textContent).toContain('32K');
+    expect(body?.textContent).not.toContain('$');
+    expect(footer?.textContent).not.toContain('Total cost');
+    expect(footer?.textContent).not.toContain('$');
   });
 
   it('uses AI SDK token detail fields instead of deprecated flat token fields', () => {

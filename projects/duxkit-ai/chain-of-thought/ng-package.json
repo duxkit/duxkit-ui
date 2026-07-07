@@ -1,0 +1,6 @@
+{
+  "$schema": "../../../node_modules/ng-packagr/ng-entrypoint.schema.json",
+  "lib": {
+    "entryFile": "../src/lib/chain-of-thought.entrypoint.ts"
+  }
+}

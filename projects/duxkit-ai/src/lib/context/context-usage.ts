@@ -1,13 +1,19 @@
-import { Component, computed, input, type Signal } from '@angular/core';
+import { Component, computed, inject, input, type Signal } from '@angular/core';
 import { twMerge } from 'tailwind-merge';
 import { formatContextTokens } from './context';
-import { contextCostUSD, formatContextCost, type ContextCostKind } from './context-cost';
+import {
+  AI_CONTEXT_COST_CALCULATOR,
+  contextCostUSD,
+  formatContextCost,
+  type ContextCostKind,
+} from './context-cost';
 import { injectContext } from './context-root';
 
 export const contextUsageClasses = 'grid grid-cols-[minmax(0,1fr)_auto] items-center gap-4 text-xs';
 
 abstract class ContextUsageRow {
   protected readonly context = injectContext();
+  private readonly costCalculator = inject(AI_CONTEXT_COST_CALCULATOR, { optional: true });
 
   protected abstract readonly label: string;
   protected abstract readonly costKind: ContextCostKind;
@@ -15,9 +21,15 @@ abstract class ContextUsageRow {
 
   protected readonly hasTokens = computed(() => this.tokens() > 0);
   protected readonly renderedTokens = computed(() => formatContextTokens(this.tokens()));
-  protected readonly renderedCost = computed(() =>
-    formatContextCost(contextCostUSD(this.context.modelId(), this.context.usage(), this.costKind)),
+  protected readonly costUSD = computed(() =>
+    contextCostUSD(
+      this.costCalculator,
+      this.context.modelId(),
+      this.context.usage(),
+      this.costKind,
+    ),
   );
+  protected readonly renderedCost = computed(() => formatContextCost(this.costUSD()));
 }
 
 @Component({
@@ -31,7 +43,9 @@ abstract class ContextUsageRow {
         <span class="text-muted-foreground">{{ label }}</span>
         <span class="whitespace-nowrap text-right tabular-nums">
           {{ renderedTokens() }}
-          <span class="ml-2 text-muted-foreground">- {{ renderedCost() }}</span>
+          @if (costUSD() !== undefined) {
+            <span class="ml-2 text-muted-foreground">- {{ renderedCost() }}</span>
+          }
         </span>
       </ng-content>
     }
@@ -58,7 +72,9 @@ export class ContextInputUsage extends ContextUsageRow {
         <span class="text-muted-foreground">{{ label }}</span>
         <span class="whitespace-nowrap text-right tabular-nums">
           {{ renderedTokens() }}
-          <span class="ml-2 text-muted-foreground">- {{ renderedCost() }}</span>
+          @if (costUSD() !== undefined) {
+            <span class="ml-2 text-muted-foreground">- {{ renderedCost() }}</span>
+          }
         </span>
       </ng-content>
     }
@@ -85,7 +101,9 @@ export class ContextOutputUsage extends ContextUsageRow {
         <span class="text-muted-foreground">{{ label }}</span>
         <span class="whitespace-nowrap text-right tabular-nums">
           {{ renderedTokens() }}
-          <span class="ml-2 text-muted-foreground">- {{ renderedCost() }}</span>
+          @if (costUSD() !== undefined) {
+            <span class="ml-2 text-muted-foreground">- {{ renderedCost() }}</span>
+          }
         </span>
       </ng-content>
     }
@@ -112,7 +130,9 @@ export class ContextReasoningUsage extends ContextUsageRow {
         <span class="text-muted-foreground">{{ label }}</span>
         <span class="whitespace-nowrap text-right tabular-nums">
           {{ renderedTokens() }}
-          <span class="ml-2 text-muted-foreground">- {{ renderedCost() }}</span>
+          @if (costUSD() !== undefined) {
+            <span class="ml-2 text-muted-foreground">- {{ renderedCost() }}</span>
+          }
         </span>
       </ng-content>
     }

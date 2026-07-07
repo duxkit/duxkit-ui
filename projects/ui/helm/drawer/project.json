@@ -1,0 +1,8 @@
+{
+  "name": "drawer",
+  "$schema": "../../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "projects/ui/helm/drawer/src",
+  "prefix": "hlm",
+  "projectType": "library",
+  "tags": []
+}

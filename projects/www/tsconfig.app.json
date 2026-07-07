@@ -14,7 +14,8 @@
       "@duxkit/ui/helm/navigation-menu": ["../ui/helm/navigation-menu/src/index.ts"],
       "@duxkit/ui/helm/textarea": ["../ui/helm/textarea/src/index.ts"],
       "@duxkit/ui/helm/utils": ["../ui/helm/utils/src/index.ts"],
-      "duxkit-ai": ["../../dist/duxkit-ai", "./dist/duxkit-ai"]
+      "duxkit-ai": ["../duxkit-ai/src/public-api.ts"],
+      "duxkit-ai/*": ["../duxkit-ai/src/lib/*.entrypoint.ts"]
     }
   },
   "include": ["src/**/*.ts"],

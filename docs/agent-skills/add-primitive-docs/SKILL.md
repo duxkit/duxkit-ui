@@ -17,13 +17,13 @@ Use this skill when a new `duxkit-ai` primitive needs docs, or when an existing 
 4. Add or update the first Storybook example in:
    - `projects/duxkit-ai/src/lib/<slug>/<slug>.stories.ts`
 5. Register the docs page in:
-   - `projects/www/src/app/docs/component-docs.registry.ts`
+   - `projects/www/src/app/routes/docs/data/component-docs.registry.ts`
 6. Add docs snippets in:
-   - `projects/www/src/app/docs/component-doc.page.ts`
+   - `projects/www/src/app/routes/components/component-doc.page.ts`
    - update `componentImports`
    - update `anatomySnippets`
 7. Add the preview in:
-   - `projects/www/src/app/docs/component-doc-preview.component.ts`
+   - `projects/www/src/app/routes/docs/components/component-doc-preview.component.ts`
    - copy the first Storybook example where practical
    - keep preview styling minimal and render the component as-is
 8. Add concise JSDoc comments to every public `input()` and `output()` that should appear in the API table.
@@ -33,14 +33,14 @@ Use this skill when a new `duxkit-ai` primitive needs docs, or when an existing 
 pnpm docs:generate-metadata
 ```
 
-Do not hand-edit `projects/www/src/app/docs/component-api-metadata.generated.ts`.
+Do not hand-edit `projects/www/src/app/routes/docs/data/component-api-metadata.generated.ts`.
 
 ## Verification
 
 For docs-only primitive additions, run:
 
 ```bash
-pnpm exec vitest run projects/www/src/app/docs/docs-search.spec.ts --environment jsdom
+pnpm exec vitest run projects/www/src/app/routes/docs/search/docs-search.spec.ts --environment jsdom
 pnpm build:www
 pnpm build:storybook
 ```

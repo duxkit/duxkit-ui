@@ -33,7 +33,7 @@ pnpm build:storybook
 Add the component to the docs registry:
 
 ```text
-projects/www/src/app/docs/component-docs.registry.ts
+projects/www/src/app/routes/docs/data/component-docs.registry.ts
 ```
 
 Each entry needs:
@@ -53,7 +53,7 @@ The slug becomes the route:
 Update the code snippets in:
 
 ```text
-projects/www/src/app/docs/component-doc.page.ts
+projects/www/src/app/routes/components/component-doc.page.ts
 ```
 
 Add entries for:
@@ -68,7 +68,7 @@ These drive the install/manual import and anatomy code tabs.
 Update:
 
 ```text
-projects/www/src/app/docs/component-doc-preview.component.ts
+projects/www/src/app/routes/docs/components/component-doc-preview.component.ts
 ```
 
 Add:
@@ -101,7 +101,7 @@ pnpm docs:generate-metadata
 This updates:
 
 ```text
-projects/www/src/app/docs/component-api-metadata.generated.ts
+projects/www/src/app/routes/docs/data/component-api-metadata.generated.ts
 ```
 
 The generator scans the component folder listed by the docs slug and extracts Angular `@Component` / `@Directive` selectors plus `input()` and `output()` metadata. Input and output descriptions come from JSDoc comments. Do not edit `component-api-metadata.generated.ts` by hand.
@@ -111,7 +111,7 @@ The generator scans the component folder listed by the docs slug and extracts An
 The search index is built from the registry plus API metadata. Run:
 
 ```bash
-pnpm exec vitest run projects/www/src/app/docs/docs-search.spec.ts --environment jsdom
+pnpm exec vitest run projects/www/src/app/routes/docs/search/docs-search.spec.ts --environment jsdom
 ```
 
 This checks that every docs entry has generated API metadata and that search can match title, selector, export, input, and output data.
@@ -143,7 +143,7 @@ Check:
 For a docs-only change, run:
 
 ```bash
-pnpm exec vitest run projects/www/src/app/docs/docs-search.spec.ts --environment jsdom
+pnpm exec vitest run projects/www/src/app/routes/docs/search/docs-search.spec.ts --environment jsdom
 pnpm build:www
 pnpm build:storybook
 ```

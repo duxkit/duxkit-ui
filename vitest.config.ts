@@ -16,6 +16,10 @@ export default defineConfig({
       { find: '@duxkit/ui/helm/tabs', replacement: helmAlias('tabs') },
       { find: '@duxkit/ui/helm/textarea', replacement: helmAlias('textarea') },
       { find: '@duxkit/ui/helm/utils', replacement: helmAlias('utils') },
+      {
+        find: /^duxkit-ai\/(.+)$/,
+        replacement: resolve(__dirname, 'projects/duxkit-ai/src/lib/$1.entrypoint.ts'),
+      },
       { find: 'duxkit-ai', replacement: resolve(__dirname, 'projects/duxkit-ai/src/public-api.ts') },
       { find: '@duxkit/ui', replacement: resolve(__dirname, 'projects/ui/src/index.ts') },
     ],

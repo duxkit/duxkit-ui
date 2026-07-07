@@ -3,6 +3,7 @@
   "compilerOptions": {
     "paths": {
       "duxkit-ai": ["./dist/duxkit-ai"],
+      "duxkit-ai/*": ["./dist/duxkit-ai/*"],
       "@duxkit/ui": ["./projects/ui/src/index.ts"],
       "@duxkit/ui/helm/button": ["./projects/ui/helm/button/src/index.ts"],
       "@duxkit/ui/helm/command": ["./projects/ui/helm/command/src/index.ts"],

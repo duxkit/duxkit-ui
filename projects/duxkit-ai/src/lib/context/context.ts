@@ -59,9 +59,9 @@ export class Context {
   public readonly usedTokens = input.required<number>();
   /** Maximum number of tokens available in the model context window. */
   public readonly maxTokens = input.required<number>();
-  /** AI SDK usage object used to render token breakdown rows and estimate cost. */
+  /** AI SDK usage object used to render token breakdown rows and optional cost estimates. */
   public readonly usage = input<LanguageModelUsage | undefined>(undefined);
-  /** Model identifier passed to tokenlens for cost estimation. */
+  /** Model identifier passed to the optional context cost calculator. */
   public readonly modelId = input<ContextModelId | undefined>(undefined);
   /** Additional classes merged onto the context root element. */
   public readonly userClass = input<string | undefined>(undefined, { alias: 'class' });

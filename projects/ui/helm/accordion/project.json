@@ -1,0 +1,8 @@
+{
+  "name": "accordion",
+  "$schema": "../../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "projects/ui/helm/accordion/src",
+  "prefix": "hlm",
+  "projectType": "library",
+  "tags": []
+}

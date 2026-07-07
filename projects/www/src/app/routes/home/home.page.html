@@ -1,0 +1,236 @@
+<section class="hero" aria-labelledby="hero-title">
+  <div class="hero-copy">
+    <h1
+      id="hero-title"
+      class="hero-title text-balance text-center font-semibold text-foreground text-[40px]! leading-[1.1] tracking-tight sm:text-5xl! lg:font-semibold xl:text-6xl!"
+    >
+      Duxkit UI
+    </h1>
+
+    <p class="lede text-muted-foreground">
+      Angular UI primitives for chat, tools, reasoning, and agent work.
+    </p>
+
+    <div class="hero-actions" aria-label="Hero actions">
+      <a hlmBtn class="primary-button" routerLink="/components">Explore Components</a>
+
+      <button
+        hlmBtn
+        class="install-command"
+        type="button"
+        variant="outline"
+        [disabled]="true"
+        size="lg"
+        [attr.aria-label]="installCopyLabel()"
+        [title]="installCopyLabel()"
+      >
+        <span aria-hidden="true">$</span>
+        <code>Coming soon</code>
+        <ng-icon
+          hlmIcon
+          size="sm"
+          [name]="installCommandCopied() ? 'lucideCheck' : 'lucideCopy'"
+          aria-hidden="true"
+        />
+      </button>
+    </div>
+  </div>
+</section>
+
+<section class="feature-strip border border-border bg-card" aria-label="Highlights">
+  <article>
+    <h2 class="text-foreground">Works with AI SDK state</h2>
+    <p class="text-muted-foreground">
+      Render message streams, tool calls, approvals, and usage data in Angular.
+    </p>
+  </article>
+  <article>
+    <h2 class="text-foreground">Built for Angular</h2>
+    <p class="text-muted-foreground">
+      Standalone components, signal-led APIs, and templates that stay type-safe.
+    </p>
+  </article>
+  <article>
+    <h2 class="text-foreground">Use the pieces you need</h2>
+    <p class="text-muted-foreground">
+      Start with chat, then add tools, sources, tasks, and approvals where the product needs them.
+    </p>
+  </article>
+</section>
+
+<section
+  id="primitives"
+  class="showcase-section border-x border-border bg-card w-full"
+  aria-labelledby="showcase-title"
+>
+  <div
+    class="text-center gap-4 mx-auto max-w-2xl! flex flex-col items-center justify-center w-full"
+  >
+    <h2
+      id="showcase-title"
+      class="font-semibold text-foreground text-xl tracking-tight sm:text-2xl md:text-3xl lg:text-[40px]"
+    >
+      Pieces for real agent screens
+    </h2>
+    <p class="text-muted-foreground">
+      Compose chat, task progress, tool output, source references, and approval moments.
+    </p>
+  </div>
+
+  <div
+    class="component-board component-board-perspective"
+    aria-label="AI primitive component previews"
+  >
+    <article
+      class="component-card component-card-wide border border-border bg-card text-card-foreground"
+      aria-label="Mocked conversation preview"
+    >
+      <div class="p-6 bg-card">
+        <ai-conversation [stickToBottom]="false">
+          <ai-conversation-content aria-live="polite">
+            <ai-message from="user" class="mt-3">
+              <ai-message-content
+                class="text-muted-foreground"
+                markdown="We need a changelog page for the SDK docs. Can you outline the first pass?"
+              />
+            </ai-message>
+
+            <ai-message from="assistant">
+              <ai-message-content
+                class="text-muted-foreground"
+                markdown="Yes. I’d start with release groups, migration notes, and a compact list of breaking changes."
+              />
+            </ai-message>
+
+            <ai-message from="user">
+              <ai-message-content
+                class="text-muted-foreground"
+                markdown="Keep it useful for Angular teams upgrading between minor versions."
+              />
+            </ai-message>
+
+            <ai-message from="assistant">
+              <ai-message-content
+                class="text-muted-foreground"
+                markdown="Then each release should call out template changes, signal API updates, dependency ranges, and one copyable upgrade command."
+              />
+            </ai-message>
+
+            <div aiConversationScrollAnchor></div>
+          </ai-conversation-content>
+        </ai-conversation>
+      </div>
+    </article>
+
+    <article
+      class="component-card primitive-preview-card border border-border bg-card text-card-foreground"
+      aria-label="Open chain of thought preview"
+    >
+      <div class="primitive-preview-body">
+        <!--<ai-chain-of-thought [autoToggle]="false" [expanded]="true" [isStreaming]="false">
+          <button aiChainOfThoughtTrigger>Reviewed docs structure</button>
+          <ai-chain-of-thought-content>
+            <ai-chain-of-thought-step
+              status="complete"
+              icon="lucideCircleCheck"
+              label="Identify release surfaces"
+              description="Docs, package exports, Angular peer versions, and migrations."
+            >
+              <ai-reasoning-content
+                markdown="Group notes by what teams need to act on first: breaking changes, migration commands, and examples that changed."
+              />
+            </ai-chain-of-thought-step>
+
+            <ai-chain-of-thought-step
+              status="complete"
+              icon="lucideSearch"
+              label="Check supporting pages"
+              description="Find references that need matching copy."
+            >
+              <ai-chain-of-thought-search-results>
+                <span aiChainOfThoughtSearchResult>Installation</span>
+                <span aiChainOfThoughtSearchResult>Components</span>
+                <span aiChainOfThoughtSearchResult>Playground</span>
+              </ai-chain-of-thought-search-results>
+            </ai-chain-of-thought-step>
+          </ai-chain-of-thought-content>
+        </ai-chain-of-thought>-->
+        <app-conversation-demo></app-conversation-demo>
+      </div>
+    </article>
+
+    <article
+      class="component-card primitive-preview-card border border-border bg-card text-card-foreground"
+      aria-label="Static task preview"
+    >
+      <div class="primitive-preview-body">
+        <ai-task [autoToggle]="false" [expanded]="true" [isStreaming]="false">
+          <button aiTaskTrigger>Prepare changelog draft</button>
+          <ai-task-content>
+            <div aiTaskItem>Read release notes from <span aiTaskItemFile>CHANGELOG.md</span></div>
+            <div aiTaskItem>Mapped API changes in <span aiTaskItemFile>public-api.ts</span></div>
+            <div aiTaskItem>Added upgrade copy to <span aiTaskItemFile>docs/releases.md</span></div>
+          </ai-task-content>
+        </ai-task>
+
+        <ai-tool [part]="databaseToolPart" [expanded]="true">
+          <button aiToolTrigger></button>
+          <ai-tool-content>
+            <pre
+              class="m-0 max-w-full overflow-auto p-3 text-xs leading-relaxed"
+              [textContent]="databaseToolInput"
+            ></pre>
+          </ai-tool-content>
+        </ai-tool>
+      </div>
+    </article>
+  </div>
+</section>
+
+<!--<section
+  class="agent-outcomes-section border-x border-b border-border bg-card"
+  aria-labelledby="agent-outcomes-title"
+>
+  <div class="agent-outcomes-heading p-9">
+    <h2 id="agent-outcomes-title" class="text-foreground">Agent interfaces, shaped for Angular.</h2>
+    <p class="text-muted-foreground">
+      Production patterns for streaming work, user approvals, generated output, and readable state.
+    </p>
+  </div>
+
+  <div class="agent-outcomes-grid">
+    <article class="agent-outcome-card agent-outcome-card-large bg-background">
+      <div class="agent-demo-visual">
+        <app-conversation-demo />
+      </div>
+
+      <div class="agent-outcome-copy border-t">
+        <h3 class="text-foreground">Conversations that keep their shape</h3>
+        <p class="text-muted-foreground">
+          Keep chat readable as answers grow, context shifts, and generated UI appears inline.
+        </p>
+      </div>
+    </article>
+
+    <article class="agent-outcome-card bg-background self-center">
+      <h3 class="text-foreground">Work users can follow</h3>
+      <p class="text-muted-foreground">
+        Show progress, tool activity, and intermediate states without exposing raw logs.
+      </p>
+    </article>
+
+    <article class="agent-outcome-card bg-background self-center">
+      <h3 class="text-foreground">Control where it matters</h3>
+      <p class="text-muted-foreground">
+        Add approval moments before agents act, edit data, or cross a boundary.
+      </p>
+    </article>
+
+    <article class="agent-outcome-card bg-background self-center">
+      <h3 class="text-foreground">Output that belongs in your app</h3>
+      <p class="text-muted-foreground">
+        Render explanations, references, files, and structured results as product UI.
+      </p>
+    </article>
+  </div>
+</section>-->

@@ -157,7 +157,7 @@ If docs changed:
 
 ```bash
 pnpm docs:generate-metadata
-pnpm exec vitest run projects/www/src/app/docs/docs-search.spec.ts --environment jsdom
+pnpm exec vitest run projects/www/src/app/routes/docs/search/docs-search.spec.ts --environment jsdom
 pnpm build:www
 ```
 

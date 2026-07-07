@@ -1,7 +1,25 @@
+import { InjectionToken } from '@angular/core';
 import type { LanguageModelUsage } from 'ai';
-import { getUsage } from 'tokenlens';
 
 export type ContextCostKind = 'input' | 'output' | 'reasoning' | 'cache' | 'total';
+
+export interface ContextCostCalculatorArgs {
+  readonly modelId: string;
+  readonly usage: LanguageModelUsage | undefined;
+  readonly kind: ContextCostKind;
+  readonly tokens: {
+    readonly inputTokens: number;
+    readonly outputTokens: number;
+    readonly reasoningTokens: number;
+    readonly cacheReadTokens: number;
+  };
+}
+
+export type ContextCostCalculator = (args: ContextCostCalculatorArgs) => number | undefined;
+
+export const AI_CONTEXT_COST_CALCULATOR = new InjectionToken<ContextCostCalculator>(
+  'AI_CONTEXT_COST_CALCULATOR',
+);
 
 export const currencyFormat = new Intl.NumberFormat(undefined, {
   currency: 'USD',
@@ -23,53 +41,21 @@ export function usageTokens(usage: LanguageModelUsage | undefined): {
 }
 
 export function contextCostUSD(
+  calculator: ContextCostCalculator | null | undefined,
   modelId: string | undefined,
   usage: LanguageModelUsage | undefined,
   kind: ContextCostKind,
 ): number | undefined {
-  if (!modelId) {
+  if (!calculator || !modelId) {
     return undefined;
   }
 
-  const tokens = usageTokens(usage);
-
-  if (kind === 'input') {
-    return getUsage({
-      modelId,
-      usage: { input: tokens.inputTokens, output: 0 },
-    }).costUSD?.totalUSD;
-  }
-
-  if (kind === 'output') {
-    return getUsage({
-      modelId,
-      usage: { input: 0, output: tokens.outputTokens },
-    }).costUSD?.totalUSD;
-  }
-
-  if (kind === 'reasoning') {
-    return getUsage({
-      modelId,
-      usage: { input: 0, output: 0, reasoningTokens: tokens.reasoningTokens },
-    }).costUSD?.totalUSD;
-  }
-
-  if (kind === 'cache') {
-    return getUsage({
-      modelId,
-      usage: { input: 0, output: 0, cacheReads: tokens.cacheReadTokens },
-    }).costUSD?.totalUSD;
-  }
-
-  return getUsage({
+  return calculator({
+    kind,
     modelId,
-    usage: {
-      input: tokens.inputTokens,
-      output: tokens.outputTokens,
-      reasoningTokens: tokens.reasoningTokens,
-      cacheReads: tokens.cacheReadTokens,
-    },
-  }).costUSD?.totalUSD;
+    usage,
+    tokens: usageTokens(usage),
+  });
 }
 
 export function formatContextCost(costUSD: number | undefined): string {

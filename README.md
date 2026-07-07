@@ -17,7 +17,8 @@ Consumers must also configure Tailwind CSS v4 and the Spartan Tailwind preset. S
 ## Basic Usage
 
 ```ts
-import { Conversation, ConversationContent, Message, MessageContent } from 'duxkit-ai';
+import { Conversation, ConversationContent } from 'duxkit-ai/conversation';
+import { Message, MessageContent } from 'duxkit-ai/message';
 ```
 
 ```html
@@ -197,7 +198,18 @@ Current non-blocking warnings you may see:
 
 ## Library Entrypoints
 
-Primary package:
+Prefer family entrypoints in consumer applications:
+
+```ts
+import { ChainOfThought } from 'duxkit-ai/chain-of-thought';
+import { Conversation } from 'duxkit-ai/conversation';
+import { Message, MessageContent } from 'duxkit-ai/message';
+import { PromptInput, PromptInputSubmit } from 'duxkit-ai/prompt-input';
+import { ReasoningContent } from 'duxkit-ai/reasoning';
+import { Tool } from 'duxkit-ai/tool';
+```
+
+The root package remains available for quick starts and compatibility:
 
 ```ts
 import {
@@ -208,6 +220,28 @@ import {
   ReasoningContent,
   Tool,
 } from 'duxkit-ai';
+```
+
+Published secondary entrypoints:
+
+```text
+duxkit-ai/attachment
+duxkit-ai/chain-of-thought
+duxkit-ai/checkpoint
+duxkit-ai/code-block
+duxkit-ai/confirmation
+duxkit-ai/context
+duxkit-ai/conversation
+duxkit-ai/message
+duxkit-ai/markdown
+duxkit-ai/model-selector
+duxkit-ai/prompt-input
+duxkit-ai/queue
+duxkit-ai/reasoning
+duxkit-ai/shimmer
+duxkit-ai/sources
+duxkit-ai/task
+duxkit-ai/tool
 ```
 
 Private app UI primitives:
@@ -252,9 +286,13 @@ The app stylesheet should include Tailwind layers and the Spartan preset:
 @import 'tailwindcss/preflight.css' layer(base);
 @import 'tailwindcss/utilities.css';
 @import '@spartan-ng/brain/hlm-tailwind-preset.css';
+
+@source '../node_modules/duxkit-ai';
 ```
 
 The Spartan preset already imports `tw-animate-css` and the Angular CDK overlay stylesheet.
+The `@source` path should be relative to the consumer app stylesheet and makes Tailwind scan
+Duxkit AI's published utility classes.
 
 ## Generate More Helm Components
 
@@ -323,18 +361,20 @@ When adding a new component to the docs, follow:
 docs/adding-component-docs.md
 ```
 
-The docs registry, examples, previews, and generated API metadata are checked in under:
+The docs registry, snippets, previews, search, and generated API metadata are checked in under:
 
 ```text
-projects/www/src/app/docs
-projects/www/src/app/docs/component-api-metadata.generated.ts
+projects/www/src/app/routes/docs/data
+projects/www/src/app/routes/docs/components
+projects/www/src/app/routes/docs/search
+projects/www/src/app/routes/docs/data/component-api-metadata.generated.ts
 ```
 
 When changing component APIs, regenerate `component-api-metadata.generated.ts` and verify the docs search index:
 
 ```bash
 pnpm docs:generate-metadata
-pnpm exec vitest run projects/www/src/app/docs/docs-search.spec.ts --environment jsdom
+pnpm exec vitest run projects/www/src/app/routes/docs/search/docs-search.spec.ts --environment jsdom
 ```
 
 Input and output descriptions in the API tables are generated from JSDoc comments on the source `input()` and `output()` properties.

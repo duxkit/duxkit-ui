@@ -44,13 +44,19 @@ Add Tailwind layers and the Spartan preset to the app stylesheet:
 @import 'tailwindcss/preflight.css' layer(base);
 @import 'tailwindcss/utilities.css';
 @import '@spartan-ng/brain/hlm-tailwind-preset.css';
+
+@source '../node_modules/duxkit-ai';
 ```
+
+The `@source` path should be relative to your stylesheet. It lets Tailwind CSS v4 scan the
+published Duxkit AI package for utility classes.
 
 ## Minimal Usage
 
 ```ts
 import { Component } from '@angular/core';
-import { Conversation, ConversationContent, Message, MessageContent } from 'duxkit-ai';
+import { Conversation, ConversationContent } from 'duxkit-ai/conversation';
+import { Message, MessageContent } from 'duxkit-ai/message';
 
 @Component({
   selector: 'app-chat',
@@ -68,19 +74,61 @@ import { Conversation, ConversationContent, Message, MessageContent } from 'duxk
 export class ChatComponent {}
 ```
 
-## Core Imports
+## Entrypoints
 
 ```ts
-import {
-  ChainOfThought,
-  Conversation,
-  Message,
-  MessageContent,
-  ModelSelector,
-  PromptInput,
-  ReasoningContent,
-  Tool,
-} from 'duxkit-ai';
+import { ChainOfThought } from 'duxkit-ai/chain-of-thought';
+import { Conversation } from 'duxkit-ai/conversation';
+import { Message, MessageContent } from 'duxkit-ai/message';
+import { ModelSelector } from 'duxkit-ai/model-selector';
+import { PromptInput } from 'duxkit-ai/prompt-input';
+import { ReasoningContent } from 'duxkit-ai/reasoning';
+import { Tool } from 'duxkit-ai/tool';
+```
+
+The root `duxkit-ai` entrypoint also exports all primitives for compatibility and quick starts, but family entrypoints are preferred in applications.
+
+## Optional Context Cost Estimation
+
+The context primitive renders token usage by default. Cost estimation is opt-in so apps only install
+pricing libraries when they need them.
+
+```bash
+npm install tokenlens
+```
+
+```ts
+import { AI_CONTEXT_COST_CALCULATOR } from 'duxkit-ai/context';
+import { getUsage } from 'tokenlens';
+
+export const appConfig = {
+  providers: [
+    {
+      provide: AI_CONTEXT_COST_CALCULATOR,
+      useValue: ({ modelId, kind, tokens }) => {
+        if (kind === 'input') {
+          return getUsage({ modelId, usage: { input: tokens.inputTokens, output: 0 } }).costUSD
+            ?.totalUSD;
+        }
+
+        if (kind === 'output') {
+          return getUsage({ modelId, usage: { input: 0, output: tokens.outputTokens } }).costUSD
+            ?.totalUSD;
+        }
+
+        return getUsage({
+          modelId,
+          usage: {
+            input: tokens.inputTokens,
+            output: tokens.outputTokens,
+            reasoningTokens: tokens.reasoningTokens,
+            cacheReads: tokens.cacheReadTokens,
+          },
+        }).costUSD?.totalUSD;
+      },
+    },
+  ],
+};
 ```
 
 ## Use With AI SDK Streams

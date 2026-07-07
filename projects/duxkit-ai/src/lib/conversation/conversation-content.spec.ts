@@ -166,6 +166,24 @@ describe('ConversationContent', () => {
     expect(scrollTo).toHaveBeenCalledWith({ top: content.scrollHeight, behavior: 'smooth' });
     expect(messagesFixture.componentInstance.content().autoScroll).toBe(true);
   });
+
+  it('skips autoscroll scheduling when requestAnimationFrame is unavailable', async () => {
+    delete (globalThis as { requestAnimationFrame?: typeof requestAnimationFrame })
+      .requestAnimationFrame;
+
+    await TestBed.resetTestingModule()
+      .configureTestingModule({
+        imports: [MessagesHost],
+      })
+      .compileComponents();
+
+    const messagesFixture = TestBed.createComponent(MessagesHost);
+
+    expect(() => messagesFixture.detectChanges()).not.toThrow();
+
+    appendMessage(messagesFixture, 'user');
+    expect(() => mutationObservers.forEach((observer) => observer.trigger())).not.toThrow();
+  });
 });
 
 function appendMessage(fixture: ComponentFixture<MessagesHost>, role: 'assistant' | 'user'): void {

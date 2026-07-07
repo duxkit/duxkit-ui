@@ -1,5 +1,5 @@
 import { PrerenderFallback, RenderMode, type ServerRoute } from '@angular/ssr';
-import { componentDocs } from './docs/component-docs.registry';
+import { componentDocs } from './routes/docs/data/component-docs.registry';
 
 export const appServerRoutes: ServerRoute[] = [
   {
@@ -7,11 +7,15 @@ export const appServerRoutes: ServerRoute[] = [
     renderMode: RenderMode.Prerender,
   },
   {
-    path: 'docs/components',
+    path: 'docs',
     renderMode: RenderMode.Prerender,
   },
   {
-    path: 'docs/components/:slug',
+    path: 'components',
+    renderMode: RenderMode.Prerender,
+  },
+  {
+    path: 'components/:slug',
     renderMode: RenderMode.Prerender,
     fallback: PrerenderFallback.None,
     async getPrerenderParams() {

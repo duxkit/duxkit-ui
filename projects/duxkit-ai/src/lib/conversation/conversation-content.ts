@@ -98,9 +98,7 @@ export class ConversationContent {
       return;
     }
 
-    requestAnimationFrame(() => {
-      this.scrollContainerToBottom('smooth');
-    });
+    this.scheduleScrollToBottom('smooth');
   }
 
   private scrollToBottom(): void {
@@ -110,8 +108,16 @@ export class ConversationContent {
       return;
     }
 
+    this.scheduleScrollToBottom('smooth');
+  }
+
+  private scheduleScrollToBottom(behavior: ScrollBehavior): void {
+    if (typeof requestAnimationFrame === 'undefined') {
+      return;
+    }
+
     requestAnimationFrame(() => {
-      this.scrollContainerToBottom('smooth');
+      this.scrollContainerToBottom(behavior);
     });
   }
 

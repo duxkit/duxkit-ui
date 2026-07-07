@@ -6,72 +6,92 @@
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>https://duxkit.com/docs/components</loc>
+    <loc>https://duxkit.com/docs</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://duxkit.com/docs/components/conversation</loc>
+    <loc>https://duxkit.com/components</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://duxkit.com/docs/components/message</loc>
+    <loc>https://duxkit.com/components/conversation</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://duxkit.com/docs/components/checkpoint</loc>
+    <loc>https://duxkit.com/components/message</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://duxkit.com/docs/components/context</loc>
+    <loc>https://duxkit.com/components/checkpoint</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://duxkit.com/docs/components/attachment</loc>
+    <loc>https://duxkit.com/components/context</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://duxkit.com/docs/components/chain-of-thought</loc>
+    <loc>https://duxkit.com/components/model-selector</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://duxkit.com/docs/components/task</loc>
+    <loc>https://duxkit.com/components/prompt-input</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://duxkit.com/docs/components/tool</loc>
+    <loc>https://duxkit.com/components/queue</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://duxkit.com/docs/components/reasoning</loc>
+    <loc>https://duxkit.com/components/attachment</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://duxkit.com/docs/components/sources</loc>
+    <loc>https://duxkit.com/components/chain-of-thought</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://duxkit.com/docs/components/confirmation</loc>
+    <loc>https://duxkit.com/components/task</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://duxkit.com/docs/components/code-block</loc>
+    <loc>https://duxkit.com/components/tool</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://duxkit.com/docs/components/shimmer</loc>
+    <loc>https://duxkit.com/components/reasoning</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://duxkit.com/components/sources</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://duxkit.com/components/confirmation</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://duxkit.com/components/code-block</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://duxkit.com/components/shimmer</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
