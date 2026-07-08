@@ -1,0 +1,14 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "outDir": "../../out-tsc/duxkit-ui-cli-spec",
+    "types": [
+      "node",
+      "vitest"
+    ]
+  },
+  "include": [
+    "src/**/*.spec.ts",
+    "src/**/*.ts"
+  ]
+}

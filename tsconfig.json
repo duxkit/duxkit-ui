@@ -59,6 +59,12 @@
     },
     {
       "path": "./projects/ui/tsconfig.lib.json"
+    },
+    {
+      "path": "./projects/duxkit-ui-cli/tsconfig.lib.json"
+    },
+    {
+      "path": "./projects/duxkit-ui-cli/tsconfig.spec.json"
     }
   ]
 }

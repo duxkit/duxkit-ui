@@ -1,0 +1,25 @@
+{
+  "name": "@duxkit/ui",
+  "version": "0.0.0",
+  "type": "module",
+  "bin": {
+    "duxkit-ui": "./index.js"
+  },
+  "exports": {
+    ".": "./index.js"
+  },
+  "files": [
+    "index.js",
+    "index.d.ts",
+    "lib"
+  ],
+  "dependencies": {
+    "commander": "^14.0.3"
+  },
+  "devDependencies": {
+    "@types/node": "^26.0.0"
+  },
+  "engines": {
+    "node": ">=24.15.0 <25 || >=22.22.3 <23 || >=26.0.0"
+  }
+}

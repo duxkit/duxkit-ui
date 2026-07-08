@@ -1,0 +1,113 @@
+import { Command, CommanderError, InvalidArgumentError } from 'commander';
+
+export interface CliOutput {
+  write(chunk: string): void;
+}
+
+export interface CliIo {
+  readonly stdout: CliOutput;
+  readonly stderr: CliOutput;
+}
+
+const supportedCommands = ['init', 'add', 'list', 'inspect'] as const;
+type SupportedCommand = (typeof supportedCommands)[number];
+
+class ScaffoldedCommandError extends Error {
+  constructor(readonly commandName: SupportedCommand) {
+    super(`duxkit-ui ${commandName} is scaffolded but not implemented yet.`);
+  }
+}
+
+function parseTokenMode(value: string): 'add' | 'skip' {
+  if (value === 'add' || value === 'skip') {
+    return value;
+  }
+
+  throw new InvalidArgumentError("expected 'add' or 'skip'");
+}
+
+function failUntilImplemented(commandName: SupportedCommand): never {
+  throw new ScaffoldedCommandError(commandName);
+}
+
+function configureCommand(command: Command): Command {
+  return command.allowUnknownOption(false).allowExcessArguments(false).exitOverride();
+}
+
+export function createCli(io: CliIo): Command {
+  const program = new Command();
+
+  program
+    .name('duxkit-ui')
+    .description('Add Duxkit AI primitives to Angular workspaces.')
+    .configureOutput({
+      writeOut: (chunk) => io.stdout.write(chunk),
+      writeErr: (chunk) => io.stderr.write(chunk),
+    })
+    .allowUnknownOption(false)
+    .allowExcessArguments(false)
+    .showHelpAfterError();
+
+  configureCommand(program.command('init'))
+    .description('Initialize Duxkit AI primitive generation in an Angular workspace.')
+    .option('--cwd <path>', 'Workspace directory to inspect.')
+    .option('--project <name>', 'Angular application project to configure.')
+    .option('--stylesheet <path>', 'Global stylesheet to configure.')
+    .option('--components-path <path>', 'Destination directory for generated AI primitives.')
+    .option('--style <language>', 'Generated component style language.')
+    .option('--tokens <mode>', "Theme token handling: 'add' or 'skip'.", parseTokenMode)
+    .option('--dry-run', 'Plan changes without writing files or installing packages.')
+    .option('--json', 'Print machine-readable JSON output.')
+    .option('--yes', 'Accept safe defaults and skip final confirmation.')
+    .option('--no-install', 'Do not install missing dependencies.')
+    .action(() => failUntilImplemented('init'));
+
+  configureCommand(program.command('add'))
+    .description('Add one or more Duxkit AI primitives to the configured workspace.')
+    .argument('[primitives...]', 'Primitive ids to add.')
+    .option('--all', 'Select every available primitive.')
+    .option('--cwd <path>', 'Workspace directory to inspect.')
+    .option('--project <name>', 'Angular application project to configure.')
+    .option('--components-path <path>', 'Destination directory for generated AI primitives.')
+    .option('--dry-run', 'Plan changes without writing files or installing packages.')
+    .option('--json', 'Print machine-readable JSON output.')
+    .option('--yes', 'Accept safe defaults and skip final confirmation.')
+    .option('--no-install', 'Do not install missing dependencies.')
+    .option('--force', 'Overwrite Duxkit-owned generated files where safe.')
+    .action(() => failUntilImplemented('add'));
+
+  configureCommand(program.command('list'))
+    .description('List Duxkit AI primitives.')
+    .option('--cwd <path>', 'Workspace directory to inspect.')
+    .option('--json', 'Print machine-readable JSON output.')
+    .action(() => failUntilImplemented('list'));
+
+  configureCommand(program.command('inspect'))
+    .description('Inspect Duxkit AI workspace state.')
+    .option('--cwd <path>', 'Workspace directory to inspect.')
+    .option('--json', 'Print machine-readable JSON output.')
+    .action(() => failUntilImplemented('inspect'));
+
+  return program;
+}
+
+export async function runCli(argv: readonly string[], io: CliIo): Promise<number> {
+  const program = createCli(io);
+  program.exitOverride();
+
+  try {
+    await program.parseAsync([...argv], { from: 'user' });
+    return 0;
+  } catch (error) {
+    if (error instanceof ScaffoldedCommandError) {
+      io.stderr.write(`${error.message}\n`);
+      return 1;
+    }
+
+    if (error instanceof CommanderError) {
+      return error.exitCode;
+    }
+
+    throw error;
+  }
+}

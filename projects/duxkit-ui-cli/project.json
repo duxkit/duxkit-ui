@@ -1,0 +1,26 @@
+{
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "name": "duxkit-ui-cli",
+  "projectType": "library",
+  "sourceRoot": "projects/duxkit-ui-cli/src",
+  "targets": {
+    "build": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "tsc -p projects/duxkit-ui-cli/tsconfig.lib.json && node projects/duxkit-ui-cli/scripts/prepare-package.mjs",
+        "cwd": "."
+      },
+      "outputs": [
+        "{workspaceRoot}/dist/duxkit-ui-cli"
+      ]
+    },
+    "test": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "vitest run --config projects/duxkit-ui-cli/vitest.config.ts",
+        "cwd": "."
+      }
+    }
+  },
+  "tags": []
+}
