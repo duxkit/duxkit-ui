@@ -1,4 +1,4 @@
-import { chmod, copyFile, mkdir, readFile, writeFile } from 'node:fs/promises';
+import { chmod, copyFile, cp, mkdir, readFile, writeFile } from 'node:fs/promises';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -21,4 +21,7 @@ const outputPackage = {
 await mkdir(outputRoot, { recursive: true });
 await writeFile(join(outputRoot, 'package.json'), `${JSON.stringify(outputPackage, null, 2)}\n`);
 await copyFile(join(packageRoot, 'README.md'), join(outputRoot, 'README.md'));
+await cp(join(packageRoot, 'src/lib/templates'), join(outputRoot, 'lib/templates'), {
+  recursive: true,
+});
 await chmod(join(outputRoot, 'index.js'), 0o755);

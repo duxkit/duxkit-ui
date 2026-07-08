@@ -73,7 +73,6 @@ const primitiveIdSet = new Set<string>(primitiveIds);
 
 const angularCore = dep('@angular/core', '^22.0.4', 'angular');
 const angularCommon = dep('@angular/common', '^22.0.4', 'angular');
-const angularForms = dep('@angular/forms', '^22.0.4', 'angular');
 const angularCdk = dep('@angular/cdk', '>=22.0.2 <23.0.0', 'angular');
 const aiSdkAngular = dep('@ai-sdk/angular', '^2.0.208', 'ai-runtime');
 const ai = dep('ai', '^6.0.207', 'ai-runtime');
@@ -125,6 +124,7 @@ const registryEntries = [
     description: 'Role-aware user, assistant, and system message structure.',
     files: [
       'message.ts',
+      'message-action-classes.ts',
       'message-actions.ts',
       'message-content.ts',
       'message-copy.ts',
@@ -132,8 +132,7 @@ const registryEntries = [
       'message-thumbs-up.ts',
       'index.ts',
     ],
-    dependencies: iconPeers,
-    peerAssumptions: markdownPeers,
+    peerAssumptions: aiRuntimePeers,
     primitiveDependencies: ['markdown', 'code-block'],
     tokens: ['markdown', 'message-actions'],
   }),
@@ -152,8 +151,8 @@ const registryEntries = [
       'prompt-input.types.ts',
       'index.ts',
     ],
-    dependencies: [angularForms, ...iconPeers],
-    primitiveDependencies: ['attachment'],
+    dependencies: iconPeers,
+    peerAssumptions: aiRuntimePeers,
     tokens: ['prompt-input'],
     optionalRelationships: [{ id: 'model-selector', kind: 'pairs-with' }],
   }),
@@ -163,7 +162,6 @@ const registryEntries = [
     description: 'Collapsible summarized reasoning with markdown content.',
     files: ['reasoning.ts', 'reasoning-content.ts', 'reasoning-trigger.ts', 'index.ts'],
     dependencies: [...collapsiblePeers, ...iconPeers],
-    peerAssumptions: markdownPeers,
     primitiveDependencies: ['markdown', 'code-block'],
     tokens: ['markdown', 'disclosure'],
   }),
@@ -184,7 +182,6 @@ const registryEntries = [
     description: 'Syntax-highlighted code block with copy and download controls.',
     files: ['code-block.ts', 'index.ts'],
     dependencies: iconPeers,
-    peerAssumptions: markdownPeers,
     primitiveDependencies: ['markdown'],
     tokens: ['code'],
   }),
@@ -192,7 +189,7 @@ const registryEntries = [
     id: 'markdown',
     title: 'Markdown',
     description: 'Markdown parsing, highlighting, and AI markdown content classes.',
-    files: ['markdown.ts', 'markdown.scss', 'markdown.entrypoint.ts'],
+    files: ['markdown.ts', 'markdown.scss', 'index.ts'],
     dependencies: markdownPeers,
     tokens: ['markdown', 'syntax-highlight'],
   }),

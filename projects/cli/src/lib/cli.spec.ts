@@ -90,7 +90,7 @@ describe('duxkit-ui command shell', () => {
     expect(result.stderr).toBe('');
     expect(result.stdout).toContain('Available primitives');
     expect(result.stdout).toContain(
-      '- message (Message) groups: Angular, Styling, Markdown, Icons deps: markdown, code-block',
+      '- message (Message) groups: Angular, Styling, Markdown, Icons, AI runtime deps: markdown, code-block',
     );
     expect(result.stdout).toContain('Installed primitives');
     expect(result.stdout).toContain('None detected');
