@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, computed, input } from '@angular/co
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { lucideChevronDown, lucideChevronUp } from '@ng-icons/lucide';
 import { BrnAccordionImports } from '@spartan-ng/brain/accordion';
-import { hlm } from '@duxkit/ui/helm/utils';
+import { hlm } from '@duxkit-private/ui/helm/utils';
 import type { ClassValue } from 'clsx';
 
 @Component({

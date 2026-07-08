@@ -247,9 +247,9 @@ duxkit-ai/tool
 Private app UI primitives:
 
 ```ts
-import { HlmButton } from '@duxkit/ui/helm/button';
-import { HlmTabs } from '@duxkit/ui/helm/tabs';
-import { HlmNavigationMenu } from '@duxkit/ui/helm/navigation-menu';
+import { HlmButton } from '@duxkit-private/ui/helm/button';
+import { HlmTabs } from '@duxkit-private/ui/helm/tabs';
+import { HlmNavigationMenu } from '@duxkit-private/ui/helm/navigation-menu';
 ```
 
 These imports are for workspace apps only. They are not part of the published `duxkit-ai` package.

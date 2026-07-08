@@ -1,5 +1,5 @@
 import { Directive } from '@angular/core';
-import { classes } from '@duxkit/ui/helm/utils';
+import { classes } from '@duxkit-private/ui/helm/utils';
 
 @Directive({
   selector: '[hlmInputGroupText],hlm-input-group-text',

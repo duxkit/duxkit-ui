@@ -1,6 +1,6 @@
 import { Directive } from '@angular/core';
-import { HlmInput } from '@duxkit/ui/helm/input';
-import { classes } from '@duxkit/ui/helm/utils';
+import { HlmInput } from '@duxkit-private/ui/helm/input';
+import { classes } from '@duxkit-private/ui/helm/utils';
 
 @Directive({
   selector: 'input[hlmInputGroupInput]',

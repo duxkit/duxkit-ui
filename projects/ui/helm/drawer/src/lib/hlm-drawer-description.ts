@@ -1,6 +1,6 @@
 import { Directive } from '@angular/core';
 import { BrnDrawerDescription } from '@spartan-ng/brain/drawer';
-import { classes } from '@duxkit/ui/helm/utils';
+import { classes } from '@duxkit-private/ui/helm/utils';
 
 @Directive({
 	selector: '[hlmDrawerDescription]',

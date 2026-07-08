@@ -1,6 +1,6 @@
 import { Directive } from '@angular/core';
-import { HlmTextarea } from '@duxkit/ui/helm/textarea';
-import { classes } from '@duxkit/ui/helm/utils';
+import { HlmTextarea } from '@duxkit-private/ui/helm/textarea';
+import { classes } from '@duxkit-private/ui/helm/utils';
 
 @Directive({
   selector: 'textarea[hlmInputGroupTextarea]',

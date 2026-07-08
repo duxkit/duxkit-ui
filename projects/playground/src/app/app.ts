@@ -1,7 +1,7 @@
 import { Component, computed, signal } from '@angular/core';
 import { Chat } from '@ai-sdk/angular';
-import { HlmButton } from '@duxkit/ui/helm/button';
-import { HlmIcon } from '@duxkit/ui/helm/icon';
+import { HlmButton } from '@duxkit-private/ui/helm/button';
+import { HlmIcon } from '@duxkit-private/ui/helm/icon';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { lucideCopy, lucideThumbsDown, lucideThumbsUp } from '@ng-icons/lucide';
 import {

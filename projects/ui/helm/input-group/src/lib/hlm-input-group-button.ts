@@ -1,6 +1,6 @@
 import { Directive, input } from '@angular/core';
-import { HlmButton, provideBrnButtonConfig } from '@duxkit/ui/helm/button';
-import { classes } from '@duxkit/ui/helm/utils';
+import { HlmButton, provideBrnButtonConfig } from '@duxkit-private/ui/helm/button';
+import { classes } from '@duxkit-private/ui/helm/utils';
 import { cva, type VariantProps } from 'class-variance-authority';
 
 const inputGroupAddonVariants = cva('gap-2 text-sm flex items-center shadow-none', {

@@ -4,7 +4,7 @@ import {
   HlmAccordionContent,
   HlmAccordionItem,
   HlmAccordionTrigger,
-} from '../../../../../ui/helm/accordion/src/index';
+} from '@duxkit-private/ui/helm/accordion';
 import { SeoService } from '../../shared/seo/seo.service';
 
 const faqs = [

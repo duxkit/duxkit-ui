@@ -24,7 +24,7 @@ The repository uses Nx project metadata for buildable or importable modules.
 Every Helm module that has a `projects/ui/helm/<name>` folder must have a matching path alias:
 
 ```json
-"@duxkit/ui/helm/<name>": ["./projects/ui/helm/<name>/src/index.ts"]
+"@duxkit-private/ui/helm/<name>": ["./projects/ui/helm/<name>/src/index.ts"]
 ```
 
 Do not add a path alias without adding the matching Nx project metadata.

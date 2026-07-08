@@ -7,7 +7,7 @@ import {
   ConfirmationRequest,
   ConfirmationTitle,
 } from '../confirmation';
-import { HlmButton } from '@duxkit/ui/helm/button';
+import { HlmButton } from '@duxkit-private/ui/helm/button';
 import type { AiToolPart } from './tool';
 import { Tool, ToolContent, ToolStatus, ToolTrigger } from './';
 

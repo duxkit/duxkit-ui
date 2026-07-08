@@ -1,7 +1,7 @@
 import { Directive, computed, effect, input, untracked } from '@angular/core';
 import { injectCustomClassSettable } from '@spartan-ng/brain/core';
 import { BrnDrawerOverlay } from '@spartan-ng/brain/drawer';
-import { hlm } from '@duxkit/ui/helm/utils';
+import { hlm } from '@duxkit-private/ui/helm/utils';
 import type { ClassValue } from 'clsx';
 
 @Directive({

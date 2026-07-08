@@ -1,6 +1,6 @@
 import { Directive } from '@angular/core';
 import { BrnDialogDescription } from '@spartan-ng/brain/dialog';
-import { classes } from '@duxkit/ui/helm/utils';
+import { classes } from '@duxkit-private/ui/helm/utils';
 
 @Directive({
   selector: '[hlmDialogDescription]',

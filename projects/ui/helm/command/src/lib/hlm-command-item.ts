@@ -1,6 +1,6 @@
 import { Directive } from '@angular/core';
 import { BrnCommandItem } from '@spartan-ng/brain/command';
-import { classes } from '@duxkit/ui/helm/utils';
+import { classes } from '@duxkit-private/ui/helm/utils';
 
 @Directive({
   selector: 'button[hlmCommandItem],button[hlm-command-item]',

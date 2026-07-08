@@ -11,7 +11,7 @@ projects/playground/  local AI SDK playground
 projects/ui/          private Spartan Helm workspace primitives
 ```
 
-The public library API is exported from `projects/duxkit-ai/src/public-api.ts`. Private workspace UI imports under `@duxkit/ui/*` are not part of the published package.
+The public library API is exported from `projects/duxkit-ai/src/public-api.ts`. Private workspace UI imports under `@duxkit-private/ui/*` are not part of the published package.
 
 ## Setup
 

@@ -31,7 +31,7 @@ for (const name of helmDirs) {
     }
   }
 
-  const alias = `@duxkit/ui/helm/${name}`;
+  const alias = `@duxkit-private/ui/helm/${name}`;
   const expectedPath = `./projects/ui/helm/${name}/src/index.ts`;
   const actualPath = paths[alias]?.[0];
   if (actualPath !== expectedPath) {

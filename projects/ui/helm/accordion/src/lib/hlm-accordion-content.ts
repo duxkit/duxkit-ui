@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { BrnAccordionContent } from '@spartan-ng/brain/accordion';
-import { classes } from '@duxkit/ui/helm/utils';
+import { classes } from '@duxkit-private/ui/helm/utils';
 
 @Component({
 	selector: 'hlm-accordion-content',

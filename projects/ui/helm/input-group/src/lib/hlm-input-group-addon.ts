@@ -1,5 +1,5 @@
 import { Directive, input } from '@angular/core';
-import { classes } from '@duxkit/ui/helm/utils';
+import { classes } from '@duxkit-private/ui/helm/utils';
 import { cva, type VariantProps } from 'class-variance-authority';
 
 const inputGroupAddonVariants = cva(

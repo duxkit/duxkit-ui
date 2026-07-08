@@ -1,6 +1,6 @@
 import { Component, signal, viewChild, viewChildren } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { HlmButton } from '@duxkit/ui/helm/button';
+import { HlmButton } from '@duxkit-private/ui/helm/button';
 import type { FileUIPart, SourceDocumentUIPart } from 'ai';
 import { beforeEach, describe, expect, it } from 'vitest';
 

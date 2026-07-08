@@ -1,6 +1,6 @@
 import { Directive } from '@angular/core';
 import { BrnCommandGroup } from '@spartan-ng/brain/command';
-import { classes } from '@duxkit/ui/helm/utils';
+import { classes } from '@duxkit-private/ui/helm/utils';
 
 @Directive({
   selector: '[hlmCommandGroup],hlm-command-group',

@@ -1,6 +1,6 @@
 import { type NumberInput } from '@angular/cdk/coercion';
 import { Directive, input, numberAttribute } from '@angular/core';
-import { classes } from '@duxkit/ui/helm/utils';
+import { classes } from '@duxkit-private/ui/helm/utils';
 
 @Directive({
 	selector: '[hlmNavigationMenuContent],hlm-navigation-menu-content',

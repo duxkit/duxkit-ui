@@ -1,6 +1,6 @@
 import { Directive, input, signal } from '@angular/core';
 import { BrnButton } from '@spartan-ng/brain/button';
-import { classes } from '@duxkit/ui/helm/utils';
+import { classes } from '@duxkit-private/ui/helm/utils';
 import { cva, type VariantProps } from 'class-variance-authority';
 import type { ClassValue } from 'clsx';
 import { injectBrnButtonConfig } from './hlm-button.token';

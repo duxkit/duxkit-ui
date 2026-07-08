@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { HlmButton } from '@duxkit/ui/helm/button';
+import { HlmButton } from '@duxkit-private/ui/helm/button';
 import { footerLinkGroups } from './footer-link-groups';
 
 @Component({

@@ -2,8 +2,8 @@ import { Component, ViewEncapsulation, computed, inject, input, signal } from '@
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { lucideCheck, lucideCopy } from '@ng-icons/lucide';
 import { AI_MARKDOWN_OPTIONS, renderHighlightedCode } from 'duxkit-ai/markdown';
-import { HlmButton } from '@duxkit/ui/helm/button';
-import { HlmIcon } from '@duxkit/ui/helm/icon';
+import { HlmButton } from '@duxkit-private/ui/helm/button';
+import { HlmIcon } from '@duxkit-private/ui/helm/icon';
 
 export interface DocsCodeTab {
   readonly id: string;

@@ -5,11 +5,11 @@ import { NavigationEnd, Router, RouterLink } from '@angular/router';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { lucideMenu, lucideMoon, lucideSun, lucideX } from '@ng-icons/lucide';
 import { type BrnDialogState } from '@spartan-ng/brain/dialog';
-import { HlmCommandImports } from '@duxkit/ui/helm/command';
-import { HlmIcon } from '@duxkit/ui/helm/icon';
-import { HlmNavigationMenuImports } from '@duxkit/ui/helm/navigation-menu';
+import { HlmCommandImports } from '@duxkit-private/ui/helm/command';
+import { HlmDrawerImports } from '@duxkit-private/ui/helm/drawer';
+import { HlmIcon } from '@duxkit-private/ui/helm/icon';
+import { HlmNavigationMenuImports } from '@duxkit-private/ui/helm/navigation-menu';
 import { filter, map } from 'rxjs';
-import { HlmDrawerImports } from '../../../../../ui/helm/drawer/src/index';
 import {
   componentSidebarGroup,
   componentHref,

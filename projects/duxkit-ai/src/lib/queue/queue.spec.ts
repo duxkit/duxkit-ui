@@ -1,6 +1,6 @@
 import { Component, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { HlmButton } from '@duxkit/ui/helm/button';
+import { HlmButton } from '@duxkit-private/ui/helm/button';
 import { Queue } from './queue';
 import { QueueItem } from './queue-item';
 import { QueueItemAction } from './queue-item-action';

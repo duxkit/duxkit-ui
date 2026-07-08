@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/angular';
 import { moduleMetadata } from '@storybook/angular';
-import { HlmButton } from '@duxkit/ui/helm/button';
+import { HlmButton } from '@duxkit-private/ui/helm/button';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { lucideTrash } from '@ng-icons/lucide';
 import {

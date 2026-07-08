@@ -5,9 +5,9 @@ import { booleanAttribute, Component, computed, inject, input } from '@angular/c
 import { provideIcons } from '@ng-icons/core';
 import { lucideX } from '@ng-icons/lucide';
 import { BrnDialogRef, injectBrnDialogContext } from '@spartan-ng/brain/dialog';
-import { HlmButton } from '@duxkit/ui/helm/button';
-import { HlmIconImports } from '@duxkit/ui/helm/icon';
-import { classes } from '@duxkit/ui/helm/utils';
+import { HlmButton } from '@duxkit-private/ui/helm/button';
+import { HlmIconImports } from '@duxkit-private/ui/helm/icon';
+import { classes } from '@duxkit-private/ui/helm/utils';
 import { HlmDialogClose } from './hlm-dialog-close';
 
 type HlmDialogContentContext = {

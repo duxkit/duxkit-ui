@@ -1,6 +1,6 @@
 import { Directive, input } from '@angular/core';
 import { BrnTabsList } from '@spartan-ng/brain/tabs';
-import { classes } from '@duxkit/ui/helm/utils';
+import { classes } from '@duxkit-private/ui/helm/utils';
 import { type VariantProps, cva } from 'class-variance-authority';
 
 export const listVariants = cva(

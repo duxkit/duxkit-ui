@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { lucideChevronDown } from '@ng-icons/lucide';
 import { BrnNavigationMenuTrigger } from '@spartan-ng/brain/navigation-menu';
-import { classes } from '@duxkit/ui/helm/utils';
+import { classes } from '@duxkit-private/ui/helm/utils';
 
 @Component({
 	// eslint-disable-next-line @angular-eslint/component-selector

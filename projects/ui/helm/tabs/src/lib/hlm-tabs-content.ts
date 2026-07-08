@@ -1,6 +1,6 @@
 import { Directive, input } from '@angular/core';
 import { BrnTabsContent } from '@spartan-ng/brain/tabs';
-import { classes } from '@duxkit/ui/helm/utils';
+import { classes } from '@duxkit-private/ui/helm/utils';
 
 @Directive({
 	selector: '[hlmTabsContent]',

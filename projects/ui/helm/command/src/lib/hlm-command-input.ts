@@ -2,8 +2,8 @@ import { Component, input } from '@angular/core';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { lucideSearch } from '@ng-icons/lucide';
 import { BrnCommandInput } from '@spartan-ng/brain/command';
-import { HlmInputGroupImports } from '@duxkit/ui/helm/input-group';
-import { classes } from '@duxkit/ui/helm/utils';
+import { HlmInputGroupImports } from '@duxkit-private/ui/helm/input-group';
+import { classes } from '@duxkit-private/ui/helm/utils';
 
 @Component({
   selector: 'hlm-command-input',

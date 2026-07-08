@@ -1,6 +1,6 @@
 import { Directive } from '@angular/core';
 import { BrnNavigationMenu } from '@spartan-ng/brain/navigation-menu';
-import { classes } from '@duxkit/ui/helm/utils';
+import { classes } from '@duxkit-private/ui/helm/utils';
 
 @Directive({
 	selector: 'nav[hlmNavigationMenu]',

@@ -1,7 +1,7 @@
 import { computed, Directive, effect, input, untracked } from '@angular/core';
 import { injectCustomClassSettable } from '@spartan-ng/brain/core';
 import { BrnDialogOverlay } from '@spartan-ng/brain/dialog';
-import { hlm } from '@duxkit/ui/helm/utils';
+import { hlm } from '@duxkit-private/ui/helm/utils';
 import type { ClassValue } from 'clsx';
 
 export const hlmDialogOverlayClass = hlm(

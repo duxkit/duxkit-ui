@@ -1,8 +1,8 @@
 import { BooleanInput } from '@angular/cdk/coercion';
 import { booleanAttribute, Component, computed, input, linkedSignal, output } from '@angular/core';
 import { BrnDialogState } from '@spartan-ng/brain/dialog';
-import { HlmDialogImports } from '@duxkit/ui/helm/dialog';
-import { hlm } from '@duxkit/ui/helm/utils';
+import { HlmDialogImports } from '@duxkit-private/ui/helm/dialog';
+import { hlm } from '@duxkit-private/ui/helm/utils';
 import { ClassValue } from 'clsx';
 
 @Component({

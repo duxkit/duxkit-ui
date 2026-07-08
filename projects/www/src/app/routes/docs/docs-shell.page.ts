@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
-import { HlmNavigationMenuImports } from '@duxkit/ui/helm/navigation-menu';
+import { HlmNavigationMenuImports } from '@duxkit-private/ui/helm/navigation-menu';
 import { docsPages } from './data/docs-navigation';
 
 @Component({

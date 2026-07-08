@@ -2,5 +2,5 @@
   "componentsPath": "projects/ui/helm",
   "buildable": false,
   "generateAs": "library",
-  "importAlias": "@duxkit/ui/helm"
+  "importAlias": "@duxkit-private/ui/helm"
 }

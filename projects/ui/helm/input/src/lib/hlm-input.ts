@@ -1,7 +1,7 @@
 import { Directive } from '@angular/core';
 import { BrnFieldControlDescribedBy } from '@spartan-ng/brain/field';
 import { BrnInput } from '@spartan-ng/brain/input';
-import { classes } from '@duxkit/ui/helm/utils';
+import { classes } from '@duxkit-private/ui/helm/utils';
 
 @Directive({
   selector: '[hlmInput]',

@@ -12,8 +12,8 @@ import {
   ToolContent,
   ToolTrigger,
 } from 'duxkit-ai/tool';
-import { HlmButton } from '@duxkit/ui/helm/button';
-import { HlmIcon } from '@duxkit/ui/helm/icon';
+import { HlmButton } from '@duxkit-private/ui/helm/button';
+import { HlmIcon } from '@duxkit-private/ui/helm/icon';
 import { SeoService } from '../../shared/seo/seo.service';
 
 @Component({

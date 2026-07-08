@@ -7,9 +7,9 @@
     "rootDir": "../..",
     "types": [],
     "paths": {
-      "@duxkit/ui/helm/button": ["../ui/helm/button/src/index.ts"],
-      "@duxkit/ui/helm/icon": ["../ui/helm/icon/src/index.ts"],
-      "@duxkit/ui/helm/utils": ["../ui/helm/utils/src/index.ts"],
+      "@duxkit-private/ui/helm/button": ["../ui/helm/button/src/index.ts"],
+      "@duxkit-private/ui/helm/icon": ["../ui/helm/icon/src/index.ts"],
+      "@duxkit-private/ui/helm/utils": ["../ui/helm/utils/src/index.ts"],
       "duxkit-ai": ["../../dist/duxkit-ai"],
       "duxkit-ai/*": ["../../dist/duxkit-ai/*"]
     }
