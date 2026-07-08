@@ -19,7 +19,12 @@ import type { PromptInputStatus } from './prompt-input.types';
   },
   template: `
     <ng-content>
-      <ng-icon [name]="iconName()" style="--ng-icon__size: 16px" aria-hidden="true" />
+      <ng-icon
+        [name]="iconName()"
+        style="--ng-icon__size: 16px"
+        aria-hidden="true"
+        [class.animate-spin]="spinning()"
+      />
     </ng-content>
   `,
 })
@@ -55,6 +60,7 @@ export class PromptInputSubmit {
         return 'lucideCornerDownLeft';
     }
   });
+  protected readonly spinning = computed(() => this.effectiveStatus() === 'submitted');
   protected readonly classes = computed(() =>
     twMerge(promptInputButtonVariants({ size: this.size() }), this.userClass()),
   );

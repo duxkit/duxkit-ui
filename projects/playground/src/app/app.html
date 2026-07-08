@@ -39,7 +39,7 @@
             >
               <button aiChainOfThoughtTrigger></button>
               <ai-chain-of-thought-content>
-                @for (part of message.parts; track $index) {
+                @for (part of message.parts; track $index; let i = $index) {
                   @if (part.type === 'reasoning') {
                     <ai-chain-of-thought-step
                       [status]="lastMessage && chat.status === 'streaming' ? 'active' : 'complete'"
@@ -192,7 +192,7 @@
       accept="image/*,.txt,.md,.json,.csv,.pdf"
       [multiple]="true"
       [maxFiles]="5"
-      [maxFileSize]="4_000_000"
+      [maxFileSize]="4000000"
       [status]="chat.status"
       (promptSubmit)="sendPrompt($event)"
       (fileError)="recordFileError($event)"

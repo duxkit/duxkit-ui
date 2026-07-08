@@ -28,6 +28,7 @@ export function docsComponentRoutePath(slug: ComponentDocSlug): `/components/${C
 export const staticSeoRoutes = [
   '/',
   '/docs',
+  '/docs/installation',
   '/components',
   ...componentDocs.map((doc) => docsComponentRoutePath(doc.slug)),
 ] as const;
@@ -50,6 +51,25 @@ export function getSeoPage(path: string): SeoPage {
       description:
         'Learn where Duxkit AI fits in an Angular app and what parts of the UI layer it covers.',
       jsonLd: [breadcrumbJsonLd([{ name: 'Docs', path: '/docs' }])],
+    });
+  }
+
+  if (path === '/docs/installation') {
+    return buildSeoPage({
+      canonicalPath: '/docs/installation',
+      title: 'Install Duxkit AI - Angular Setup Guide',
+      description: 'Install Duxkit AI, configure Tailwind CSS v4, and render the first primitive.',
+      jsonLd: [
+        breadcrumbJsonLd([
+          { name: 'Docs', path: '/docs' },
+          { name: 'Installation', path: '/docs/installation' },
+        ]),
+        techArticleJsonLd(
+          'Install Duxkit AI',
+          'Install Duxkit AI in an Angular app with Tailwind CSS v4.',
+          '/docs/installation',
+        ),
+      ],
     });
   }
 

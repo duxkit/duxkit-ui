@@ -342,6 +342,15 @@ describe('PromptInput', () => {
     expect(fixture.componentInstance.submitted()).toBeUndefined();
   });
 
+  it('spins the submit icon while the response is submitted', () => {
+    fixture.componentInstance.status.set('submitted');
+    fixture.detectChanges();
+
+    const icon = element.querySelector('button[aiPromptInputSubmit] ng-icon');
+
+    expect(icon?.classList).toContain('animate-spin');
+  });
+
   it('keeps HLM button classes when composed with hlmBtn', async () => {
     await TestBed.resetTestingModule()
       .configureTestingModule({

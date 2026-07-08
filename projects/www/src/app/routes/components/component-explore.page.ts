@@ -1,8 +1,8 @@
 import { Component, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
+import { SeoService } from '../../shared/seo/seo.service';
 import { componentDocs } from '../docs/data/component-docs.registry';
 import { componentHref } from '../docs/data/docs-navigation';
-import { SeoService } from '../../shared/seo/seo.service';
 
 @Component({
   imports: [RouterLink],
@@ -498,9 +498,9 @@ export class ComponentExplorePage {
   protected readonly componentHref = componentHref;
   protected readonly componentGroups = [
     {
-      title: 'Components',
+      title: '',
       headingId: 'chatbot-components',
-      description: 'Start with the parts your screen needs, then compose them into your own flow.',
+      description: '',
       items: componentDocs,
     },
   ] as const;

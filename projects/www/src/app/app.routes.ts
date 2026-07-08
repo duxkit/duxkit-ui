@@ -15,6 +15,11 @@ export const appRoutes: Route[] = [
         loadComponent: () =>
           import('./routes/docs/docs-introduction.page').then((m) => m.DocsIntroductionPage),
       },
+      {
+        path: 'installation',
+        loadComponent: () =>
+          import('./routes/docs/installation.page').then((m) => m.InstallationPage),
+      },
     ],
   },
   {
@@ -30,7 +35,8 @@ export const appRoutes: Route[] = [
       },
       {
         path: ':slug',
-        loadComponent: () => import('./routes/components/component-doc.page').then((m) => m.ComponentDocPage),
+        loadComponent: () =>
+          import('./routes/components/component-doc.page').then((m) => m.ComponentDocPage),
       },
     ],
   },

@@ -5,6 +5,7 @@ import {
   PromptInput,
   PromptInputAddAttachment,
   PromptInputAttachments,
+  PromptInputButton,
   PromptInputSubmit,
   PromptInputTextarea,
   PromptInputToolbar,
@@ -28,6 +29,9 @@ import {
   ModelSelectorTrigger,
   type ModelSelectorModel,
 } from '../model-selector';
+import { provideIcons } from '@ng-icons/core';
+import { lucidePlus } from '@ng-icons/lucide';
+import { HlmIcon, HlmIconImports } from '@duxkit-private/ui/helm/icon';
 
 const models = [
   {
@@ -52,6 +56,7 @@ const meta: Meta = {
     moduleMetadata({
       imports: [
         HlmButton,
+        HlmIconImports,
         ModelSelector,
         ModelSelectorContent,
         ModelSelectorDescription,
@@ -72,17 +77,29 @@ const meta: Meta = {
         PromptInputTextarea,
         PromptInputToolbar,
         PromptInputTools,
+        PromptInputButton,
       ],
+      providers: [provideIcons({ lucidePlus })],
     }),
   ],
   tags: ['autodocs'],
-  render: () => ({
+  args: {
+    status: 'ready',
+  },
+  argTypes: {
+    status: {
+      control: 'select',
+      options: ['ready', 'submitted', 'streaming', 'error'],
+    },
+  },
+  render: (args) => ({
     props: {
+      ...args,
       groups: modelGroups,
       searchValue: createModelSelectorSearchValue,
     },
     template: `
-      <form aiPromptInput class="w-[640px]">
+      <form aiPromptInput class="w-[640px]" [status]="status">
         <textarea aiPromptInputTextarea placeholder="Ask a question..."></textarea>
         <ai-prompt-input-attachments />
         <ai-prompt-input-toolbar>
@@ -103,7 +120,7 @@ const meta: Meta = {
                       <ai-model-selector-group-heading>{{ group.heading }}</ai-model-selector-group-heading>
                       @for (model of group.models; track model.id) {
                         <button aiModelSelectorItem [value]="searchValue(model)">
-                          <ai-model-selector-logo [provider]="model.providerSlug ?? model.provider" />
+                          <ai-model-selector-logo [provider]="!model.providerSlug ?? model.provider" />
                           <ai-model-selector-name>{{ model.name }}</ai-model-selector-name>
                         </button>
                       }
@@ -113,8 +130,11 @@ const meta: Meta = {
               </ai-model-selector-content>
             </ai-model-selector>
             <button aiPromptInputAddAttachment hlmBtn variant="ghost" size="icon-sm"></button>
+            <button aiPromptInputButton hlmBtn variant="ghost" size="icon-sm">
+              <ng-icon hlm size="sm" name="lucidePlus" />
+            </button>
           </ai-prompt-input-tools>
-          <button aiPromptInputSubmit hlmBtn size="icon-sm"></button>
+          <button aiPromptInputSubmit hlmBtn size="icon-sm" [status]="status"></button>
         </ai-prompt-input-toolbar>
       </form>
     `,
@@ -127,13 +147,17 @@ type Story = StoryObj;
 export const Default: Story = {};
 
 export const Streaming: Story = {
-  render: () => ({
+  args: {
+    status: 'streaming',
+  },
+  render: (args) => ({
     props: {
+      ...args,
       groups: modelGroups,
       searchValue: createModelSelectorSearchValue,
     },
     template: `
-      <form aiPromptInput class="w-[640px]" status="streaming">
+      <form aiPromptInput class="w-[640px]" [status]="status">
         <textarea aiPromptInputTextarea placeholder="Ask a question...">Draft a migration plan</textarea>
         <ai-prompt-input-toolbar>
           <ai-prompt-input-tools>
@@ -164,7 +188,7 @@ export const Streaming: Story = {
             </ai-model-selector>
             <button aiPromptInputAddAttachment hlmBtn variant="ghost" size="icon-sm"></button>
           </ai-prompt-input-tools>
-          <button aiPromptInputSubmit hlmBtn size="icon-sm" status="streaming"></button>
+          <button aiPromptInputSubmit hlmBtn size="icon-sm" [status]="status"></button>
         </ai-prompt-input-toolbar>
       </form>
     `,

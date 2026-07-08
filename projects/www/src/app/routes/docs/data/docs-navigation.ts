@@ -9,6 +9,12 @@ export const docsPages = [
     description: 'What Duxkit AI provides and where it fits in an Angular app.',
     href: '/docs',
   },
+  {
+    slug: 'installation',
+    title: 'Installation',
+    description: 'Install Duxkit AI, configure Tailwind CSS v4, and render the first primitive.',
+    href: '/docs/installation',
+  },
 ] as const;
 
 export const topLevelSections = [

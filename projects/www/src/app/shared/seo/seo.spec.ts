@@ -19,7 +19,13 @@ describe('www SEO configuration', () => {
   it('keeps every component docs page in the static route inventory', () => {
     const expectedDocsRoutes = componentDocs.map((doc) => docsComponentRoutePath(doc.slug));
 
-    expect(staticSeoRoutes).toEqual(['/', '/docs', '/components', ...expectedDocsRoutes]);
+    expect(staticSeoRoutes).toEqual([
+      '/',
+      '/docs',
+      '/docs/installation',
+      '/components',
+      ...expectedDocsRoutes,
+    ]);
   });
 
   it('provides specific metadata for the home, docs index, and component docs routes', () => {
@@ -30,6 +36,10 @@ describe('www SEO configuration', () => {
     expect(getSeoPage('/docs')).toMatchObject({
       title: 'Duxkit UI Docs - Introduction',
       canonicalPath: '/docs',
+    });
+    expect(getSeoPage('/docs/installation')).toMatchObject({
+      title: 'Install Duxkit AI - Angular Setup Guide',
+      canonicalPath: '/docs/installation',
     });
     expect(getSeoPage('/components')).toMatchObject({
       title: 'Angular AI Components - Duxkit UI',
@@ -52,7 +62,7 @@ describe('www SEO configuration', () => {
   });
 
   it('uses a social preview image with the expected large-card dimensions', () => {
-    const publicRoot = join(import.meta.dirname, '../../public');
+    const publicRoot = join(import.meta.dirname, '../../../../public');
     const ogImage = readFileSync(join(publicRoot, defaultOgImagePath.slice(1)));
 
     expect(defaultOgImagePath).toBe('/og-image.png');
@@ -81,7 +91,7 @@ describe('www SEO configuration', () => {
   });
 
   it('keeps public crawl assets aligned with generated SEO output', () => {
-    const publicRoot = join(import.meta.dirname, '../../public');
+    const publicRoot = join(import.meta.dirname, '../../../../public');
 
     expect(readFileSync(join(publicRoot, 'robots.txt'), 'utf8')).toBe(buildRobotsTxt());
     expect(readFileSync(join(publicRoot, 'sitemap.xml'), 'utf8')).toBe(buildSitemapXml());
