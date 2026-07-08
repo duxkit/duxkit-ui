@@ -37,6 +37,15 @@ Also update:
 projects/duxkit-ai/src/public-api.ts
 ```
 
+If the primitive should be installable through `duxkit-ui`, update:
+
+```text
+projects/cli/src/lib/primitive-registry.ts
+projects/cli/src/lib/primitive-registry.spec.ts
+```
+
+Keep the CLI registry in sync with the primitive id, title, status, files, dependencies, peer assumptions, tokens, aliases, primitive dependencies, and relationships.
+
 If the primitive appears in docs, follow `docs/agent-skills/add-primitive-docs/SKILL.md`.
 
 ## Angular Standards
@@ -161,6 +170,13 @@ pnpm exec vitest run projects/www/src/app/routes/docs/search/docs-search.spec.ts
 pnpm build:www
 ```
 
+If the CLI registry changed:
+
+```bash
+pnpm test:cli
+pnpm build:cli
+```
+
 If Storybook changed or the user asks for full verification:
 
 ```bash
@@ -170,6 +186,7 @@ pnpm build:storybook
 Before finishing, confirm:
 
 - public exports are present,
+- the CLI registry reflects new installable primitives,
 - tests cover the API behavior,
 - docs metadata is regenerated when API changed,
 - light/dark theme classes use theme tokens,

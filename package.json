@@ -10,6 +10,7 @@
     "storybook": "scripts/with-node.sh nx run duxkit-ai:storybook",
     "build:storybook": "scripts/with-node.sh nx run duxkit-ai:build-storybook",
     "build": "nx run-many -t build",
+    "build:cli": "nx build cli",
     "build:lib": "nx build duxkit-ai",
     "build:playground": "pnpm build:lib && CI=1 nx build playground --progress=false",
     "build:www": "nx build www",
@@ -17,6 +18,7 @@
     "check:conventions": "node scripts/check-workspace-conventions.mjs",
     "watch": "nx build duxkit-ai --watch --configuration development",
     "test": "nx run-many -t test",
+    "test:cli": "nx test cli",
     "test:ci": "CI=1 nx run-many -t test -- --watch=false"
   },
   "private": true,

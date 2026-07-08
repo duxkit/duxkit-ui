@@ -106,7 +106,25 @@ projects/www/src/app/routes/docs/data/component-api-metadata.generated.ts
 
 The generator scans the component folder listed by the docs slug and extracts Angular `@Component` / `@Directive` selectors plus `input()` and `output()` metadata. Input and output descriptions come from JSDoc comments. Do not edit `component-api-metadata.generated.ts` by hand.
 
-## 7. Verify Search
+## 7. Update The CLI Registry
+
+If the component is a primitive that should be installable through `duxkit-ui`, update:
+
+```text
+projects/cli/src/lib/primitive-registry.ts
+projects/cli/src/lib/primitive-registry.spec.ts
+```
+
+Keep the primitive id, title, status, files, dependencies, peer assumptions, tokens, aliases, primitive dependencies, and relationships aligned with the component source.
+
+Verify the CLI package:
+
+```bash
+pnpm test:cli
+pnpm build:cli
+```
+
+## 8. Verify Search
 
 The search index is built from the registry plus API metadata. Run:
 
@@ -116,7 +134,7 @@ pnpm exec vitest run projects/www/src/app/routes/docs/search/docs-search.spec.ts
 
 This checks that every docs entry has generated API metadata and that search can match title, selector, export, input, and output data.
 
-## 8. Verify The Docs App
+## 9. Verify The Docs App
 
 Run the docs site locally:
 
@@ -138,7 +156,7 @@ Check:
 - the API section contains the expected selectors, inputs, outputs, exports, and source metadata
 - the search command finds the component by name and API metadata
 
-## 9. Final Checks
+## 10. Final Checks
 
 For a docs-only change, run:
 

@@ -377,6 +377,13 @@ pnpm docs:generate-metadata
 pnpm exec vitest run projects/www/src/app/routes/docs/search/docs-search.spec.ts --environment jsdom
 ```
 
+When adding a primitive that should be installable through `duxkit-ui`, update the bundled CLI registry and verify it:
+
+```bash
+pnpm test:cli
+pnpm build:cli
+```
+
 Input and output descriptions in the API tables are generated from JSDoc comments on the source `input()` and `output()` properties.
 
 Run the docs site locally or build it with:
