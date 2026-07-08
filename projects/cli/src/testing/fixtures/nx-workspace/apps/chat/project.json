@@ -1,0 +1,15 @@
+{
+  "name": "chat",
+  "projectType": "application",
+  "root": "apps/chat",
+  "sourceRoot": "apps/chat/src",
+  "targets": {
+    "build": {
+      "executor": "@nx/angular:application",
+      "options": {
+        "browser": "apps/chat/src/main.ts",
+        "styles": ["apps/chat/src/styles.css"]
+      }
+    }
+  }
+}
