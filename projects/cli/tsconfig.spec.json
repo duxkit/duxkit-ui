@@ -1,7 +1,7 @@
 {
   "extends": "./tsconfig.json",
   "compilerOptions": {
-    "outDir": "../../out-tsc/duxkit-ui-cli-spec",
+    "outDir": "../../out-tsc/cli-spec",
     "types": [
       "node",
       "vitest"

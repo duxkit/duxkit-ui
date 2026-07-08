@@ -1,7 +1,7 @@
 {
   "extends": "./tsconfig.json",
   "compilerOptions": {
-    "outDir": "../../dist/duxkit-ui-cli",
+    "outDir": "../../dist/cli",
     "rootDir": "src",
     "declaration": true,
     "declarationMap": true

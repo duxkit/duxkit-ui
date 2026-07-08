@@ -5,7 +5,7 @@ import { fileURLToPath } from 'node:url';
 const projectRoot = dirname(fileURLToPath(import.meta.url));
 const packageRoot = dirname(projectRoot);
 const workspaceRoot = dirname(dirname(packageRoot));
-const outputRoot = join(workspaceRoot, 'dist/duxkit-ui-cli');
+const outputRoot = join(workspaceRoot, 'dist/cli');
 
 const sourcePackage = JSON.parse(await readFile(join(packageRoot, 'package.json'), 'utf8'));
 const outputPackage = {

@@ -61,10 +61,10 @@
       "path": "./projects/ui/tsconfig.lib.json"
     },
     {
-      "path": "./projects/duxkit-ui-cli/tsconfig.lib.json"
+      "path": "./projects/cli/tsconfig.lib.json"
     },
     {
-      "path": "./projects/duxkit-ui-cli/tsconfig.spec.json"
+      "path": "./projects/cli/tsconfig.spec.json"
     }
   ]
 }
