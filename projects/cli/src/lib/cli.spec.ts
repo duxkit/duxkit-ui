@@ -61,7 +61,7 @@ describe('duxkit-ui command shell', () => {
     expect(result.stdout).toBe('');
   });
 
-  it('keeps init mutations scaffolded while accepting the planning flags', async () => {
+  it('accepts init planning and mutation flags', async () => {
     const result = await run([
       'init',
       '--cwd',
@@ -82,13 +82,15 @@ describe('duxkit-ui command shell', () => {
       'add',
       '--package-manager',
       'npm',
+      '--dry-run',
+      '--json',
       '--yes',
       '--no-install',
     ]);
 
     expect(result.exitCode).toBe(1);
-    expect(result.stderr).toContain('duxkit-ui init is scaffolded but not implemented yet.');
-    expect(result.stdout).toBe('');
+    expect(result.stderr).toBe('');
+    expect(JSON.parse(result.stdout)).toEqual(expect.objectContaining({ command: 'init' }));
   });
 
   it('inspects workspace state as JSON', async () => {

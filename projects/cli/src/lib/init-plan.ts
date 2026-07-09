@@ -209,7 +209,8 @@ export async function createInitPlan(
   if (style === 'unknown') {
     ambiguities.push({
       flag: '--style <language>',
-      message: 'The component style language could not be inferred. Pass --style css, scss, sass, or less.',
+      message:
+        'The component style language could not be inferred. Pass --style css, scss, sass, or less.',
     });
   }
 
@@ -249,12 +250,12 @@ export async function createInitPlan(
     ambiguities,
     warnings,
   );
-  const requiredPackages = getRequiredPackages(
-    inspection,
-    options,
-    inspection.tailwind.v4Imports || stylesheetText.includes('tailwindcss'),
-  );
   const installedPackageNames = await readPackageNames(inspection.root);
+  const tailwindConfigured =
+    (inspection.tailwind.v4Imports || stylesheetText.includes('tailwindcss')) &&
+    installedPackageNames.has('tailwindcss') &&
+    installedPackageNames.has('@tailwindcss/postcss');
+  const requiredPackages = getRequiredPackages(inspection, options, tailwindConfigured);
   const missingPackages = requiredPackages.filter(
     (dependency) => !installedPackageNames.has(dependency.name),
   );
@@ -273,23 +274,14 @@ export async function createInitPlan(
     ambiguities,
     warnings,
   );
-  const tokens = createTokenPlan(
-    stylesheetText,
-    options.tokens,
-    options.yes === true,
-    ambiguities,
-  );
+  const tokens = createTokenPlan(stylesheetText, options.tokens, options.yes === true, ambiguities);
   const directory = await createDirectoryPlan(inspection.root, componentsPath, ambiguities);
-  const config = await createConfigPlan(
-    inspection,
-    project,
-    stylesheet,
-    componentsPath,
-    style,
-  );
+  const config = await createConfigPlan(inspection, project, stylesheet, componentsPath, style);
 
   if (tailwind.action === 'manual' || postcss.action === 'manual') {
-    warnings.push('A manual Tailwind or PostCSS step is required; the planner will not migrate it automatically.');
+    warnings.push(
+      'A manual Tailwind or PostCSS step is required; the planner will not migrate it automatically.',
+    );
   }
 
   const plannedChanges = createPlannedChanges(
@@ -511,7 +503,11 @@ async function createTailwindPlan(
     return {
       action: 'skip',
       imports: [],
-      sourceCoverage: sourceRequired ? (sourceCovered ? 'explicit-source' : 'missing') : 'covered-by-source-root',
+      sourceCoverage: sourceRequired
+        ? sourceCovered
+          ? 'explicit-source'
+          : 'missing'
+        : 'covered-by-source-root',
       sourcePath,
       sourceRequired,
     };
@@ -520,13 +516,18 @@ async function createTailwindPlan(
   if (legacyConfig && !v4Imports) {
     ambiguities.push({
       flag: '--tailwind skip (or migrate manually)',
-      message: 'A legacy tailwind.config file was found without Tailwind v4 CSS imports. Automatic migration is unsafe.',
+      message:
+        'A legacy tailwind.config file was found without Tailwind v4 CSS imports. Automatic migration is unsafe.',
     });
 
     return {
       action: 'manual',
       imports: [],
-      sourceCoverage: sourceRequired ? (sourceCovered ? 'explicit-source' : 'missing') : 'covered-by-source-root',
+      sourceCoverage: sourceRequired
+        ? sourceCovered
+          ? 'explicit-source'
+          : 'missing'
+        : 'covered-by-source-root',
       sourcePath,
       sourceRequired,
     };
@@ -547,10 +548,7 @@ async function createTailwindPlan(
             statement.includes('@spartan-ng/brain'),
         )
         .filter((statement) => !hasCssImport(stylesheetText, statement))
-    : [
-        '@layer theme, base, components, utilities;',
-        ...requiredTailwindImports,
-      ];
+    : ['@layer theme, base, components, utilities;', ...requiredTailwindImports];
   const needsChange = imports.length > 0 || (sourceRequired && !sourceCovered);
 
   if (mode === 'require-existing' && needsChange) {
@@ -562,7 +560,11 @@ async function createTailwindPlan(
     return {
       action: 'manual',
       imports,
-      sourceCoverage: sourceRequired ? (sourceCovered ? 'explicit-source' : 'missing') : 'covered-by-source-root',
+      sourceCoverage: sourceRequired
+        ? sourceCovered
+          ? 'explicit-source'
+          : 'missing'
+        : 'covered-by-source-root',
       sourcePath,
       sourceRequired,
     };
@@ -571,7 +573,11 @@ async function createTailwindPlan(
   return {
     action: needsChange ? 'add' : 'unchanged',
     imports,
-    sourceCoverage: sourceRequired ? (sourceCovered ? 'explicit-source' : 'missing') : 'covered-by-source-root',
+    sourceCoverage: sourceRequired
+      ? sourceCovered
+        ? 'explicit-source'
+        : 'missing'
+      : 'covered-by-source-root',
     sourcePath,
     sourceRequired,
   };
@@ -602,7 +608,12 @@ async function createPostCssPlan(
   if (mode === 'skip') {
     warnings.push('PostCSS setup was skipped by --postcss skip.');
 
-    return { action: 'skip', after: null, path: jsonPath ?? riskyPath, plugin: '@tailwindcss/postcss' };
+    return {
+      action: 'skip',
+      after: null,
+      path: jsonPath ?? riskyPath,
+      plugin: '@tailwindcss/postcss',
+    };
   }
 
   if (jsonPath === null && riskyPath !== null) {
@@ -617,7 +628,8 @@ async function createPostCssPlan(
   if (mode === 'require-existing' && jsonPath === null) {
     ambiguities.push({
       flag: '--postcss add',
-      message: 'No safe JSON PostCSS config was found. Pass --postcss add to plan a new .postcssrc.json, or configure PostCSS manually.',
+      message:
+        'No safe JSON PostCSS config was found. Pass --postcss add to plan a new .postcssrc.json, or configure PostCSS manually.',
     });
 
     return { action: 'manual', after: null, path: null, plugin: '@tailwindcss/postcss' };
@@ -865,7 +877,9 @@ function createInstallCommands(
   const commands: string[] = [];
 
   if (runtime.length > 0) {
-    commands.push(`${packageManager} ${packageManager === 'npm' ? 'install' : 'add'} ${runtime.map(formatPackage).join(' ')}`);
+    commands.push(
+      `${packageManager} ${packageManager === 'npm' ? 'install' : 'add'} ${runtime.map(formatPackage).join(' ')}`,
+    );
   }
 
   if (dev.length > 0) {
@@ -884,19 +898,23 @@ function createNextSteps(commands: readonly string[], hasChanges: boolean): read
   const nextSteps = [...commands];
 
   if (hasChanges) {
-    nextSteps.push('Rerun without --dry-run to apply the accepted initialization plan once init mutations are available.');
+    nextSteps.push(
+      'Rerun without --dry-run to apply the accepted initialization plan once init mutations are available.',
+    );
   }
 
   return nextSteps;
 }
 
 async function hasLegacyTailwindConfig(workspaceRoot: string): Promise<boolean> {
-  return (await firstExistingPath(workspaceRoot, [
-    'tailwind.config.js',
-    'tailwind.config.cjs',
-    'tailwind.config.mjs',
-    'tailwind.config.ts',
-  ])) !== null;
+  return (
+    (await firstExistingPath(workspaceRoot, [
+      'tailwind.config.js',
+      'tailwind.config.cjs',
+      'tailwind.config.mjs',
+      'tailwind.config.ts',
+    ])) !== null
+  );
 }
 
 async function firstExistingPath(
@@ -950,7 +968,10 @@ function hasPostCssPlugin(config: Readonly<Record<string, unknown>>): boolean {
   const plugins = config['plugins'];
 
   if (Array.isArray(plugins)) {
-    return plugins.some((plugin) => plugin === '@tailwindcss/postcss' || (isRecord(plugin) && '@tailwindcss/postcss' in plugin));
+    return plugins.some(
+      (plugin) =>
+        plugin === '@tailwindcss/postcss' || (isRecord(plugin) && '@tailwindcss/postcss' in plugin),
+    );
   }
 
   return isRecord(plugins) && '@tailwindcss/postcss' in plugins;
@@ -981,14 +1002,20 @@ function addPostCssPlugin(
 }
 
 function stylesheetHasSource(stylesheetText: string, sourcePath: string): boolean {
-  const sourcePaths = [...stylesheetText.matchAll(/@source\s+["']([^"']+)["']/g)].map((match) => normalizeCssPath(match[1]));
+  const sourcePaths = [...stylesheetText.matchAll(/@source\s+["']([^"']+)["']/g)].map((match) =>
+    normalizeCssPath(match[1]),
+  );
   const normalizedSource = normalizeCssPath(sourcePath);
 
-  return sourcePaths.some((path) => path === normalizedSource || isInsideOrEqual(path, normalizedSource));
+  return sourcePaths.some(
+    (path) => path === normalizedSource || isInsideOrEqual(path, normalizedSource),
+  );
 }
 
 function hasCssImport(stylesheetText: string, statement: string): boolean {
-  return stylesheetText.includes(statement) || stylesheetText.includes(statement.replaceAll("'", '"'));
+  return (
+    stylesheetText.includes(statement) || stylesheetText.includes(statement.replaceAll("'", '"'))
+  );
 }
 
 function formatRelativeCssPath(fromDirectory: string, toPath: string): string {
@@ -1016,7 +1043,9 @@ function isSafeWorkspacePath(path: string): boolean {
 }
 
 function toStyleLanguage(value: string): StyleLanguage {
-  return value === 'css' || value === 'less' || value === 'sass' || value === 'scss' ? value : 'unknown';
+  return value === 'css' || value === 'less' || value === 'sass' || value === 'scss'
+    ? value
+    : 'unknown';
 }
 
 function escapeRegExp(value: string): string {

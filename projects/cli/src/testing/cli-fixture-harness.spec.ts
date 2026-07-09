@@ -1,4 +1,4 @@
-import { mkdir } from 'node:fs/promises';
+import { mkdir, stat } from 'node:fs/promises';
 import { describe, expect, it } from 'vitest';
 import { diffSnapshots, withCliFixtureWorkspace } from './cli-fixture-harness.js';
 
@@ -68,7 +68,9 @@ describe('CLI fixture harness', () => {
       result.assertExitCode(1);
       expect(result.stderr).toBe('');
       expect(parsed.status).toBe('blocked');
-      expect(parsed.ambiguities).toContainEqual(expect.objectContaining({ flag: '--tokens add|skip' }));
+      expect(parsed.ambiguities).toContainEqual(
+        expect.objectContaining({ flag: '--tokens add|skip' }),
+      );
       expect(parsed.ambiguities).toContainEqual(
         expect.objectContaining({ flag: '--package-manager <npm|pnpm|yarn|bun>' }),
       );
@@ -113,6 +115,113 @@ describe('CLI fixture harness', () => {
     });
   });
 
+  it.each([
+    ['angular-cli-app', 'src/app/components/ai', 'src/styles.css'],
+    ['nx-workspace', 'apps/chat/src/app/components/ai', 'apps/chat/src/styles.css'],
+  ] as const)(
+    'applies safe init mutations to the %s fixture without installation',
+    async (fixtureName, componentsPath, stylesheetPath) => {
+      await withCliFixtureWorkspace(fixtureName, async (workspace) => {
+        const result = await workspace.run([
+          'init',
+          '--yes',
+          '--no-install',
+          '--package-manager',
+          'npm',
+          '--tokens',
+          'add',
+        ]);
+
+        result.assertExitCode(0);
+        expect(result.stderr).toBe('');
+        expect(result.packageChanges).toEqual([]);
+        result.assertFileChanged('duxkit-ai.json');
+        result.assertFileChanged('.postcssrc.json');
+        result.assertFileChanged(stylesheetPath);
+        expect(JSON.parse(await workspace.readText('duxkit-ai.json'))).toEqual(
+          expect.objectContaining({ componentsPath, stylesheet: stylesheetPath }),
+        );
+        expect(await workspace.readText('.postcssrc.json')).toContain('@tailwindcss/postcss');
+        expect(await workspace.readText(stylesheetPath)).toContain(
+          "@import 'tailwindcss/theme.css' layer(theme);",
+        );
+        expect(await workspace.readText(stylesheetPath)).toContain('--background:');
+        expect((await stat(workspace.resolve(componentsPath))).isDirectory()).toBe(true);
+        result.assertSourceFixtureUnchanged();
+      });
+    },
+  );
+
+  it('requires --yes for non-interactive init writes', async () => {
+    await withCliFixtureWorkspace('angular-cli-app', async (workspace) => {
+      const result = await workspace.run(['init', '--package-manager', 'npm', '--tokens', 'add']);
+
+      result.assertExitCode(1);
+      result.assertStderrIncludes('pass --yes');
+      result.assertReadOnly();
+      result.assertSourceFixtureUnchanged();
+    });
+  });
+
+  it('keeps applied init JSON free of human-readable output', async () => {
+    await withCliFixtureWorkspace('angular-cli-app', async (workspace) => {
+      const result = await workspace.run([
+        'init',
+        '--yes',
+        '--no-install',
+        '--package-manager',
+        'npm',
+        '--tokens',
+        'add',
+        '--json',
+      ]);
+      const parsed = JSON.parse(result.stdout) as {
+        readonly applied: boolean;
+        readonly status: string;
+      };
+
+      result.assertExitCode(0);
+      expect(result.stderr).toBe('');
+      expect(parsed).toEqual(expect.objectContaining({ applied: true, status: 'applied' }));
+      result.assertSourceFixtureUnchanged();
+    });
+  });
+
+  it('preserves existing token values and JSON PostCSS plugins while adding missing setup', async () => {
+    await withCliFixtureWorkspace('angular-cli-app', async (workspace) => {
+      await workspace.writeText('src/styles.css', ':root {\n  --background: rgb(1 2 3);\n}\n');
+      await workspace.writeText(
+        '.postcssrc.json',
+        JSON.stringify({ plugins: { 'existing-plugin': {} }, syntax: 'preserve-me' }, null, 2),
+      );
+
+      const result = await workspace.run([
+        'init',
+        '--yes',
+        '--no-install',
+        '--package-manager',
+        'npm',
+        '--tokens',
+        'add',
+      ]);
+
+      result.assertExitCode(0);
+      const stylesheet = await workspace.readText('src/styles.css');
+      const postcss = JSON.parse(await workspace.readText('.postcssrc.json')) as {
+        readonly plugins: Readonly<Record<string, unknown>>;
+        readonly syntax: string;
+      };
+
+      expect(stylesheet.match(/--background:/g)).toHaveLength(1);
+      expect(stylesheet).toContain('--background: rgb(1 2 3);');
+      expect(postcss.plugins).toEqual(
+        expect.objectContaining({ 'existing-plugin': {}, '@tailwindcss/postcss': {} }),
+      );
+      expect(postcss.syntax).toBe('preserve-me');
+      result.assertSourceFixtureUnchanged();
+    });
+  });
+
   it('copies Angular CLI app fixtures to a temporary workspace and runs commands inside them', async () => {
     await withCliFixtureWorkspace('angular-cli-app', async (workspace) => {
       const result = await workspace.run(['inspect', '--json']);
@@ -129,7 +238,9 @@ describe('CLI fixture harness', () => {
       result.assertExitCode(0);
       expect(result.stderr).toBe('');
       expect(parsed.type).toBe('angular-cli');
-      expect(parsed.project).toEqual(expect.objectContaining({ name: 'fixture-app', sourceRoot: 'src' }));
+      expect(parsed.project).toEqual(
+        expect.objectContaining({ name: 'fixture-app', sourceRoot: 'src' }),
+      );
       expect(parsed.stylesheet).toBe('src/styles.css');
       expect(parsed.styleLanguage).toBe('css');
       expect(parsed.componentDestination).toBe('src/app/components/ai');
@@ -334,7 +445,12 @@ describe('CLI fixture harness', () => {
         ['@import "tailwindcss";', ':root {', '  --background: white;', '}'].join('\n'),
       );
 
-      const result = await workspace.run(['inspect', '--cwd', workspace.resolve('src/app'), '--json']);
+      const result = await workspace.run([
+        'inspect',
+        '--cwd',
+        workspace.resolve('src/app'),
+        '--json',
+      ]);
       const parsed = JSON.parse(result.stdout) as {
         readonly config: { readonly exists: boolean; readonly valid: boolean };
         readonly installedPrimitives: readonly {
@@ -345,7 +461,10 @@ describe('CLI fixture harness', () => {
         readonly missingDependencies: readonly { readonly name: string }[];
         readonly root: string;
         readonly tailwind: { readonly sourceCoverage: string; readonly v4Imports: boolean };
-        readonly tokens: { readonly missing: readonly string[]; readonly present: readonly string[] };
+        readonly tokens: {
+          readonly missing: readonly string[];
+          readonly present: readonly string[];
+        };
       };
 
       result.assertExitCode(0);

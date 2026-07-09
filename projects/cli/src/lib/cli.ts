@@ -76,22 +76,32 @@ export function createCli(io: CliIo): Command {
     .option('--stylesheet <path>', 'Global stylesheet to configure.')
     .option('--components-path <path>', 'Destination directory for generated AI primitives.')
     .option('--style <language>', 'Generated component style language.')
-    .option('--tokens <mode>', "Theme token handling: 'add', 'skip', or 'require-existing'.", parseTokenMode)
-    .option('--tailwind <mode>', "Tailwind handling: 'add', 'skip', or 'require-existing'.", parseInitMode)
-    .option('--postcss <mode>', "PostCSS handling: 'add', 'skip', or 'require-existing'.", parseInitMode)
-    .option('--package-manager <manager>', 'Package manager to use for the planned install command.', parsePackageManager)
+    .option(
+      '--tokens <mode>',
+      "Theme token handling: 'add', 'skip', or 'require-existing'.",
+      parseTokenMode,
+    )
+    .option(
+      '--tailwind <mode>',
+      "Tailwind handling: 'add', 'skip', or 'require-existing'.",
+      parseInitMode,
+    )
+    .option(
+      '--postcss <mode>',
+      "PostCSS handling: 'add', 'skip', or 'require-existing'.",
+      parseInitMode,
+    )
+    .option(
+      '--package-manager <manager>',
+      'Package manager to use for the planned install command.',
+      parsePackageManager,
+    )
     .option('--dry-run', 'Plan changes without writing files or installing packages.')
     .option('--json', 'Print machine-readable JSON output.')
     .option('--yes', 'Accept safe defaults and skip final confirmation.')
     .option('--force', 'Allow explicit init flags to replace conflicting config values.')
     .option('--no-install', 'Do not install missing dependencies.')
-    .action(async (options: InitCommandOptions) => {
-      if (options.dryRun !== true) {
-        failUntilImplemented('init');
-      }
-
-      await runInitCommand(options, io);
-    });
+    .action((options: InitCommandOptions) => runInitCommand(options, io));
 
   configureCommand(program.command('add'))
     .description('Add one or more Duxkit AI primitives to the configured workspace.')
