@@ -1,4 +1,5 @@
 import { Command, CommanderError, InvalidArgumentError } from 'commander';
+import { runInspectCommand, type InspectCommandOptions } from './inspect-command.js';
 import { runListCommand, type ListCommandOptions } from './list-command.js';
 
 export interface CliOutput {
@@ -87,7 +88,7 @@ export function createCli(io: CliIo): Command {
     .description('Inspect Duxkit AI workspace state.')
     .option('--cwd <path>', 'Workspace directory to inspect.')
     .option('--json', 'Print machine-readable JSON output.')
-    .action(() => failUntilImplemented('inspect'));
+    .action((options: InspectCommandOptions) => runInspectCommand(options, io));
 
   return program;
 }

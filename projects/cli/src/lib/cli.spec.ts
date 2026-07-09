@@ -73,7 +73,6 @@ describe('duxkit-ui command shell', () => {
         '--force',
       ],
     ],
-    ['inspect', ['--cwd', '/tmp/app', '--json']],
   ] as const)('parses %s with supported options', async (command, args) => {
     const result = await run([command, ...args]);
 
@@ -81,6 +80,21 @@ describe('duxkit-ui command shell', () => {
     expect(result.stderr).toContain(`duxkit-ui ${command} is scaffolded but not implemented yet.`);
     expect(result.stderr).not.toContain('unknown option');
     expect(result.stdout).toBe('');
+  });
+
+  it('inspects workspace state as JSON', async () => {
+    const result = await run(['inspect', '--cwd', '/tmp/app', '--json']);
+    const parsed = JSON.parse(result.stdout) as {
+      readonly componentDestination: string | null;
+      readonly root: string;
+      readonly type: string;
+    };
+
+    expect(result.exitCode).toBe(0);
+    expect(result.stderr).toBe('');
+    expect(parsed.root).toBe('/tmp/app');
+    expect(parsed.type).toBe('unknown');
+    expect(parsed.componentDestination).toBeNull();
   });
 
   it('lists primitives in human-readable form', async () => {
