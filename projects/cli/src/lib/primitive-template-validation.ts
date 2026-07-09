@@ -8,12 +8,8 @@ export interface PrimitiveTemplateSource extends PrimitiveTemplateFile {
 }
 
 const baselineOnlyPackageNames = new Set([
-  '@ai-sdk/angular',
-  '@angular/common',
-  '@angular/core',
-  'class-variance-authority',
-  'clsx',
-  'tailwind-merge',
+  '@tailwindcss/postcss',
+  '@spartan-ng/brain',
   'tailwindcss',
   'tw-animate-css',
 ]);

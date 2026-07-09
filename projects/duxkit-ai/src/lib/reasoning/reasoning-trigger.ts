@@ -37,7 +37,7 @@ import { lucideBrain, lucideChevronDown } from '@ng-icons/lucide';
       background-image: linear-gradient(
         90deg,
         currentColor 0%,
-        color-mix(in oklab, currentColor 35%, white) 50%,
+        color-mix(in oklab, currentColor 35%, var(--background, Canvas)) 50%,
         currentColor 100%
       );
       background-size: 200% 100%;

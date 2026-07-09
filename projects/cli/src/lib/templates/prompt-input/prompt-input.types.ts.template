@@ -1,3 +1,4 @@
+import type { AbstractControl } from '@angular/forms';
 import type { ChatStatus, FileUIPart } from 'ai';
 
 export type AiAttachmentPart = FileUIPart;
@@ -5,6 +6,7 @@ export interface AiPromptSubmit {
   readonly text: string;
   readonly files: readonly AiAttachmentPart[];
 }
+export type PromptInputTextControl = AbstractControl<string>;
 export type PromptInputStatus = ChatStatus;
 export type PromptInputFilePart = FileUIPart & {
   readonly file: File;

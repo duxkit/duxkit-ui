@@ -73,8 +73,8 @@ const primitiveIdSet = new Set<string>(primitiveIds);
 
 const angularCore = dep('@angular/core', '^22.0.4', 'angular');
 const angularCommon = dep('@angular/common', '^22.0.4', 'angular');
+const angularForms = dep('@angular/forms', '^22.0.4', 'angular');
 const angularCdk = dep('@angular/cdk', '>=22.0.2 <23.0.0', 'angular');
-const aiSdkAngular = dep('@ai-sdk/angular', '^2.0.208', 'ai-runtime');
 const ai = dep('ai', '^6.0.207', 'ai-runtime');
 const ngIconsCore = dep('@ng-icons/core', '>=33.3.0 <34.0.0', 'icons');
 const ngIconsLucide = dep('@ng-icons/lucide', '>=33.3.0 <34.0.0', 'icons');
@@ -87,22 +87,22 @@ const twAnimate = dep('tw-animate-css', '>=1.0.0', 'styling');
 const marked = dep('marked', '^18.0.5', 'markdown');
 const highlightJs = dep('highlight.js', '^11.11.1', 'markdown');
 
-const baselinePeers = [
-  angularCore,
-  angularCommon,
-  cva,
-  clsx,
-  tailwindMerge,
-  tailwindcss,
-  twAnimate,
-] as const;
+const baselinePeers = [tailwindcss, twAnimate] as const;
 
 const iconPeers = [ngIconsCore, ngIconsLucide] as const;
 const markdownPeers = [marked, highlightJs] as const;
 const collapsiblePeers = [spartanBrain] as const;
 const hoverCardPeers = [angularCdk, spartanBrain] as const;
 const commandDialogPeers = [angularCdk, spartanBrain] as const;
-const aiRuntimePeers = [aiSdkAngular, ai] as const;
+const aiRuntimePeers = [ai] as const;
+const dependencyGroupOrder: readonly DependencyGroup[] = [
+  'angular',
+  'styling',
+  'markdown',
+  'icons',
+  'ai-runtime',
+  'spartan',
+] as const;
 
 const registryEntries = [
   primitive({
@@ -115,6 +115,7 @@ const registryEntries = [
       'conversation-scroll-anchor.ts',
       'index.ts',
     ],
+    dependencies: [angularCore, tailwindMerge],
     tokens: ['layout', 'scroll'],
     relationships: [{ id: 'message', kind: 'composes' }],
   }),
@@ -132,7 +133,7 @@ const registryEntries = [
       'message-thumbs-up.ts',
       'index.ts',
     ],
-    peerAssumptions: aiRuntimePeers,
+    dependencies: [angularCore, cva, clsx, tailwindMerge, ...aiRuntimePeers],
     primitiveDependencies: ['markdown', 'code-block'],
     tokens: ['markdown', 'message-actions'],
   }),
@@ -151,8 +152,15 @@ const registryEntries = [
       'prompt-input.types.ts',
       'index.ts',
     ],
-    dependencies: iconPeers,
-    peerAssumptions: aiRuntimePeers,
+    dependencies: [
+      angularCommon,
+      angularCore,
+      angularForms,
+      cva,
+      tailwindMerge,
+      ...iconPeers,
+      ...aiRuntimePeers,
+    ],
     tokens: ['prompt-input'],
     optionalRelationships: [{ id: 'model-selector', kind: 'pairs-with' }],
   }),
@@ -161,7 +169,7 @@ const registryEntries = [
     title: 'Reasoning',
     description: 'Collapsible summarized reasoning with markdown content.',
     files: ['reasoning.ts', 'reasoning-content.ts', 'reasoning-trigger.ts', 'index.ts'],
-    dependencies: [...collapsiblePeers, ...iconPeers],
+    dependencies: [angularCore, tailwindMerge, ...collapsiblePeers, ...iconPeers],
     primitiveDependencies: ['markdown', 'code-block'],
     tokens: ['markdown', 'disclosure'],
   }),
@@ -170,8 +178,13 @@ const registryEntries = [
     title: 'Tool',
     description: 'AI SDK tool-call status, input, result, and state rendering.',
     files: ['tool.ts', 'tool-content.ts', 'tool-status.ts', 'tool-trigger.ts', 'index.ts'],
-    dependencies: [...collapsiblePeers, ...iconPeers],
-    peerAssumptions: aiRuntimePeers,
+    dependencies: [
+      angularCore,
+      tailwindMerge,
+      ...collapsiblePeers,
+      ...iconPeers,
+      ...aiRuntimePeers,
+    ],
     tokens: ['tool-status', 'disclosure'],
     optionalRelationships: [{ id: 'confirmation', kind: 'pairs-with' }],
   }),
@@ -181,7 +194,7 @@ const registryEntries = [
     title: 'Code Block',
     description: 'Syntax-highlighted code block with copy and download controls.',
     files: ['code-block.ts', 'index.ts'],
-    dependencies: iconPeers,
+    dependencies: [angularCommon, angularCore, tailwindMerge, ...iconPeers],
     primitiveDependencies: ['markdown'],
     tokens: ['code'],
   }),
@@ -190,7 +203,7 @@ const registryEntries = [
     title: 'Markdown',
     description: 'Markdown parsing, highlighting, and AI markdown content classes.',
     files: ['markdown.ts', 'markdown.scss', 'index.ts'],
-    dependencies: markdownPeers,
+    dependencies: [angularCore, ...markdownPeers],
     tokens: ['markdown', 'syntax-highlight'],
   }),
   primitive({
@@ -460,7 +473,9 @@ export function resolvePrimitivePlan(inputs: readonly string[]): ResolvedPrimiti
   const requestedSet = new Set<PrimitiveId>(requestedIds);
   const included = ordered.filter((entry) => !requestedSet.has(entry.id));
   const dependencies = resolvePackageDependencies(ordered);
-  const dependencyGroups = dedupe(dependencies.map((dependency) => dependency.group));
+  const dependencyGroups = sortDependencyGroups(
+    dedupe(dependencies.map((dependency) => dependency.group)),
+  );
 
   return {
     dependencyGroups,
@@ -753,7 +768,7 @@ function resolvePackageDependencies(
   const seen = new Set<string>();
 
   for (const primitiveEntry of primitives) {
-    for (const dependency of [...primitiveEntry.peerAssumptions, ...primitiveEntry.dependencies]) {
+    for (const dependency of [...primitiveEntry.dependencies, ...primitiveEntry.peerAssumptions]) {
       const key = `${dependency.section}:${dependency.name}`;
 
       if (seen.has(key)) {
@@ -790,6 +805,12 @@ function dedupeDependencies(
   }
 
   return result;
+}
+
+function sortDependencyGroups(groups: readonly DependencyGroup[]): readonly DependencyGroup[] {
+  return [...groups].sort(
+    (left, right) => dependencyGroupOrder.indexOf(left) - dependencyGroupOrder.indexOf(right),
+  );
 }
 
 function fail(message: string): never {
