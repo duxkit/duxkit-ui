@@ -1,4 +1,4 @@
-import { cp, mkdtemp, readdir, readFile, rm, writeFile } from 'node:fs/promises';
+import { chmod, cp, mkdir, mkdtemp, readdir, readFile, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { dirname, join, relative, resolve, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -7,10 +7,7 @@ import { runCli, type CliIo } from '../lib/cli.js';
 export type CliFixtureName = 'angular-cli-app' | 'nx-workspace';
 
 export type PackageDependencySection =
-  | 'dependencies'
-  | 'devDependencies'
-  | 'peerDependencies'
-  | 'optionalDependencies';
+  'dependencies' | 'devDependencies' | 'peerDependencies' | 'optionalDependencies';
 
 export interface FileChange {
   readonly path: string;
@@ -124,7 +121,10 @@ export class CliFixtureWorkspace {
     return resolvedPath;
   }
 
-  async run(argv: readonly string[]): Promise<CliFixtureCommandResult> {
+  async run(
+    argv: readonly string[],
+    environment: Readonly<Record<string, string>> = {},
+  ): Promise<CliFixtureCommandResult> {
     const sourceBefore = await snapshotWorkspace(this.sourceFixtureRoot);
     const before = await this.snapshot();
     let stderr = '';
@@ -143,13 +143,28 @@ export class CliFixtureWorkspace {
     };
 
     const previousCwd = process.cwd();
+    const previousEnvironment = new Map(
+      Object.keys(environment).map((key) => [key, process.env[key]] as const),
+    );
     let exitCode: number;
 
     try {
+      for (const [key, value] of Object.entries(environment)) {
+        process.env[key] = value;
+      }
+
       process.chdir(this.root);
       exitCode = await runCli(argv, io);
     } finally {
       process.chdir(previousCwd);
+
+      for (const [key, value] of previousEnvironment) {
+        if (value === undefined) {
+          delete process.env[key];
+        } else {
+          process.env[key] = value;
+        }
+      }
     }
 
     const after = await this.snapshot();
@@ -187,6 +202,13 @@ export class CliFixtureWorkspace {
 
   async writeText(path: string, text: string): Promise<void> {
     await writeFile(this.resolve(path), text);
+  }
+
+  async writeExecutable(path: string, text: string): Promise<void> {
+    const absolutePath = this.resolve(path);
+    await mkdir(dirname(absolutePath), { recursive: true });
+    await writeFile(absolutePath, text);
+    await chmod(absolutePath, 0o755);
   }
 }
 

@@ -1,6 +1,7 @@
 import { resolve } from 'node:path';
 import type { CliIo } from './cli.js';
 import { CliCommandError } from './cli-errors.js';
+import { applyAddPlan, AddApplyError, renderAddImportPath } from './add-apply.js';
 import { createAddPlan, type AddPlan, type AddPlannerOptions } from './add-plan.js';
 
 export interface AddCommandOptions extends AddPlannerOptions {
@@ -13,26 +14,135 @@ export async function runAddCommand(
   options: AddCommandOptions,
   io: CliIo,
 ): Promise<void> {
-  if (options.dryRun !== true) {
-    io.stderr.write('Add mutations are not implemented yet. Rerun with --dry-run.\n');
-    throw new CliCommandError(1);
-  }
-
   const plan = await createAddPlan(inputs, options, resolve(options.cwd ?? process.cwd()));
 
-  if (options.json === true) {
-    io.stdout.write(`${JSON.stringify(plan, null, 2)}\n`);
-  } else {
-    io.stdout.write(renderHumanAdd(plan));
-  }
-
   if (plan.status === 'blocked') {
+    writePlanOutput(plan, options.json === true, io);
+
     if (options.json !== true && plan.nextSteps.length > 0) {
       io.stderr.write(`${plan.nextSteps.join('\n')}\n`);
     }
 
     throw new CliCommandError(1);
   }
+
+  if (options.dryRun === true) {
+    writePlanOutput(plan, options.json === true, io);
+    return;
+  }
+
+  if (plan.plannedChanges.length > 0 && options.yes !== true && !isInteractive()) {
+    const blockedPlan = {
+      ...plan,
+      ambiguities: [
+        ...plan.ambiguities,
+        'Run add interactively or pass --yes before allowing writes in a non-interactive terminal.',
+      ],
+      status: 'blocked' as const,
+    };
+    writePlanOutput(blockedPlan, options.json === true, io);
+
+    if (options.json !== true) {
+      io.stderr.write('Pass --yes before allowing add writes in a non-interactive terminal.\n');
+    }
+
+    throw new CliCommandError(1);
+  }
+
+  if (options.json !== true) {
+    io.stdout.write(renderHumanAdd(plan));
+  }
+
+  try {
+    const result = await applyAddPlan(plan, {
+      noInstall: options.noInstall === true || options.install === false,
+    });
+    const appliedPlan = {
+      ...plan,
+      applied: true,
+      completedPrimitives: result.completedPrimitives,
+      completedSteps: result.completedSteps,
+      skippedInstall: result.skippedInstall,
+      status: 'applied' as const,
+    };
+
+    if (options.json === true) {
+      io.stdout.write(`${JSON.stringify(appliedPlan, null, 2)}\n`);
+    } else {
+      io.stdout.write(renderAddSuccess(plan));
+    }
+  } catch (error) {
+    if (!(error instanceof AddApplyError)) {
+      throw error;
+    }
+
+    const failedPlan = {
+      ...plan,
+      applied: false,
+      completedSteps: error.completedSteps,
+      error: error.message,
+      pendingSteps: error.pendingSteps,
+      status: 'failed' as const,
+    };
+
+    if (options.json === true) {
+      io.stdout.write(`${JSON.stringify(failedPlan, null, 2)}\n`);
+    } else {
+      io.stderr.write(`${renderAddFailure(error)}\n`);
+    }
+
+    throw new CliCommandError(1);
+  }
+}
+
+function writePlanOutput(plan: AddPlan, json: boolean, io: CliIo): void {
+  if (json) {
+    io.stdout.write(`${JSON.stringify(plan, null, 2)}\n`);
+  } else {
+    io.stdout.write(renderHumanAdd(plan));
+  }
+}
+
+function renderAddSuccess(plan: AddPlan): string {
+  const imports = plan.requested.map(
+    (primitive) =>
+      `  import * as ${toPascalCase(primitive)}Primitive from '${renderAddImportPath(plan, primitive)}';`,
+  );
+
+  return (
+    [
+      'Add applied.',
+      '',
+      'Import examples',
+      ...imports,
+      '',
+      'Copied Duxkit AI component source into your app.',
+      'These files are yours to edit. Rerun with --dry-run before overwriting customized files.',
+      'Runtime behavior remains provided by installed Duxkit, Angular, and supporting packages.',
+    ].join('\n') + '\n'
+  );
+}
+
+function renderAddFailure(error: AddApplyError): string {
+  const partial = error.completedSteps.length > 0 ? 'Partial changes were made.' : 'Add failed.';
+
+  return [
+    partial,
+    `  completed: ${error.completedSteps.length === 0 ? 'None' : error.completedSteps.join(', ')}`,
+    `  pending: ${error.pendingSteps.length === 0 ? 'None' : error.pendingSteps.join(', ')}`,
+    `  error: ${error.message}`,
+  ].join('\n');
+}
+
+function toPascalCase(value: string): string {
+  return value
+    .split('-')
+    .map((part) => `${part[0]?.toUpperCase() ?? ''}${part.slice(1)}`)
+    .join('');
+}
+
+function isInteractive(): boolean {
+  return process.stdin.isTTY === true && process.stdout.isTTY === true;
 }
 
 function renderHumanAdd(plan: AddPlan): string {

@@ -249,10 +249,13 @@ export async function createAddPlan(
     (file) =>
       file.status === 'customized' || file.status === 'foreign' || file.status === 'blocked',
   );
+  const unresolvedConflicts = conflicts.filter(
+    (file) => !(options.force === true && file.status === 'customized'),
+  );
 
-  if (conflicts.length > 0) {
+  if (unresolvedConflicts.length > 0) {
     errors.push(
-      `${conflicts.length} generated file target(s) need attention. Customized and foreign files are never overwritten automatically.`,
+      `${unresolvedConflicts.length} generated file target(s) need attention. Customized files require --force and foreign files are never overwritten.`,
     );
   }
 
@@ -272,6 +275,7 @@ export async function createAddPlan(
     files,
     stylesheetChanges,
     stylesheetPlan,
+    options.force === true,
   );
 
   if (skipInstall && missingPackages.length > 0) {
@@ -719,6 +723,7 @@ function createPlannedChanges(
   files: readonly AddFilePlan[],
   stylesheetChanges: readonly AddFilePlan[],
   stylesheetPlan: AddStylesheetPlan | null,
+  force: boolean,
 ): readonly AddPlannedChange[] {
   const changes: AddPlannedChange[] = [];
 
@@ -743,22 +748,22 @@ function createPlannedChanges(
 
   changes.push(
     ...files
-      .filter((file) => file.status === 'create')
+      .filter((file) => isWritableAddFile(force, file))
       .map((file) => ({
-        action: 'create' as const,
+        action: file.status === 'create' ? ('create' as const) : ('update' as const),
         category: 'file' as const,
-        detail: `Create ${file.primitive}/${file.file}.`,
+        detail: `${file.status === 'create' ? 'Create' : 'Update'} ${file.primitive}/${file.file}.`,
         path: file.path,
       })),
   );
 
   changes.push(
     ...stylesheetChanges
-      .filter((file) => file.status === 'create')
+      .filter((file) => isWritableAddFile(force, file))
       .map((file) => ({
-        action: 'create' as const,
+        action: file.status === 'create' ? ('create' as const) : ('update' as const),
         category: 'stylesheet' as const,
-        detail: `Create generated stylesheet ${file.path}.`,
+        detail: `${file.status === 'create' ? 'Create' : 'Update'} generated stylesheet ${file.path}.`,
         path: file.path,
       })),
   );
@@ -853,7 +858,11 @@ function formatRelativeCssPath(fromDirectory: string, toPath: string): string {
   return path.startsWith('.') ? path : `./${path}`;
 }
 
-function stylesheetHasSource(stylesheetText: string, sourcePath: string): boolean {
+export function isWritableAddFile(force: boolean, file: AddFilePlan): boolean {
+  return file.status === 'create' || (force && file.status === 'customized');
+}
+
+export function stylesheetHasSource(stylesheetText: string, sourcePath: string): boolean {
   const normalizedSourcePath = normalizeCssPath(sourcePath);
 
   return [...stylesheetText.matchAll(/@source\s+["']([^"']+)["']/g)].some((match) =>
@@ -912,11 +921,11 @@ function formatError(error: unknown): string {
   return error instanceof Error ? error.message : String(error);
 }
 
-function isRecord(value: unknown): value is Record<string, unknown> {
+export function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null && !Array.isArray(value);
 }
 
-async function readJsonRecord(path: string): Promise<Record<string, unknown> | null> {
+export async function readJsonRecord(path: string): Promise<Record<string, unknown> | null> {
   try {
     const parsed: unknown = JSON.parse(await readFile(path, 'utf8'));
 

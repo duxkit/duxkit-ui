@@ -1,3 +1,4 @@
+import { readFile } from 'node:fs/promises';
 import { listPrimitives, type PrimitiveId } from './primitive-registry.js';
 
 export interface PrimitiveTemplateFile {
@@ -32,4 +33,19 @@ export function listPrimitiveTemplates(): readonly PrimitiveTemplateFile[] {
 
 export function hasLaunchTemplate(id: PrimitiveId): boolean {
   return launchTemplatePrimitiveIdSet.has(id);
+}
+
+export async function readPrimitiveTemplate(
+  primitiveId: PrimitiveId,
+  file: string,
+): Promise<string> {
+  const template = listPrimitiveTemplates().find(
+    (candidate) => candidate.primitiveId === primitiveId && candidate.file === file,
+  );
+
+  if (template === undefined) {
+    throw new Error(`The bundled template for ${primitiveId}/${file} is missing.`);
+  }
+
+  return readFile(new URL(`./${template.templatePath}`, import.meta.url), 'utf8');
 }

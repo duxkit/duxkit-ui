@@ -321,6 +321,134 @@ describe('CLI fixture harness', () => {
     });
   });
 
+  it('applies launch templates, config, and ownership guidance without installation', async () => {
+    await withCliFixtureWorkspace('angular-cli-app', async (workspace) => {
+      const result = await workspace.run([
+        'add',
+        'message',
+        '--yes',
+        '--no-install',
+        '--package-manager',
+        'npm',
+      ]);
+
+      result.assertExitCode(0);
+      expect(result.stderr).toBe('');
+      expect(result.packageChanges).toEqual([]);
+      result.assertFileChanged('src/app/components/ai/message/message.ts');
+      result.assertFileChanged('src/app/components/ai/markdown/markdown.scss');
+      result.assertFileChanged('duxkit-ai.json');
+      expect(JSON.parse(await workspace.readText('duxkit-ai.json'))).toEqual(
+        expect.objectContaining({
+          primitives: {
+            'code-block': '0.1.0',
+            markdown: '0.1.0',
+            message: '0.1.0',
+          },
+        }),
+      );
+      expect(result.stdout).toContain('Import examples');
+      expect(result.stdout).toContain('./components/ai/message');
+      expect(result.stdout).toContain('These files are yours to edit.');
+      result.assertSourceFixtureUnchanged();
+    });
+  });
+
+  it('writes a planned global @source after generated files', async () => {
+    await withCliFixtureWorkspace('angular-cli-app', async (workspace) => {
+      const result = await workspace.run([
+        'add',
+        'message',
+        '--components-path',
+        'generated/ai',
+        '--yes',
+        '--no-install',
+        '--package-manager',
+        'npm',
+      ]);
+
+      result.assertExitCode(0);
+      result.assertFileChanged('src/styles.css');
+      expect(await workspace.readText('src/styles.css')).toContain("@source '../generated/ai';");
+      result.assertSourceFixtureUnchanged();
+    });
+  });
+
+  it('installs dependencies before writing generated files', async () => {
+    await withCliFixtureWorkspace('angular-cli-app', async (workspace) => {
+      await workspace.writeExecutable(
+        '.test-bin/npm',
+        [
+          '#!/bin/sh',
+          'if [ -e "$DUXKIT_ROOT/src/app/components/ai" ]; then exit 17; fi',
+          'printf "%s\\n" "$@" > "$DUXKIT_LOG"',
+          'touch "$DUXKIT_MARKER"',
+        ].join('\n') + '\n',
+      );
+      const path = `${workspace.resolve('.test-bin')}:${process.env.PATH ?? ''}`;
+      const result = await workspace.run(['add', 'message', '--yes', '--package-manager', 'npm'], {
+        DUXKIT_LOG: workspace.resolve('.test-bin/install.log'),
+        DUXKIT_MARKER: workspace.resolve('.test-bin/install-complete'),
+        DUXKIT_ROOT: workspace.root,
+        PATH: path,
+      });
+
+      result.assertExitCode(0);
+      expect(await workspace.readText('.test-bin/install-complete')).toBe('');
+      expect(await workspace.readText('.test-bin/install.log')).toContain('install');
+      expect(await workspace.readText('.test-bin/install.log')).toContain('ai@^6.0.207');
+      result.assertFileChanged('src/app/components/ai/message/message.ts');
+      result.assertSourceFixtureUnchanged();
+    });
+  });
+
+  it('leaves generated source, config, and stylesheet unchanged when installation fails', async () => {
+    await withCliFixtureWorkspace('angular-cli-app', async (workspace) => {
+      await workspace.writeExecutable('.test-bin/npm', '#!/bin/sh\nexit 23\n');
+      const before = await workspace.snapshot();
+      const result = await workspace.run(['add', 'message', '--yes', '--package-manager', 'npm'], {
+        DUXKIT_ROOT: workspace.root,
+        PATH: `${workspace.resolve('.test-bin')}:${process.env.PATH ?? ''}`,
+      });
+
+      result.assertExitCode(1);
+      result.assertStderrIncludes('Add failed.');
+      expect(result.fileChanges).toEqual([]);
+      expect(result.packageChanges).toEqual([]);
+      expect((await workspace.snapshot()).files).toEqual(before.files);
+      result.assertSourceFixtureUnchanged();
+    });
+  });
+
+  it('reports completed and pending steps when a later generated write fails', async () => {
+    await withCliFixtureWorkspace('angular-cli-app', async (workspace) => {
+      await workspace.writeExecutable(
+        '.test-bin/npm',
+        [
+          '#!/bin/sh',
+          'mkdir -p "$DUXKIT_ROOT/src/app/components/ai/message/message-action-classes.ts"',
+        ].join('\n') + '\n',
+      );
+      const result = await workspace.run(['add', 'message', '--yes', '--package-manager', 'npm'], {
+        DUXKIT_ROOT: workspace.root,
+        PATH: `${workspace.resolve('.test-bin')}:${process.env.PATH ?? ''}`,
+      });
+
+      result.assertExitCode(1);
+      result.assertStderrIncludes('Partial changes were made.');
+      result.assertStderrIncludes('primitive markdown files written');
+      result.assertStderrIncludes('primitive message files written');
+      result.assertFileChanged('src/app/components/ai/markdown/markdown.ts');
+      result.assertFileUnchanged('duxkit-ai.json');
+      expect(
+        (
+          await stat(workspace.resolve('src/app/components/ai/message/message-action-classes.ts'))
+        ).isDirectory(),
+      ).toBe(true);
+      result.assertSourceFixtureUnchanged();
+    });
+  });
+
   it('plans requested primitives, transitive dependencies, packages, and templates deterministically', async () => {
     await withCliFixtureWorkspace('angular-cli-app', async (workspace) => {
       const argv = [
