@@ -1,4 +1,4 @@
-import { chmod, copyFile, cp, mkdir, readFile, writeFile } from 'node:fs/promises';
+import { chmod, copyFile, cp, mkdir, readFile, rm, symlink, writeFile } from 'node:fs/promises';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -24,4 +24,11 @@ await copyFile(join(packageRoot, 'README.md'), join(outputRoot, 'README.md'));
 await cp(join(packageRoot, 'src/lib/templates'), join(outputRoot, 'lib/templates'), {
   recursive: true,
 });
+
+// Keep the uninstalled build runnable from the workspace root. Published packages
+// resolve this dependency through package installation instead.
+const dependencyRoot = join(outputRoot, 'node_modules');
+await mkdir(dependencyRoot, { recursive: true });
+await rm(join(dependencyRoot, 'commander'), { force: true, recursive: true });
+await symlink('../../../projects/cli/node_modules/commander', join(dependencyRoot, 'commander'));
 await chmod(join(outputRoot, 'index.js'), 0o755);
