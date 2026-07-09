@@ -1,4 +1,5 @@
 import { Command, CommanderError, InvalidArgumentError } from 'commander';
+import { runAddCommand, type AddCommandOptions } from './add-command.js';
 import { CliCommandError } from './cli-errors.js';
 import { runInitCommand, type InitCommandOptions, isInitMode } from './init-command.js';
 import { runInspectCommand, type InspectCommandOptions } from './inspect-command.js';
@@ -12,15 +13,6 @@ export interface CliOutput {
 export interface CliIo {
   readonly stdout: CliOutput;
   readonly stderr: CliOutput;
-}
-
-const supportedCommands = ['init', 'add', 'list', 'inspect'] as const;
-type SupportedCommand = (typeof supportedCommands)[number];
-
-class ScaffoldedCommandError extends Error {
-  constructor(readonly commandName: SupportedCommand) {
-    super(`duxkit-ui ${commandName} is scaffolded but not implemented yet.`);
-  }
 }
 
 function parseTokenMode(value: string): 'add' | 'skip' | 'require-existing' {
@@ -45,10 +37,6 @@ function parsePackageManager(value: string): Exclude<PackageManagerName, 'unknow
   }
 
   throw new InvalidArgumentError("expected 'npm', 'pnpm', 'yarn', or 'bun'");
-}
-
-function failUntilImplemented(commandName: SupportedCommand): never {
-  throw new ScaffoldedCommandError(commandName);
 }
 
 function configureCommand(command: Command): Command {
@@ -110,12 +98,19 @@ export function createCli(io: CliIo): Command {
     .option('--cwd <path>', 'Workspace directory to inspect.')
     .option('--project <name>', 'Angular application project to configure.')
     .option('--components-path <path>', 'Destination directory for generated AI primitives.')
+    .option(
+      '--package-manager <manager>',
+      'Package manager to use for the planned install command.',
+      parsePackageManager,
+    )
     .option('--dry-run', 'Plan changes without writing files or installing packages.')
     .option('--json', 'Print machine-readable JSON output.')
     .option('--yes', 'Accept safe defaults and skip final confirmation.')
     .option('--no-install', 'Do not install missing dependencies.')
     .option('--force', 'Overwrite Duxkit-owned generated files where safe.')
-    .action(() => failUntilImplemented('add'));
+    .action((primitives: readonly string[], options: AddCommandOptions) =>
+      runAddCommand(primitives, options, io),
+    );
 
   configureCommand(program.command('list'))
     .description('List Duxkit AI primitives.')
@@ -140,11 +135,6 @@ export async function runCli(argv: readonly string[], io: CliIo): Promise<number
     await program.parseAsync([...argv], { from: 'user' });
     return 0;
   } catch (error) {
-    if (error instanceof ScaffoldedCommandError) {
-      io.stderr.write(`${error.message}\n`);
-      return 1;
-    }
-
     if (error instanceof CommanderError) {
       return error.exitCode;
     }

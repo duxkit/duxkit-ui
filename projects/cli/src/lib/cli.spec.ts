@@ -56,9 +56,11 @@ describe('duxkit-ui command shell', () => {
     const result = await run([command, ...args]);
 
     expect(result.exitCode).toBe(1);
-    expect(result.stderr).toContain(`duxkit-ui ${command} is scaffolded but not implemented yet.`);
+    expect(result.stderr).toBe('');
     expect(result.stderr).not.toContain('unknown option');
-    expect(result.stdout).toBe('');
+    expect(JSON.parse(result.stdout)).toEqual(
+      expect.objectContaining({ command: 'add', status: 'blocked' }),
+    );
   });
 
   it('accepts init planning and mutation flags', async () => {

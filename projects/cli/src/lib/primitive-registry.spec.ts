@@ -42,10 +42,13 @@ describe('primitive registry', () => {
 
   it('normalizes exact ids and documented aliases only', () => {
     expect(normalizePrimitiveInput('message')).toBe('message');
+    expect(normalizePrimitiveInput('Message')).toBe('message');
+    expect(normalizePrimitiveInput('prompt-input')).toBe('prompt-input');
+    expect(normalizePrimitiveInput('Prompt Input')).toBe('prompt-input');
     expect(normalizePrimitiveInput('prompt')).toBe('prompt-input');
     expect(normalizePrimitiveInput('cot')).toBe('chain-of-thought');
-    expect(() => normalizePrimitiveInput('Message')).toThrow(PrimitiveRegistryError);
-    expect(() => normalizePrimitiveInput('promptInput')).toThrow(PrimitiveRegistryError);
+    expect(normalizePrimitiveInput('promptInput')).toBe('prompt-input');
+    expect(() => normalizePrimitiveInput('mesage')).toThrow(/Did you mean "message"/);
   });
 
   it('resolves primitive dependencies before dependents without duplicating user requests', () => {

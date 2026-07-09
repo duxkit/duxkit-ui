@@ -313,9 +313,236 @@ describe('CLI fixture harness', () => {
     await withCliFixtureWorkspace('nx-workspace', async (workspace) => {
       const result = await workspace.runDryRun(['add', 'message', '--no-install']);
 
-      result.assertExitCode(1);
+      result.assertExitCode(0);
       result.assertReadOnly();
       result.assertFileUnchanged('package.json');
+      result.assertStdoutIncludes('Requested primitives');
+      result.assertSourceFixtureUnchanged();
+    });
+  });
+
+  it('plans requested primitives, transitive dependencies, packages, and templates deterministically', async () => {
+    await withCliFixtureWorkspace('angular-cli-app', async (workspace) => {
+      const argv = [
+        'add',
+        'Message',
+        '--dry-run',
+        '--json',
+        '--package-manager',
+        'npm',
+        '--no-install',
+      ] as const;
+      const first = await workspace.run(argv);
+      const second = await workspace.run(argv);
+      const parsed = JSON.parse(first.stdout) as {
+        readonly componentDestination: string;
+        readonly config: { readonly action: string };
+        readonly files: readonly { readonly status: string }[];
+        readonly included: readonly string[];
+        readonly packages: {
+          readonly installCommands: readonly string[];
+          readonly missing: readonly { readonly name: string }[];
+        };
+        readonly requested: readonly string[];
+        readonly status: string;
+        readonly stylesheetChanges: readonly { readonly file: string }[];
+      };
+
+      first.assertExitCode(0);
+      second.assertExitCode(0);
+      expect(first.stderr).toBe('');
+      expect(second.stderr).toBe('');
+      expect(first.stdout).toBe(second.stdout);
+      expect(parsed.status).toBe('ready');
+      expect(parsed.requested).toEqual(['message']);
+      expect(parsed.included).toEqual(['markdown', 'code-block']);
+      expect(parsed.componentDestination).toBe('src/app/components/ai');
+      expect(parsed.config.action).toBe('create');
+      expect(parsed.files).toHaveLength(13);
+      expect(parsed.files.every((file) => file.status === 'create')).toBe(true);
+      expect(parsed.stylesheetChanges).toEqual([
+        expect.objectContaining({ file: 'markdown.scss' }),
+      ]);
+      expect(parsed.packages.missing).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({ name: 'ai' }),
+          expect.objectContaining({ name: 'marked' }),
+          expect.objectContaining({ name: 'highlight.js' }),
+        ]),
+      );
+      expect(parsed.packages.missing).not.toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({ name: 'tailwindcss' }),
+          expect.objectContaining({ name: 'tw-animate-css' }),
+        ]),
+      );
+      expect(parsed.packages.installCommands.length).toBeGreaterThan(0);
+      first.assertReadOnly();
+      first.assertSourceFixtureUnchanged();
+    });
+  });
+
+  it('uses the configured Nx component destination and resolves aliases', async () => {
+    await withCliFixtureWorkspace('nx-workspace', async (workspace) => {
+      const result = await workspace.run(['add', 'prompt', '--dry-run', '--json', '--no-install']);
+      const parsed = JSON.parse(result.stdout) as {
+        readonly componentDestination: string;
+        readonly requested: readonly string[];
+        readonly status: string;
+      };
+
+      result.assertExitCode(0);
+      expect(parsed).toEqual(
+        expect.objectContaining({
+          componentDestination: 'apps/chat/src/app/components/ai',
+          requested: ['prompt-input'],
+          status: 'ready',
+        }),
+      );
+      result.assertReadOnly();
+      result.assertSourceFixtureUnchanged();
+    });
+  });
+
+  it('plans a deduplicated global @source change when the destination is outside the app source root', async () => {
+    await withCliFixtureWorkspace('angular-cli-app', async (workspace) => {
+      const result = await workspace.run([
+        'add',
+        'message',
+        '--components-path',
+        'generated/ai',
+        '--package-manager',
+        'npm',
+        '--dry-run',
+        '--json',
+        '--no-install',
+      ]);
+      const parsed = JSON.parse(result.stdout) as {
+        readonly plannedChanges: readonly {
+          readonly category: string;
+          readonly detail: string;
+        }[];
+        readonly stylesheetPlan: {
+          readonly action: string;
+          readonly path: string | null;
+          readonly sourcePath: string | null;
+        };
+      };
+
+      result.assertExitCode(0);
+      expect(parsed.stylesheetPlan).toEqual({
+        action: 'add',
+        path: 'src/styles.css',
+        sourcePath: '../generated/ai',
+      });
+      expect(parsed.plannedChanges).toContainEqual(
+        expect.objectContaining({
+          category: 'stylesheet',
+          detail: "Add @source '../generated/ai' to src/styles.css.",
+        }),
+      );
+      result.assertReadOnly();
+      result.assertSourceFixtureUnchanged();
+    });
+  });
+
+  it('reports nearest primitive suggestions in human and JSON-safe blocked plans', async () => {
+    await withCliFixtureWorkspace('angular-cli-app', async (workspace) => {
+      const result = await workspace.run(['add', 'mesage', '--dry-run', '--json', '--no-install']);
+      const parsed = JSON.parse(result.stdout) as {
+        readonly errors: readonly string[];
+        readonly status: string;
+      };
+
+      result.assertExitCode(1);
+      expect(result.stderr).toBe('');
+      expect(parsed.status).toBe('blocked');
+      expect(parsed.errors.join(' ')).toContain('Did you mean "message"?');
+      expect(parsed.errors.join(' ')).toContain('duxkit-ui list');
+      result.assertReadOnly();
+      result.assertSourceFixtureUnchanged();
+    });
+  });
+
+  it('classifies customized, foreign, and blocked targets before any write', async () => {
+    await withCliFixtureWorkspace('angular-cli-app', async (workspace) => {
+      await mkdir(workspace.resolve('src/app/components/ai/message'), { recursive: true });
+      await mkdir(workspace.resolve('src/app/components/ai/markdown'), { recursive: true });
+      await workspace.writeText(
+        'duxkit-ai.json',
+        JSON.stringify(
+          {
+            componentsPath: 'src/app/components/ai',
+            primitives: { message: '0.1.0' },
+          },
+          null,
+          2,
+        ),
+      );
+      await workspace.writeText(
+        'src/app/components/ai/message/message.ts',
+        'export const customized = true;\n',
+      );
+      await workspace.writeText(
+        'src/app/components/ai/markdown/markdown.ts',
+        'export const foreign = true;\n',
+      );
+
+      const result = await workspace.run(['add', 'message', '--dry-run', '--json', '--no-install']);
+      const parsed = JSON.parse(result.stdout) as {
+        readonly conflicts: readonly { readonly primitive: string; readonly status: string }[];
+        readonly files: readonly {
+          readonly file: string;
+          readonly primitive: string;
+          readonly status: string;
+        }[];
+        readonly status: string;
+      };
+
+      result.assertExitCode(1);
+      expect(parsed.status).toBe('blocked');
+      expect(parsed.conflicts).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({
+            file: 'message.ts',
+            primitive: 'message',
+            status: 'customized',
+          }),
+          expect.objectContaining({
+            file: 'markdown.ts',
+            primitive: 'markdown',
+            status: 'foreign',
+          }),
+        ]),
+      );
+      expect(parsed.files).toEqual(
+        expect.arrayContaining([expect.objectContaining({ file: 'index.ts', status: 'create' })]),
+      );
+      result.assertReadOnly();
+      result.assertSourceFixtureUnchanged();
+    });
+  });
+
+  it('blocks unsafe component destinations during preflight', async () => {
+    await withCliFixtureWorkspace('nx-workspace', async (workspace) => {
+      const result = await workspace.run([
+        'add',
+        'message',
+        '--components-path',
+        '../outside',
+        '--dry-run',
+        '--json',
+        '--no-install',
+      ]);
+      const parsed = JSON.parse(result.stdout) as {
+        readonly files: readonly { readonly status: string }[];
+        readonly status: string;
+      };
+
+      result.assertExitCode(1);
+      expect(parsed.status).toBe('blocked');
+      expect(parsed.files.some((file) => file.status === 'blocked')).toBe(true);
+      result.assertReadOnly();
       result.assertSourceFixtureUnchanged();
     });
   });

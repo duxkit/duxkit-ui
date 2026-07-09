@@ -444,19 +444,72 @@ export function listPrimitives(): readonly PrimitiveRegistryEntry[] {
 }
 
 export function normalizePrimitiveInput(input: string): PrimitiveId {
-  const byAlias = primitiveAliasMap.get(input);
+  const normalized = normalizePrimitiveName(input);
+  const byAlias = primitiveAliasMap.get(normalized);
 
   if (byAlias !== undefined) {
     return byAlias;
   }
 
-  if (primitiveIdSet.has(input)) {
-    return input as PrimitiveId;
+  if (primitiveIdSet.has(normalized)) {
+    return normalized as PrimitiveId;
   }
 
+  const suggestions = nearestPrimitiveSuggestions(normalized);
+  const suggestionText =
+    suggestions.length === 0
+      ? ''
+      : ` Did you mean ${suggestions.map((value) => `"${value}"`).join(', ')}?`;
+
   throw new PrimitiveRegistryError(
-    `Unknown primitive "${input}". Run "duxkit-ui list" to see available primitives.`,
+    `Unknown primitive "${input}".${suggestionText} Run "duxkit-ui list" to see available primitives.`,
   );
+}
+
+function normalizePrimitiveName(input: string): string {
+  return input
+    .trim()
+    .replace(/([a-z0-9])([A-Z])/g, '$1-$2')
+    .replace(/[\s_]+/g, '-')
+    .toLowerCase();
+}
+
+function nearestPrimitiveSuggestions(input: string): readonly string[] {
+  const candidates = [...new Set([...primitiveIds, ...primitiveAliasMap.keys()])];
+  const threshold = Math.max(2, Math.floor(input.length / 2));
+
+  return candidates
+    .map((candidate) => ({ candidate, distance: editDistance(input, candidate) }))
+    .filter(({ distance }) => distance <= threshold)
+    .sort(
+      (left, right) =>
+        left.distance - right.distance || left.candidate.localeCompare(right.candidate),
+    )
+    .slice(0, 3)
+    .map(({ candidate }) => candidate);
+}
+
+function editDistance(left: string, right: string): number {
+  const distances = Array.from({ length: right.length + 1 }, (_, index) => index);
+
+  for (let leftIndex = 1; leftIndex <= left.length; leftIndex += 1) {
+    let diagonal = distances[0];
+    distances[0] = leftIndex;
+
+    for (let rightIndex = 1; rightIndex <= right.length; rightIndex += 1) {
+      const previous = distances[rightIndex];
+      const substitutionCost = left[leftIndex - 1] === right[rightIndex - 1] ? 0 : 1;
+
+      distances[rightIndex] = Math.min(
+        distances[rightIndex] + 1,
+        distances[rightIndex - 1] + 1,
+        diagonal + substitutionCost,
+      );
+      diagonal = previous;
+    }
+  }
+
+  return distances[right.length] ?? left.length;
 }
 
 export function resolvePrimitivePlan(inputs: readonly string[]): ResolvedPrimitivePlan {
