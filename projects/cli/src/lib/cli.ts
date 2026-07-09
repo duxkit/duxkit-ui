@@ -1,6 +1,9 @@
 import { Command, CommanderError, InvalidArgumentError } from 'commander';
+import { CliCommandError } from './cli-errors.js';
+import { runInitCommand, type InitCommandOptions, isInitMode } from './init-command.js';
 import { runInspectCommand, type InspectCommandOptions } from './inspect-command.js';
 import { runListCommand, type ListCommandOptions } from './list-command.js';
+import type { PackageManagerName } from './workspace-state.js';
 
 export interface CliOutput {
   write(chunk: string): void;
@@ -20,12 +23,28 @@ class ScaffoldedCommandError extends Error {
   }
 }
 
-function parseTokenMode(value: string): 'add' | 'skip' {
-  if (value === 'add' || value === 'skip') {
+function parseTokenMode(value: string): 'add' | 'skip' | 'require-existing' {
+  if (isInitMode(value)) {
     return value;
   }
 
-  throw new InvalidArgumentError("expected 'add' or 'skip'");
+  throw new InvalidArgumentError("expected 'add', 'skip', or 'require-existing'");
+}
+
+function parseInitMode(value: string): 'add' | 'skip' | 'require-existing' {
+  if (isInitMode(value)) {
+    return value;
+  }
+
+  throw new InvalidArgumentError("expected 'add', 'skip', or 'require-existing'");
+}
+
+function parsePackageManager(value: string): Exclude<PackageManagerName, 'unknown'> {
+  if (value === 'npm' || value === 'pnpm' || value === 'yarn' || value === 'bun') {
+    return value;
+  }
+
+  throw new InvalidArgumentError("expected 'npm', 'pnpm', 'yarn', or 'bun'");
 }
 
 function failUntilImplemented(commandName: SupportedCommand): never {
@@ -57,12 +76,22 @@ export function createCli(io: CliIo): Command {
     .option('--stylesheet <path>', 'Global stylesheet to configure.')
     .option('--components-path <path>', 'Destination directory for generated AI primitives.')
     .option('--style <language>', 'Generated component style language.')
-    .option('--tokens <mode>', "Theme token handling: 'add' or 'skip'.", parseTokenMode)
+    .option('--tokens <mode>', "Theme token handling: 'add', 'skip', or 'require-existing'.", parseTokenMode)
+    .option('--tailwind <mode>', "Tailwind handling: 'add', 'skip', or 'require-existing'.", parseInitMode)
+    .option('--postcss <mode>', "PostCSS handling: 'add', 'skip', or 'require-existing'.", parseInitMode)
+    .option('--package-manager <manager>', 'Package manager to use for the planned install command.', parsePackageManager)
     .option('--dry-run', 'Plan changes without writing files or installing packages.')
     .option('--json', 'Print machine-readable JSON output.')
     .option('--yes', 'Accept safe defaults and skip final confirmation.')
+    .option('--force', 'Allow explicit init flags to replace conflicting config values.')
     .option('--no-install', 'Do not install missing dependencies.')
-    .action(() => failUntilImplemented('init'));
+    .action(async (options: InitCommandOptions) => {
+      if (options.dryRun !== true) {
+        failUntilImplemented('init');
+      }
+
+      await runInitCommand(options, io);
+    });
 
   configureCommand(program.command('add'))
     .description('Add one or more Duxkit AI primitives to the configured workspace.')
@@ -107,6 +136,10 @@ export async function runCli(argv: readonly string[], io: CliIo): Promise<number
     }
 
     if (error instanceof CommanderError) {
+      return error.exitCode;
+    }
+
+    if (error instanceof CliCommandError) {
       return error.exitCode;
     }
 

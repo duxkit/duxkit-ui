@@ -3,6 +3,116 @@ import { describe, expect, it } from 'vitest';
 import { diffSnapshots, withCliFixtureWorkspace } from './cli-fixture-harness.js';
 
 describe('CLI fixture harness', () => {
+  it.each(['angular-cli-app', 'nx-workspace'] as const)(
+    'plans a complete read-only init for the %s fixture',
+    async (fixtureName) => {
+      await withCliFixtureWorkspace(fixtureName, async (workspace) => {
+        const result = await workspace.run([
+          'init',
+          '--dry-run',
+          '--json',
+          '--package-manager',
+          'npm',
+          '--tokens',
+          'add',
+        ]);
+        const parsed = JSON.parse(result.stdout) as {
+          readonly packageManager: string;
+          readonly plannedChanges: readonly { readonly category: string }[];
+          readonly status: string;
+          readonly packages: { readonly missing: readonly { readonly name: string }[] };
+          readonly postcss: { readonly action: string } | null;
+          readonly tailwind: { readonly action: string } | null;
+          readonly tokens: { readonly action: string } | null;
+        };
+
+        result.assertExitCode(0);
+        expect(result.stderr).toBe('');
+        expect(parsed.status).toBe('ready');
+        expect(parsed.packageManager).toBe('npm');
+        expect(parsed.plannedChanges.map((change) => change.category)).toEqual(
+          expect.arrayContaining([
+            'config',
+            'directory',
+            'package',
+            'postcss',
+            'tailwind',
+            'tokens',
+          ]),
+        );
+        expect(parsed.packages.missing).toEqual(
+          expect.arrayContaining([
+            expect.objectContaining({ name: '@spartan-ng/brain' }),
+            expect.objectContaining({ name: 'tw-animate-css' }),
+            expect.objectContaining({ name: 'tailwindcss' }),
+            expect.objectContaining({ name: '@tailwindcss/postcss' }),
+          ]),
+        );
+        expect(parsed.postcss?.action).toBe('create');
+        expect(parsed.tailwind?.action).toBe('add');
+        expect(parsed.tokens?.action).toBe('add');
+        result.assertReadOnly();
+        result.assertSourceFixtureUnchanged();
+      });
+    },
+  );
+
+  it('keeps blocked init JSON machine-readable and names missing flags', async () => {
+    await withCliFixtureWorkspace('angular-cli-app', async (workspace) => {
+      const result = await workspace.run(['init', '--dry-run', '--json']);
+      const parsed = JSON.parse(result.stdout) as {
+        readonly ambiguities: readonly { readonly flag: string }[];
+        readonly status: string;
+      };
+
+      result.assertExitCode(1);
+      expect(result.stderr).toBe('');
+      expect(parsed.status).toBe('blocked');
+      expect(parsed.ambiguities).toContainEqual(expect.objectContaining({ flag: '--tokens add|skip' }));
+      expect(parsed.ambiguities).toContainEqual(
+        expect.objectContaining({ flag: '--package-manager <npm|pnpm|yarn|bun>' }),
+      );
+      result.assertReadOnly();
+      result.assertSourceFixtureUnchanged();
+    });
+  });
+
+  it('blocks require-existing modes and plans missing partial Tailwind v4 setup', async () => {
+    await withCliFixtureWorkspace('angular-cli-app', async (workspace) => {
+      await workspace.writeText('src/styles.css', '@import "tailwindcss";\n');
+
+      const result = await workspace.run([
+        'init',
+        '--dry-run',
+        '--json',
+        '--package-manager',
+        'npm',
+        '--tailwind',
+        'add',
+        '--postcss',
+        'require-existing',
+        '--tokens',
+        'require-existing',
+      ]);
+      const parsed = JSON.parse(result.stdout) as {
+        readonly ambiguities: readonly { readonly flag: string }[];
+        readonly status: string;
+        readonly tailwind: { readonly imports: readonly string[] } | null;
+      };
+
+      result.assertExitCode(1);
+      expect(result.stderr).toBe('');
+      expect(parsed.status).toBe('blocked');
+      expect(parsed.ambiguities).toContainEqual(expect.objectContaining({ flag: '--postcss add' }));
+      expect(parsed.ambiguities).toContainEqual(expect.objectContaining({ flag: '--tokens add' }));
+      expect(parsed.tailwind?.imports).toEqual(
+        expect.arrayContaining(['@layer theme, base, components, utilities;']),
+      );
+      result.assertReadOnly();
+      result.assertSourceFixtureUnchanged();
+    });
+  });
+
   it('copies Angular CLI app fixtures to a temporary workspace and runs commands inside them', async () => {
     await withCliFixtureWorkspace('angular-cli-app', async (workspace) => {
       const result = await workspace.run(['inspect', '--json']);

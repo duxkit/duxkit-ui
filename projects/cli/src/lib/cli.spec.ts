@@ -35,27 +35,6 @@ async function run(argv: readonly string[]): Promise<CliResult> {
 describe('duxkit-ui command shell', () => {
   it.each([
     [
-      'init',
-      [
-        '--cwd',
-        '/tmp/app',
-        '--project',
-        'app',
-        '--stylesheet',
-        'src/styles.scss',
-        '--components-path',
-        'src/app/components/ai',
-        '--style',
-        'scss',
-        '--tokens',
-        'add',
-        '--dry-run',
-        '--json',
-        '--yes',
-        '--no-install',
-      ],
-    ],
-    [
       'add',
       [
         'message',
@@ -79,6 +58,36 @@ describe('duxkit-ui command shell', () => {
     expect(result.exitCode).toBe(1);
     expect(result.stderr).toContain(`duxkit-ui ${command} is scaffolded but not implemented yet.`);
     expect(result.stderr).not.toContain('unknown option');
+    expect(result.stdout).toBe('');
+  });
+
+  it('keeps init mutations scaffolded while accepting the planning flags', async () => {
+    const result = await run([
+      'init',
+      '--cwd',
+      '/tmp/app',
+      '--project',
+      'app',
+      '--stylesheet',
+      'src/styles.scss',
+      '--components-path',
+      'src/app/components/ai',
+      '--style',
+      'scss',
+      '--tokens',
+      'add',
+      '--tailwind',
+      'add',
+      '--postcss',
+      'add',
+      '--package-manager',
+      'npm',
+      '--yes',
+      '--no-install',
+    ]);
+
+    expect(result.exitCode).toBe(1);
+    expect(result.stderr).toContain('duxkit-ui init is scaffolded but not implemented yet.');
     expect(result.stdout).toBe('');
   });
 
