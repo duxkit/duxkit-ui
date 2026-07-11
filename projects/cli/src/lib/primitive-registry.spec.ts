@@ -19,7 +19,9 @@ import {
 
 describe('primitive registry', () => {
   it('validates the bundled primitive catalog', () => {
-    expect(listPrimitives().map((primitive) => primitive.id)).toEqual([
+    const primitives = listPrimitives();
+
+    expect(primitives.map((primitive) => primitive.id)).toEqual([
       'conversation',
       'message',
       'prompt-input',
@@ -38,6 +40,7 @@ describe('primitive registry', () => {
       'sources',
       'task',
     ]);
+    expect(primitives.every((primitive) => primitive.status === 'available')).toBe(true);
   });
 
   it('normalizes exact ids and documented aliases only', () => {
@@ -75,6 +78,23 @@ describe('primitive registry', () => {
     ]);
   });
 
+  it('includes dependencies for CDK-backed and command-input primitives', () => {
+    const attachment = resolvePrimitivePlan(['attachment']);
+    const context = resolvePrimitivePlan(['context']);
+    const modelSelector = resolvePrimitivePlan(['model-selector']);
+
+    expect(attachment.dependencies).toContainEqual(
+      expect.objectContaining({ name: '@angular/cdk' }),
+    );
+    expect(context.dependencies).toContainEqual(expect.objectContaining({ name: '@angular/cdk' }));
+    expect(modelSelector.dependencies).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ name: '@angular/cdk' }),
+        expect.objectContaining({ name: '@angular/forms' }),
+      ]),
+    );
+  });
+
   it('rejects invalid registry records', () => {
     const [first] = listPrimitives();
 
@@ -110,45 +130,14 @@ describe('primitive registry', () => {
     ).toThrow(PrimitiveRegistryError);
   });
 
-  it('bundles launch primitive templates matching registry file metadata', async () => {
+  it('bundles every available primitive template matching registry file metadata', async () => {
     const templates = await loadPrimitiveTemplates();
 
-    expect(templates.map((template) => `${template.primitiveId}/${template.file}`)).toEqual([
-      'conversation/conversation.ts',
-      'conversation/conversation-content.ts',
-      'conversation/conversation-scroll-anchor.ts',
-      'conversation/index.ts',
-      'message/message.ts',
-      'message/message-action-classes.ts',
-      'message/message-actions.ts',
-      'message/message-content.ts',
-      'message/message-copy.ts',
-      'message/message-thumbs-down.ts',
-      'message/message-thumbs-up.ts',
-      'message/index.ts',
-      'prompt-input/prompt-input-attachments.ts',
-      'prompt-input/prompt-input-button.ts',
-      'prompt-input/prompt-input-layout.ts',
-      'prompt-input/prompt-input-root.ts',
-      'prompt-input/prompt-input-submit.ts',
-      'prompt-input/prompt-input-textarea.ts',
-      'prompt-input/prompt-input.types.ts',
-      'prompt-input/index.ts',
-      'reasoning/reasoning.ts',
-      'reasoning/reasoning-content.ts',
-      'reasoning/reasoning-trigger.ts',
-      'reasoning/index.ts',
-      'tool/tool.ts',
-      'tool/tool-content.ts',
-      'tool/tool-status.ts',
-      'tool/tool-trigger.ts',
-      'tool/index.ts',
-      'code-block/code-block.ts',
-      'code-block/index.ts',
-      'markdown/markdown.ts',
-      'markdown/markdown.scss',
-      'markdown/index.ts',
-    ]);
+    expect(templates.map((template) => `${template.primitiveId}/${template.file}`)).toEqual(
+      listPrimitives().flatMap((primitive) =>
+        primitive.files.map((file) => `${primitive.id}/${file}`),
+      ),
+    );
 
     validatePrimitiveTemplates(listPrimitives(), templates);
   });
@@ -161,6 +150,15 @@ describe('primitive registry', () => {
         /from\s+['"]@duxkit(?:\/|-)/,
       );
     }
+  });
+
+  it('keeps generated source links accessibly named when title is omitted', async () => {
+    const templates = await loadPrimitiveTemplates();
+    const source = templates.find(
+      (template) => template.primitiveId === 'sources' && template.file === 'source.ts',
+    );
+
+    expect(source?.content).toContain("title() || href() || 'Source'");
   });
 
   it('rejects templates importing packages missing from registry dependency metadata', async () => {

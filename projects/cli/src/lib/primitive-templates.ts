@@ -7,21 +7,9 @@ export interface PrimitiveTemplateFile {
   readonly templatePath: string;
 }
 
-const launchTemplatePrimitiveIds = [
-  'conversation',
-  'message',
-  'prompt-input',
-  'reasoning',
-  'tool',
-  'code-block',
-  'markdown',
-] as const satisfies readonly PrimitiveId[];
-
-const launchTemplatePrimitiveIdSet = new Set<PrimitiveId>(launchTemplatePrimitiveIds);
-
 export function listPrimitiveTemplates(): readonly PrimitiveTemplateFile[] {
   return listPrimitives()
-    .filter((primitive) => launchTemplatePrimitiveIdSet.has(primitive.id))
+    .filter((primitive) => primitive.status === 'available')
     .flatMap((primitive) =>
       primitive.files.map((file) => ({
         file,
@@ -31,8 +19,10 @@ export function listPrimitiveTemplates(): readonly PrimitiveTemplateFile[] {
     );
 }
 
-export function hasLaunchTemplate(id: PrimitiveId): boolean {
-  return launchTemplatePrimitiveIdSet.has(id);
+export function hasPrimitiveTemplate(id: PrimitiveId): boolean {
+  return listPrimitives().some(
+    (primitive) => primitive.id === id && primitive.status === 'available',
+  );
 }
 
 export async function readPrimitiveTemplate(

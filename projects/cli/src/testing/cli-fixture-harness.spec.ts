@@ -1,8 +1,25 @@
-import { mkdir, realpath, stat } from 'node:fs/promises';
+import { execFile } from 'node:child_process';
+import { mkdir, realpath, stat, symlink } from 'node:fs/promises';
+import { resolve } from 'node:path';
+import { promisify } from 'node:util';
 import { describe, expect, it } from 'vitest';
 import { AddApplyError, applyAddPlan } from '../lib/add-apply.js';
 import { createAddPlan, isWritableAddFile } from '../lib/add-plan.js';
 import { diffSnapshots, withCliFixtureWorkspace } from './cli-fixture-harness.js';
+
+const execFileAsync = promisify(execFile);
+const remainingV1PrimitiveIds = [
+  'attachment',
+  'chain-of-thought',
+  'checkpoint',
+  'confirmation',
+  'context',
+  'model-selector',
+  'queue',
+  'shimmer',
+  'sources',
+  'task',
+] as const;
 
 describe('CLI fixture harness', () => {
   it.each(['angular-cli-app', 'nx-workspace'] as const)(
@@ -410,7 +427,7 @@ describe('CLI fixture harness', () => {
     });
   });
 
-  it('applies launch templates, config, and ownership guidance without installation', async () => {
+  it('applies primitive templates, config, and ownership guidance without installation', async () => {
     await withCliFixtureWorkspace('angular-cli-app', async (workspace) => {
       const result = await workspace.run([
         'add',
@@ -439,6 +456,69 @@ describe('CLI fixture harness', () => {
       expect(result.stdout).toContain('Import examples');
       expect(result.stdout).toContain('./components/ai/message');
       expect(result.stdout).toContain('These files are yours to edit.');
+      result.assertSourceFixtureUnchanged();
+    });
+  });
+
+  it.each(remainingV1PrimitiveIds)('plans the remaining V1 %s primitive', async (primitive) => {
+    await withCliFixtureWorkspace('angular-cli-app', async (workspace) => {
+      const result = await workspace.run([
+        'add',
+        primitive,
+        '--dry-run',
+        '--json',
+        '--no-install',
+        '--package-manager',
+        'npm',
+      ]);
+      const parsed = JSON.parse(result.stdout) as {
+        readonly files: readonly { readonly primitive: string; readonly status: string }[];
+        readonly requested: readonly string[];
+        readonly status: string;
+      };
+
+      result.assertExitCode(0);
+      expect(parsed.status).toBe('ready');
+      expect(parsed.requested).toEqual([primitive]);
+      expect(parsed.files).toContainEqual(expect.objectContaining({ primitive, status: 'create' }));
+      result.assertReadOnly();
+    });
+  });
+
+  it('adds and type-checks the complete V1 primitive catalog', async () => {
+    await withCliFixtureWorkspace('angular-cli-app', async (workspace) => {
+      const result = await workspace.run([
+        'add',
+        '--all',
+        '--yes',
+        '--no-install',
+        '--package-manager',
+        'npm',
+      ]);
+
+      result.assertExitCode(0);
+      for (const primitive of remainingV1PrimitiveIds) {
+        result.assertFileChanged(`src/app/components/ai/${primitive}/index.ts`);
+      }
+
+      await symlink(resolve('node_modules'), workspace.resolve('node_modules'), 'dir');
+      try {
+        await execFileAsync(
+          resolve('node_modules/.bin/ngc'),
+          ['-p', 'tsconfig.json', '--noEmit', '--skipLibCheck'],
+          {
+            cwd: workspace.root,
+            encoding: 'utf8',
+            maxBuffer: 1024 * 1024,
+          },
+        );
+      } catch (error) {
+        const output =
+          error instanceof Error && 'stdout' in error
+            ? `${String(error.stdout)}${String(error.stderr)}`
+            : String(error);
+        throw new Error(`Generated V1 catalog did not type-check:\n${output}`, { cause: error });
+      }
       result.assertSourceFixtureUnchanged();
     });
   });

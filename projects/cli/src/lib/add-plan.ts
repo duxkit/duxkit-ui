@@ -1,7 +1,7 @@
 import { readFile, realpath, stat } from 'node:fs/promises';
 import { dirname, extname, isAbsolute, join, relative, resolve, sep } from 'node:path';
 import {
-  hasLaunchTemplate,
+  hasPrimitiveTemplate,
   listPrimitiveTemplates,
   type PrimitiveTemplateFile,
 } from './primitive-templates.js';
@@ -213,7 +213,7 @@ export async function createAddPlan(
         errors.push(
           `Primitive ${primitive.id} is not available in this CLI release. Run "duxkit-ui list" for available primitives.`,
         );
-      } else if (!hasLaunchTemplate(primitive.id)) {
+      } else if (!hasPrimitiveTemplate(primitive.id)) {
         errors.push(`Primitive ${primitive.id} has no bundled template and cannot be added yet.`);
       }
     }
@@ -374,7 +374,7 @@ async function loadTemplates(
   const loaded = new Map<string, AddTemplate>();
 
   for (const primitive of primitives) {
-    if (!hasLaunchTemplate(primitive.id)) {
+    if (!hasPrimitiveTemplate(primitive.id)) {
       continue;
     }
 

@@ -1,11 +1,6 @@
 export type PrimitiveStatus = 'available' | 'planned';
 export type DependencyGroup =
-  | 'ai-runtime'
-  | 'angular'
-  | 'icons'
-  | 'markdown'
-  | 'spartan'
-  | 'styling';
+  'ai-runtime' | 'angular' | 'icons' | 'markdown' | 'spartan' | 'styling';
 export type DependencySection = 'dependencies' | 'devDependencies' | 'peerDependencies';
 export type PrimitiveRelationshipKind = 'composes' | 'pairs-with' | 'uses';
 
@@ -215,6 +210,7 @@ const registryEntries = [
       'attachment.ts',
       'attachment-media-type.ts',
       'attachment-name.ts',
+      'attachment-preview-slot.ts',
       'attachment-preview.ts',
       'attachment-remove.ts',
       'attachment-thumbnail.ts',
@@ -222,9 +218,14 @@ const registryEntries = [
       'attachments.ts',
       'index.ts',
     ],
-    dependencies: [...hoverCardPeers, ...iconPeers],
-    peerAssumptions: aiRuntimePeers,
-    status: 'planned',
+    dependencies: [
+      angularCore,
+      cva,
+      tailwindMerge,
+      ...hoverCardPeers,
+      ...iconPeers,
+      ...aiRuntimePeers,
+    ],
     tokens: ['attachment-preview'],
   }),
   primitive({
@@ -246,9 +247,8 @@ const registryEntries = [
       'chain-of-thought-trigger.ts',
       'index.ts',
     ],
-    dependencies: [...collapsiblePeers, ...iconPeers],
+    dependencies: [angularCore, tailwindMerge, ...collapsiblePeers, ...iconPeers],
     primitiveDependencies: ['shimmer'],
-    status: 'planned',
     tokens: ['reasoning-steps'],
     optionalRelationships: [{ id: 'confirmation', kind: 'pairs-with' }],
   }),
@@ -257,8 +257,7 @@ const registryEntries = [
     title: 'Checkpoint',
     description: 'Restore-point marker for earlier chat state.',
     files: ['checkpoint.ts', 'checkpoint-icon.ts', 'checkpoint-trigger.ts', 'index.ts'],
-    dependencies: iconPeers,
-    status: 'planned',
+    dependencies: [angularCore, tailwindMerge, ...iconPeers],
     tokens: ['checkpoint'],
   }),
   primitive({
@@ -276,8 +275,7 @@ const registryEntries = [
       'confirmation.types.ts',
       'index.ts',
     ],
-    peerAssumptions: aiRuntimePeers,
-    status: 'planned',
+    dependencies: [angularCore, tailwindMerge, ...aiRuntimePeers],
     tokens: ['confirmation'],
   }),
   primitive({
@@ -292,12 +290,12 @@ const registryEntries = [
       'context-content-header.ts',
       'context-cost.ts',
       'context-icon.ts',
+      'context-root.ts',
       'context-trigger.ts',
       'context-usage.ts',
       'index.ts',
     ],
-    dependencies: [...hoverCardPeers, ...iconPeers],
-    status: 'planned',
+    dependencies: [angularCore, tailwindMerge, ...hoverCardPeers, ...aiRuntimePeers],
     tokens: ['context-cost', 'context-usage'],
   }),
   primitive({
@@ -326,8 +324,7 @@ const registryEntries = [
       'model-selector.types.ts',
       'index.ts',
     ],
-    dependencies: [...commandDialogPeers, ...iconPeers],
-    status: 'planned',
+    dependencies: [angularCore, angularForms, tailwindMerge, ...commandDialogPeers, ...iconPeers],
     tokens: ['model-logo', 'command-list'],
   }),
   primitive({
@@ -354,8 +351,7 @@ const registryEntries = [
       'queue.types.ts',
       'index.ts',
     ],
-    dependencies: [...collapsiblePeers, ...iconPeers],
-    status: 'planned',
+    dependencies: [angularCore, tailwindMerge, ...collapsiblePeers, ...iconPeers],
     tokens: ['queue'],
   }),
   primitive({
@@ -363,7 +359,7 @@ const registryEntries = [
     title: 'Shimmer',
     description: 'Animated text for loading states and progressive output.',
     files: ['shimmer.ts', 'index.ts'],
-    status: 'planned',
+    dependencies: [angularCore, tailwindMerge],
     tokens: ['motion'],
   }),
   primitive({
@@ -372,8 +368,7 @@ const registryEntries = [
     title: 'Sources',
     description: 'Expandable grouped source links and references.',
     files: ['source.ts', 'sources.ts', 'sources-content.ts', 'sources-trigger.ts', 'index.ts'],
-    dependencies: [...collapsiblePeers, ...iconPeers],
-    status: 'planned',
+    dependencies: [angularCore, tailwindMerge, ...collapsiblePeers, ...iconPeers],
     tokens: ['sources'],
   }),
   primitive({
@@ -388,8 +383,7 @@ const registryEntries = [
       'task-trigger.ts',
       'index.ts',
     ],
-    dependencies: [...collapsiblePeers, ...iconPeers],
-    status: 'planned',
+    dependencies: [angularCore, tailwindMerge, ...collapsiblePeers, ...iconPeers],
     tokens: ['task'],
   }),
 ] as const satisfies readonly PrimitiveRegistryEntry[];
