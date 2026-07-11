@@ -21,6 +21,7 @@ import {
   type PackageManagerName,
   type WorkspaceInspection,
 } from './workspace-state.js';
+import { checksumText } from './text-checksum.js';
 
 export interface AddPlannerOptions {
   readonly all?: boolean;
@@ -37,6 +38,7 @@ export interface AddPlannerOptions {
 export type AddFileStatus = 'blocked' | 'create' | 'customized' | 'foreign' | 'unchanged';
 
 export interface AddFilePlan {
+  readonly checksum?: string;
   readonly file: string;
   readonly primitive: PrimitiveId;
   readonly status: AddFileStatus;
@@ -555,6 +557,10 @@ async function classifyTargets(
   const ownedIds = new Set([...configuredIds, ...exactGeneratedIds]);
 
   return targets.map((target) => ({
+    checksum:
+      target.status === 'unchanged' || target.status === 'foreign'
+        ? checksumText(target.content)
+        : undefined,
     file: target.file,
     path: target.path,
     primitive: target.primitive,

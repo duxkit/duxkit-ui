@@ -11,6 +11,8 @@ export interface CliOutput {
 }
 
 export interface CliIo {
+  readonly confirm?: (message: string) => Promise<boolean>;
+  readonly interactive?: boolean;
   readonly stdout: CliOutput;
   readonly stderr: CliOutput;
 }

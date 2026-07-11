@@ -2,6 +2,12 @@ import { execFile } from 'node:child_process';
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import { promisify } from 'node:util';
+import {
+  executeMutationSteps,
+  MutationStepExecutionError,
+  type MutationStep,
+  type MutationStepResult,
+} from './mutation-steps.js';
 import type { InitPlan } from './init-plan.js';
 
 const execFileAsync = promisify(execFile);
@@ -19,15 +25,11 @@ export class InitApplyError extends Error {
   constructor(
     readonly completedSteps: readonly string[],
     readonly pendingSteps: readonly string[],
+    readonly partialChanges: boolean,
     cause: unknown,
   ) {
     super(`Init failed: ${errorMessage(cause)}`, { cause });
   }
-}
-
-interface ApplyStep {
-  readonly id: string;
-  readonly run: () => Promise<void>;
 }
 
 export async function applyInitPlan(
@@ -35,54 +37,61 @@ export async function applyInitPlan(
   options: InitApplyOptions,
 ): Promise<InitApplyResult> {
   const steps = createApplySteps(plan, options);
-  const completedSteps: string[] = [];
+  let result: MutationStepResult;
 
-  for (const [index, step] of steps.entries()) {
-    try {
-      await step.run();
-      completedSteps.push(step.id);
-    } catch (error) {
-      throw new InitApplyError(
-        completedSteps,
-        steps.slice(index).map((pending) => pending.id),
-        error,
-      );
+  try {
+    result = await executeMutationSteps(steps);
+  } catch (error) {
+    if (!(error instanceof MutationStepExecutionError)) {
+      throw error;
     }
+
+    throw new InitApplyError(
+      error.completedSteps,
+      error.pendingSteps,
+      error.partialChanges,
+      error.cause,
+    );
   }
 
   return {
-    completedSteps,
+    completedSteps: result.completedSteps,
     skippedInstall: options.noInstall && plan.packages.missing.length > 0,
   };
 }
 
-function createApplySteps(plan: InitPlan, options: InitApplyOptions): readonly ApplyStep[] {
-  const steps: ApplyStep[] = [];
+function createApplySteps(plan: InitPlan, options: InitApplyOptions): readonly MutationStep[] {
+  const steps: MutationStep[] = [];
 
   if (plan.packages.missing.length > 0) {
     steps.push({
       id: options.noInstall ? 'dependencies skipped (--no-install)' : 'dependencies installed',
+      mutates: !options.noInstall,
       run: options.noInstall ? async () => undefined : () => installDependencies(plan),
     });
   }
 
   if (plan.config?.action !== undefined && plan.config.action !== 'unchanged') {
-    steps.push({ id: 'duxkit-ai.json written', run: () => writeConfig(plan) });
+    steps.push({ id: 'duxkit-ai.json written', mutates: true, run: () => writeConfig(plan) });
   }
 
   if (
     plan.postcss !== null &&
     (plan.postcss.action === 'create' || plan.postcss.action === 'update')
   ) {
-    steps.push({ id: 'PostCSS config written', run: () => writePostCss(plan) });
+    steps.push({ id: 'PostCSS config written', mutates: true, run: () => writePostCss(plan) });
   }
 
   if (stylesheetHasChanges(plan)) {
-    steps.push({ id: 'stylesheet written', run: () => writeStylesheet(plan) });
+    steps.push({ id: 'stylesheet written', mutates: true, run: () => writeStylesheet(plan) });
   }
 
   if (plan.directory?.action === 'create') {
-    steps.push({ id: 'components directory created', run: () => createComponentsDirectory(plan) });
+    steps.push({
+      id: 'components directory created',
+      mutates: true,
+      run: () => createComponentsDirectory(plan),
+    });
   }
 
   return steps;

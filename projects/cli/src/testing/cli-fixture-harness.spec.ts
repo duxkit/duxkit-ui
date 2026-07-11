@@ -1,5 +1,7 @@
-import { mkdir, stat } from 'node:fs/promises';
+import { mkdir, realpath, stat } from 'node:fs/promises';
 import { describe, expect, it } from 'vitest';
+import { AddApplyError, applyAddPlan } from '../lib/add-apply.js';
+import { createAddPlan, isWritableAddFile } from '../lib/add-plan.js';
 import { diffSnapshots, withCliFixtureWorkspace } from './cli-fixture-harness.js';
 
 describe('CLI fixture harness', () => {
@@ -163,6 +165,77 @@ describe('CLI fixture harness', () => {
     });
   });
 
+  it('prints the init plan and asks one final confirmation in interactive mode', async () => {
+    await withCliFixtureWorkspace('angular-cli-app', async (workspace) => {
+      const result = await workspace.run(
+        ['init', '--no-install', '--package-manager', 'npm', '--tokens', 'add'],
+        {},
+        { confirmations: [false] },
+      );
+
+      result.assertExitCode(1);
+      result.assertStdoutIncludes('Init plan (ready)');
+      result.assertStdoutIncludes('Planned changes');
+      result.assertStderrIncludes('Apply these changes? (y/N) n');
+      result.assertStderrIncludes('Initialization cancelled.');
+      result.assertReadOnly();
+    });
+  });
+
+  it('does not ask for interactive confirmation when init receives --yes', async () => {
+    await withCliFixtureWorkspace('angular-cli-app', async (workspace) => {
+      const result = await workspace.run(
+        ['init', '--yes', '--no-install', '--package-manager', 'npm', '--tokens', 'add'],
+        {},
+        { confirmations: [] },
+      );
+
+      result.assertExitCode(0);
+      expect(result.stderr).toBe('');
+      result.assertFileChanged('duxkit-ai.json');
+    });
+  });
+
+  it('--yes accepts safe defaults but does not resolve conflicting config ambiguity', async () => {
+    await withCliFixtureWorkspace('angular-cli-app', async (workspace) => {
+      await workspace.writeText(
+        'duxkit-ai.json',
+        JSON.stringify(
+          {
+            componentsPath: 'src/app/components/ai',
+            project: 'fixture-app',
+            stylesheet: 'src/styles.css',
+            style: 'css',
+          },
+          null,
+          2,
+        ),
+      );
+      const result = await workspace.run([
+        'init',
+        '--yes',
+        '--no-install',
+        '--package-manager',
+        'npm',
+        '--components-path',
+        'src/app/components/other',
+        '--json',
+      ]);
+      const parsed = JSON.parse(result.stdout) as {
+        readonly ambiguities: readonly { readonly flag: string }[];
+        readonly status: string;
+      };
+
+      result.assertExitCode(1);
+      expect(result.stderr).toBe('');
+      expect(parsed.status).toBe('blocked');
+      expect(parsed.ambiguities).toContainEqual(
+        expect.objectContaining({ flag: '--components-path (or --force)' }),
+      );
+      result.assertReadOnly();
+    });
+  });
+
   it('keeps applied init JSON free of human-readable output', async () => {
     await withCliFixtureWorkspace('angular-cli-app', async (workspace) => {
       const result = await workspace.run([
@@ -184,6 +257,22 @@ describe('CLI fixture harness', () => {
       expect(result.stderr).toBe('');
       expect(parsed).toEqual(expect.objectContaining({ applied: true, status: 'applied' }));
       result.assertSourceFixtureUnchanged();
+    });
+  });
+
+  it('prints an interactive JSON init plan to stderr while keeping stdout parseable', async () => {
+    await withCliFixtureWorkspace('angular-cli-app', async (workspace) => {
+      const result = await workspace.run(
+        ['init', '--json', '--no-install', '--package-manager', 'npm', '--tokens', 'add'],
+        {},
+        { confirmations: [true] },
+      );
+      const parsed = JSON.parse(result.stdout) as { readonly status: string };
+
+      result.assertExitCode(0);
+      expect(parsed.status).toBe('applied');
+      result.assertStderrIncludes('"plannedChanges"');
+      result.assertStderrIncludes('Apply these changes? (y/N) y');
     });
   });
 
@@ -354,6 +443,74 @@ describe('CLI fixture harness', () => {
     });
   });
 
+  it('requires --yes for non-interactive add writes', async () => {
+    await withCliFixtureWorkspace('angular-cli-app', async (workspace) => {
+      const result = await workspace.run([
+        'add',
+        'message',
+        '--no-install',
+        '--package-manager',
+        'npm',
+      ]);
+
+      result.assertExitCode(1);
+      result.assertStderrIncludes('Pass --yes');
+      result.assertReadOnly();
+    });
+  });
+
+  it('prints the add plan and asks one final confirmation in interactive mode', async () => {
+    await withCliFixtureWorkspace('angular-cli-app', async (workspace) => {
+      const result = await workspace.run(
+        ['add', 'message', '--no-install', '--package-manager', 'npm'],
+        {},
+        { confirmations: [true] },
+      );
+
+      result.assertExitCode(0);
+      result.assertStdoutIncludes('Add plan (ready)');
+      result.assertStdoutIncludes('Planned changes');
+      result.assertStderrIncludes('Apply these changes? (y/N) y');
+      result.assertFileChanged('src/app/components/ai/message/message.ts');
+    });
+  });
+
+  it('--no-install prints exact commands without invoking the package manager', async () => {
+    await withCliFixtureWorkspace('angular-cli-app', async (workspace) => {
+      const planned = await workspace.run([
+        'add',
+        'message',
+        '--dry-run',
+        '--json',
+        '--no-install',
+        '--package-manager',
+        'npm',
+      ]);
+      const plan = JSON.parse(planned.stdout) as {
+        readonly packages: { readonly installCommands: readonly string[] };
+      };
+      await workspace.writeExecutable(
+        '.test-bin/npm',
+        '#!/bin/sh\ntouch "$DUXKIT_MARKER"\nexit 91\n',
+      );
+      const result = await workspace.run(
+        ['add', 'message', '--yes', '--no-install', '--package-manager', 'npm'],
+        {
+          DUXKIT_MARKER: workspace.resolve('.test-bin/package-manager-invoked'),
+          PATH: `${workspace.resolve('.test-bin')}:${process.env.PATH ?? ''}`,
+        },
+      );
+
+      result.assertExitCode(0);
+      expect(plan.packages.installCommands.length).toBeGreaterThan(0);
+      for (const command of plan.packages.installCommands) {
+        result.assertStdoutIncludes(command);
+      }
+      expect(result.after.file('.test-bin/package-manager-invoked')).toBeUndefined();
+      expect(result.packageChanges).toEqual([]);
+    });
+  });
+
   it('writes a planned global @source after generated files', async () => {
     await withCliFixtureWorkspace('angular-cli-app', async (workspace) => {
       const result = await workspace.run([
@@ -420,6 +577,47 @@ describe('CLI fixture harness', () => {
     });
   });
 
+  it('leaves init source, config, and stylesheet unchanged when installation fails', async () => {
+    await withCliFixtureWorkspace('angular-cli-app', async (workspace) => {
+      await workspace.writeExecutable('.test-bin/npm', '#!/bin/sh\nexit 23\n');
+      const before = await workspace.snapshot();
+      const result = await workspace.run(
+        ['init', '--yes', '--package-manager', 'npm', '--tokens', 'add'],
+        { PATH: `${workspace.resolve('.test-bin')}:${process.env.PATH ?? ''}` },
+      );
+
+      result.assertExitCode(1);
+      result.assertStderrIncludes('Init failed.');
+      expect(result.fileChanges).toEqual([]);
+      expect((await workspace.snapshot()).files).toEqual(before.files);
+    });
+  });
+
+  it('reports completed and pending steps when a later init write fails', async () => {
+    await withCliFixtureWorkspace('angular-cli-app', async (workspace) => {
+      await workspace.writeExecutable(
+        '.test-bin/npm',
+        '#!/bin/sh\nmkdir -p "$DUXKIT_ROOT/.postcssrc.json"\n',
+      );
+      const result = await workspace.run(
+        ['init', '--yes', '--package-manager', 'npm', '--tokens', 'add'],
+        {
+          DUXKIT_ROOT: workspace.root,
+          PATH: `${workspace.resolve('.test-bin')}:${process.env.PATH ?? ''}`,
+        },
+      );
+
+      result.assertExitCode(1);
+      result.assertStderrIncludes('Partial changes were made.');
+      result.assertStderrIncludes('dependencies installed');
+      result.assertStderrIncludes('duxkit-ai.json written');
+      result.assertStderrIncludes('PostCSS config written');
+      result.assertStderrIncludes('stylesheet written');
+      result.assertFileChanged('duxkit-ai.json');
+      result.assertFileUnchanged('src/styles.css');
+    });
+  });
+
   it('reports completed and pending steps when a later generated write fails', async () => {
     await withCliFixtureWorkspace('angular-cli-app', async (workspace) => {
       await workspace.writeExecutable(
@@ -446,6 +644,207 @@ describe('CLI fixture harness', () => {
         ).isDirectory(),
       ).toBe(true);
       result.assertSourceFixtureUnchanged();
+    });
+  });
+
+  it('keeps partial add failure stdout as one JSON document', async () => {
+    await withCliFixtureWorkspace('angular-cli-app', async (workspace) => {
+      await workspace.writeExecutable(
+        '.test-bin/npm',
+        '#!/bin/sh\nmkdir -p "$DUXKIT_ROOT/src/app/components/ai/message/message-action-classes.ts"\n',
+      );
+      const result = await workspace.run(
+        ['add', 'message', '--yes', '--json', '--package-manager', 'npm'],
+        {
+          DUXKIT_ROOT: workspace.root,
+          PATH: `${workspace.resolve('.test-bin')}:${process.env.PATH ?? ''}`,
+        },
+      );
+      const parsed = JSON.parse(result.stdout) as {
+        readonly completedSteps: readonly string[];
+        readonly message: string;
+        readonly pendingSteps: readonly string[];
+        readonly partialChanges: boolean;
+        readonly status: string;
+      };
+
+      result.assertExitCode(1);
+      expect(result.stderr).toBe('');
+      expect(parsed.status).toBe('failed');
+      expect(parsed.message).toBe('Partial changes were made');
+      expect(parsed.partialChanges).toBe(true);
+      expect(parsed.completedSteps.length).toBeGreaterThan(0);
+      expect(parsed.pendingSteps.length).toBeGreaterThan(0);
+    });
+  });
+
+  it('tracks partial changes at generated-file granularity', async () => {
+    await withCliFixtureWorkspace('angular-cli-app', async (workspace) => {
+      const plan = await createAddPlan(
+        ['message'],
+        { noInstall: true, packageManager: 'npm', yes: true },
+        await realpath(workspace.root),
+      );
+      const writableFiles = plan.files.filter((file) => isWritableAddFile(plan.force, file));
+      const failingFile = writableFiles[1];
+
+      expect(failingFile, JSON.stringify(plan.errors)).toBeDefined();
+      await mkdir(workspace.resolve(failingFile?.path ?? ''), { recursive: true });
+
+      let failure: unknown;
+      try {
+        await applyAddPlan(plan, { noInstall: true });
+      } catch (error) {
+        failure = error;
+      }
+
+      expect(failure).toBeInstanceOf(AddApplyError);
+      if (!(failure instanceof AddApplyError)) return;
+      expect(failure.partialChanges).toBe(true);
+      expect(failure.completedSteps).toContain('dependencies skipped (--no-install)');
+      expect(failure.completedSteps).toContain(
+        `primitive ${writableFiles[0]?.primitive} file ${writableFiles[0]?.file} written`,
+      );
+      expect(failure.pendingSteps).toContain(
+        `primitive ${failingFile?.primitive} file ${failingFile?.file} written`,
+      );
+    });
+  });
+
+  it('does not report partial changes for a skipped install followed by the first write failing', async () => {
+    await withCliFixtureWorkspace('angular-cli-app', async (workspace) => {
+      const plan = await createAddPlan(
+        ['message'],
+        { noInstall: true, packageManager: 'npm', yes: true },
+        await realpath(workspace.root),
+      );
+      const firstFile = plan.files.find((file) => isWritableAddFile(plan.force, file));
+
+      expect(firstFile, JSON.stringify(plan.errors)).toBeDefined();
+      await mkdir(workspace.resolve(firstFile?.path ?? ''), { recursive: true });
+
+      let failure: unknown;
+      try {
+        await applyAddPlan(plan, { noInstall: true });
+      } catch (error) {
+        failure = error;
+      }
+
+      expect(failure).toBeInstanceOf(AddApplyError);
+      if (!(failure instanceof AddApplyError)) return;
+      expect(failure.partialChanges).toBe(false);
+      expect(failure.completedSteps).toEqual(['dependencies skipped (--no-install)']);
+    });
+  });
+
+  it('--force overwrites only configured Duxkit-owned generated files', async () => {
+    await withCliFixtureWorkspace('angular-cli-app', async (workspace) => {
+      const initial = await workspace.run([
+        'add',
+        'message',
+        '--yes',
+        '--no-install',
+        '--package-manager',
+        'npm',
+      ]);
+      initial.assertExitCode(0);
+      const generated = initial.after.file('src/app/components/ai/message/message.ts');
+      await workspace.writeText(
+        'src/app/components/ai/message/message.ts',
+        'export const customized = true;\n',
+      );
+      await workspace.writeText('src/app/app.config.ts', 'export const appConfig = "foreign";\n');
+      await workspace.writeText('src/app/app.routes.ts', 'export const routes = ["foreign"];\n');
+      await workspace.writeText('postcss.config.mjs', 'export default { foreign: true };\n');
+
+      const result = await workspace.run([
+        'add',
+        'message',
+        '--yes',
+        '--force',
+        '--no-install',
+        '--package-manager',
+        'npm',
+      ]);
+
+      result.assertExitCode(0);
+      expect(await workspace.readText('src/app/components/ai/message/message.ts')).toBe(generated);
+      expect(await workspace.readText('src/app/app.config.ts')).toBe(
+        'export const appConfig = "foreign";\n',
+      );
+      expect(await workspace.readText('src/app/app.routes.ts')).toBe(
+        'export const routes = ["foreign"];\n',
+      );
+      expect(await workspace.readText('postcss.config.mjs')).toBe(
+        'export default { foreign: true };\n',
+      );
+    });
+  });
+
+  it('--force never overwrites foreign generated targets', async () => {
+    await withCliFixtureWorkspace('angular-cli-app', async (workspace) => {
+      await mkdir(workspace.resolve('src/app/components/ai/markdown'), { recursive: true });
+      await workspace.writeText(
+        'src/app/components/ai/markdown/markdown.ts',
+        'export const foreign = true;\n',
+      );
+      const result = await workspace.run([
+        'add',
+        'message',
+        '--yes',
+        '--force',
+        '--no-install',
+        '--package-manager',
+        'npm',
+      ]);
+
+      result.assertExitCode(1);
+      expect(await workspace.readText('src/app/components/ai/markdown/markdown.ts')).toBe(
+        'export const foreign = true;\n',
+      );
+      result.assertReadOnly();
+    });
+  });
+
+  it('--force rejects a generated target replaced by a symlink after planning', async () => {
+    await withCliFixtureWorkspace('angular-cli-app', async (workspace) => {
+      const initial = await workspace.run([
+        'add',
+        'message',
+        '--yes',
+        '--no-install',
+        '--package-manager',
+        'npm',
+      ]);
+      initial.assertExitCode(0);
+      const target = 'src/app/components/ai/message/message.ts';
+      await workspace.writeText(target, 'export const customized = true;\n');
+      await workspace.writeText('src/app/app.config.ts', 'export const protectedValue = true;\n');
+      await workspace.writeExecutable(
+        '.test-bin/npm',
+        [
+          '#!/bin/sh',
+          'if [ ! -L "$DUXKIT_TARGET" ]; then',
+          '  mv "$DUXKIT_TARGET" "$DUXKIT_TARGET.original"',
+          '  ln -s "$DUXKIT_FOREIGN" "$DUXKIT_TARGET"',
+          'fi',
+        ].join('\n') + '\n',
+      );
+      const result = await workspace.run(
+        ['add', 'message', '--yes', '--force', '--package-manager', 'npm'],
+        {
+          DUXKIT_FOREIGN: workspace.resolve('src/app/app.config.ts'),
+          DUXKIT_TARGET: workspace.resolve(target),
+          PATH: `${workspace.resolve('.test-bin')}:${process.env.PATH ?? ''}`,
+        },
+      );
+
+      result.assertExitCode(1);
+      result.assertStderrIncludes('Refusing to overwrite a non-file or symlink target');
+      expect(await workspace.readText('src/app/app.config.ts')).toBe(
+        'export const protectedValue = true;\n',
+      );
+      result.assertFileUnchanged('duxkit-ai.json');
     });
   });
 

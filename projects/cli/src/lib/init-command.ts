@@ -1,7 +1,8 @@
-import { createInterface } from 'node:readline/promises';
 import { resolve } from 'node:path';
+import { createInterface } from 'node:readline/promises';
 import type { CliIo } from './cli.js';
 import { CliCommandError } from './cli-errors.js';
+import { confirmApply, isInteractive, printJsonPlanForConfirmation } from './cli-interaction.js';
 import { applyInitPlan, InitApplyError } from './init-apply.js';
 import {
   createInitPlan,
@@ -22,7 +23,7 @@ export async function runInitCommand(options: InitCommandOptions, io: CliIo): Pr
   const cwd = resolve(options.cwd ?? process.cwd());
   let plan = await createInitPlan(options, cwd);
 
-  if (plan.status === 'blocked' && isInteractive(options)) {
+  if (plan.status === 'blocked' && isInteractive(io)) {
     const promptedOptions = await promptForInitAmbiguities(options, plan);
 
     if (promptedOptions !== null) {
@@ -41,7 +42,7 @@ export async function runInitCommand(options: InitCommandOptions, io: CliIo): Pr
     return;
   }
 
-  if (plan.plannedChanges.length > 0 && !options.yes && !isInteractive(options)) {
+  if (plan.plannedChanges.length > 0 && !options.yes && !isInteractive(io)) {
     const blockedPlan = withBlockedAmbiguity(
       plan,
       'Run init interactively or pass --yes before allowing writes in a non-interactive terminal.',
@@ -55,8 +56,9 @@ export async function runInitCommand(options: InitCommandOptions, io: CliIo): Pr
     io.stdout.write(renderHumanInit(plan));
   }
 
-  if (!options.yes && isInteractive(options) && plan.plannedChanges.length > 0) {
-    const confirmed = await confirmInitApply();
+  if (!options.yes && isInteractive(io) && plan.plannedChanges.length > 0) {
+    printJsonPlanForConfirmation(plan, options.json === true, io);
+    const confirmed = await confirmApply(io);
 
     if (!confirmed) {
       const cancelledPlan = withBlockedAmbiguity(plan, 'Initialization cancelled.');
@@ -92,7 +94,9 @@ export async function runInitCommand(options: InitCommandOptions, io: CliIo): Pr
       ...plan,
       completedSteps: error.completedSteps,
       error: error.message,
+      message: error.partialChanges ? 'Partial changes were made' : 'Init failed',
       pendingSteps: error.pendingSteps,
+      partialChanges: error.partialChanges,
       status: 'failed' as const,
     };
 
@@ -131,28 +135,15 @@ function withBlockedAmbiguity(plan: InitPlan, message: string): InitPlan {
   };
 }
 
-async function confirmInitApply(): Promise<boolean> {
-  const readline = createInterface({ input: process.stdin, output: process.stderr });
-
-  try {
-    const answer = await readline.question('Apply these changes? (y/N) ');
-    return answer.trim().toLowerCase() === 'y';
-  } finally {
-    readline.close();
-  }
-}
-
 function renderApplyFailure(error: InitApplyError): string {
+  const partial = error.partialChanges ? 'Partial changes were made.' : 'Init failed.';
+
   return [
-    'Partial changes were made.',
+    partial,
     `  completed: ${error.completedSteps.length === 0 ? 'None' : error.completedSteps.join(', ')}`,
     `  pending: ${error.pendingSteps.length === 0 ? 'None' : error.pendingSteps.join(', ')}`,
     `  error: ${error.message}`,
   ].join('\n');
-}
-
-function isInteractive(options: InitCommandOptions): boolean {
-  return process.stdin.isTTY === true && process.stdout.isTTY === true;
 }
 
 async function promptForInitAmbiguities(

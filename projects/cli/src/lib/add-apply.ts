@@ -1,8 +1,16 @@
 import { execFile } from 'node:child_process';
-import { mkdir, readFile, writeFile } from 'node:fs/promises';
-import { dirname, join, relative } from 'node:path';
+import { constants } from 'node:fs';
+import { lstat, mkdir, open, readFile, writeFile } from 'node:fs/promises';
+import { dirname, join, relative, resolve, sep } from 'node:path';
 import { promisify } from 'node:util';
 import { readPrimitiveTemplate } from './primitive-templates.js';
+import {
+  executeMutationSteps,
+  MutationStepExecutionError,
+  type MutationStep,
+  type MutationStepResult,
+} from './mutation-steps.js';
+import { checksumText } from './text-checksum.js';
 import {
   isRecord,
   isWritableAddFile,
@@ -28,41 +36,39 @@ export class AddApplyError extends Error {
   constructor(
     readonly completedSteps: readonly string[],
     readonly pendingSteps: readonly string[],
+    readonly partialChanges: boolean,
     cause: unknown,
   ) {
     super(`Add failed: ${errorMessage(cause)}`, { cause });
   }
 }
 
-interface ApplyStep {
-  readonly id: string;
-  readonly run: () => Promise<void>;
-}
-
 export async function applyAddPlan(
   plan: AddPlan,
   options: AddApplyOptions,
 ): Promise<AddApplyResult> {
-  const completedSteps: string[] = [];
   const completedPrimitives = new Set<string>();
   const steps = createApplySteps(plan, options, completedPrimitives);
+  let result: MutationStepResult;
 
-  for (const [index, step] of steps.entries()) {
-    try {
-      await step.run();
-      completedSteps.push(step.id);
-    } catch (error) {
-      throw new AddApplyError(
-        completedSteps,
-        steps.slice(index).map((pending) => pending.id),
-        error,
-      );
+  try {
+    result = await executeMutationSteps(steps);
+  } catch (error) {
+    if (!(error instanceof MutationStepExecutionError)) {
+      throw error;
     }
+
+    throw new AddApplyError(
+      error.completedSteps,
+      error.pendingSteps,
+      error.partialChanges,
+      error.cause,
+    );
   }
 
   return {
     completedPrimitives: [...completedPrimitives],
-    completedSteps,
+    completedSteps: result.completedSteps,
     skippedInstall: options.noInstall && plan.packages.missing.length > 0,
   };
 }
@@ -71,13 +77,14 @@ function createApplySteps(
   plan: AddPlan,
   options: AddApplyOptions,
   completedPrimitives: Set<string>,
-): readonly ApplyStep[] {
-  const steps: ApplyStep[] = [];
+): readonly MutationStep[] {
+  const steps: MutationStep[] = [];
   const primitiveIds = [...new Set(plan.files.map((file) => file.primitive))];
 
   if (plan.packages.missing.length > 0) {
     steps.push({
       id: options.noInstall ? 'dependencies skipped (--no-install)' : 'dependencies installed',
+      mutates: !options.noInstall,
       run: options.noInstall ? async () => undefined : () => installDependencies(plan),
     });
   }
@@ -87,16 +94,25 @@ function createApplySteps(
     const writableFiles = files.filter((file) => isWritableAddFile(plan.force, file));
 
     if (writableFiles.length > 0) {
+      for (const file of writableFiles) {
+        steps.push({
+          id: `primitive ${primitive} file ${file.file} written`,
+          mutates: true,
+          run: () => writePrimitiveFile(plan, file),
+        });
+      }
+
       steps.push({
         id: `primitive ${primitive} files written`,
+        mutates: false,
         run: async () => {
-          await writePrimitiveFiles(plan, writableFiles);
           completedPrimitives.add(primitive);
         },
       });
     } else {
       steps.push({
         id: `primitive ${primitive} files verified`,
+        mutates: false,
         run: async () => {
           completedPrimitives.add(primitive);
         },
@@ -107,6 +123,7 @@ function createApplySteps(
   if (plan.stylesheetPlan?.action === 'add') {
     steps.push({
       id: 'global stylesheet written',
+      mutates: true,
       run: () => writeGlobalStylesheet(plan),
     });
   }
@@ -114,6 +131,7 @@ function createApplySteps(
   if (plan.config !== null && plan.config.action !== 'unchanged') {
     steps.push({
       id: 'duxkit-ai.json updated',
+      mutates: true,
       run: () => writeConfigForCompletedPrimitives(plan, new Set(primitiveIds)),
     });
   }
@@ -145,17 +163,103 @@ async function installDependencies(plan: AddPlan): Promise<void> {
   }
 }
 
-async function writePrimitiveFiles(plan: AddPlan, files: readonly AddFilePlan[]): Promise<void> {
-  for (const file of files) {
-    const content = await readPrimitiveTemplate(file.primitive, file.file);
-    const target = join(plan.workspace.root, file.path);
+async function writePrimitiveFile(plan: AddPlan, file: AddFilePlan): Promise<void> {
+  const content = await readPrimitiveTemplate(file.primitive, file.file);
+  const target = resolve(plan.workspace.root, file.path);
+  assertTargetInsideDestination(plan, target);
+  await assertNoSymlinkAncestors(plan.workspace.root, dirname(target));
+  await mkdir(dirname(target), { recursive: true });
+  await assertNoSymlinkAncestors(plan.workspace.root, dirname(target));
 
-    await mkdir(dirname(target), { recursive: true });
-    await writeFile(target, content, {
-      encoding: 'utf8',
-      flag: file.status === 'create' ? 'wx' : 'w',
-    });
+  if (file.status === 'create') {
+    const handle = await open(
+      target,
+      constants.O_CREAT | constants.O_EXCL | constants.O_WRONLY | constants.O_NOFOLLOW,
+      0o666,
+    );
+
+    try {
+      await handle.writeFile(content, 'utf8');
+    } finally {
+      await handle.close();
+    }
+    return;
   }
+
+  if (file.status !== 'customized' || file.checksum === undefined) {
+    throw new Error(`Refusing to overwrite unverified generated target: ${file.path}.`);
+  }
+
+  const before = await lstat(target);
+
+  if (!before.isFile() || before.isSymbolicLink()) {
+    throw new Error(`Refusing to overwrite a non-file or symlink target: ${file.path}.`);
+  }
+
+  const existing = await readFile(target, 'utf8');
+
+  if (checksumText(existing) !== file.checksum) {
+    throw new Error(`The generated target changed after planning: ${file.path}.`);
+  }
+
+  const handle = await open(target, constants.O_WRONLY | constants.O_NOFOLLOW);
+
+  try {
+    const opened = await handle.stat();
+
+    if (!opened.isFile() || opened.dev !== before.dev || opened.ino !== before.ino) {
+      throw new Error(`The generated target changed while opening it: ${file.path}.`);
+    }
+
+    await handle.truncate(0);
+    await handle.writeFile(content, 'utf8');
+  } finally {
+    await handle.close();
+  }
+}
+
+function assertTargetInsideDestination(plan: AddPlan, target: string): void {
+  if (plan.componentDestination === null) {
+    throw new Error('The configured component destination is missing.');
+  }
+
+  const destination = resolve(plan.workspace.root, plan.componentDestination);
+  const targetRelative = relative(destination, target);
+
+  if (targetRelative === '' || targetRelative === '..' || targetRelative.startsWith(`..${sep}`)) {
+    throw new Error(`Refusing to write outside the configured component destination: ${target}.`);
+  }
+}
+
+async function assertNoSymlinkAncestors(workspaceRoot: string, directory: string): Promise<void> {
+  const root = resolve(workspaceRoot);
+  const directoryRelative = relative(root, directory);
+
+  if (directoryRelative === '..' || directoryRelative.startsWith(`..${sep}`)) {
+    throw new Error(`Generated target directory escapes the workspace: ${directory}.`);
+  }
+
+  let current = root;
+
+  for (const segment of directoryRelative.split(sep).filter((value) => value.length > 0)) {
+    current = join(current, segment);
+
+    try {
+      if ((await lstat(current)).isSymbolicLink()) {
+        throw new Error(`Generated target directory contains a symlink: ${current}.`);
+      }
+    } catch (error) {
+      if (isNodeError(error) && error.code === 'ENOENT') {
+        return;
+      }
+
+      throw error;
+    }
+  }
+}
+
+function isNodeError(error: unknown): error is NodeJS.ErrnoException {
+  return error instanceof Error && 'code' in error;
 }
 
 async function writeConfigForCompletedPrimitives(

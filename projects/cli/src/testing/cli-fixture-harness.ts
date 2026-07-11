@@ -55,6 +55,10 @@ export interface CliFixtureCommandResult {
   assertStdoutIncludes(text: string): void;
 }
 
+export interface CliFixtureInteraction {
+  readonly confirmations: readonly boolean[];
+}
+
 export class WorkspaceSnapshot {
   readonly packageJson: PackageManifest | null;
 
@@ -124,12 +128,29 @@ export class CliFixtureWorkspace {
   async run(
     argv: readonly string[],
     environment: Readonly<Record<string, string>> = {},
+    interaction?: CliFixtureInteraction,
   ): Promise<CliFixtureCommandResult> {
     const sourceBefore = await snapshotWorkspace(this.sourceFixtureRoot);
     const before = await this.snapshot();
     let stderr = '';
     let stdout = '';
+    const confirmations = [...(interaction?.confirmations ?? [])];
     const io: CliIo = {
+      confirm:
+        interaction === undefined
+          ? undefined
+          : async (message) => {
+              stderr += `${message} (y/N) `;
+              const answer = confirmations.shift();
+
+              if (answer === undefined) {
+                throw new Error(`No fixture confirmation answer remains for: ${message}`);
+              }
+
+              stderr += `${answer ? 'y' : 'n'}\n`;
+              return answer;
+            },
+      interactive: interaction === undefined ? false : true,
       stderr: {
         write: (chunk) => {
           stderr += chunk;

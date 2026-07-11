@@ -1,6 +1,7 @@
 import { resolve } from 'node:path';
 import type { CliIo } from './cli.js';
 import { CliCommandError } from './cli-errors.js';
+import { confirmApply, isInteractive, printJsonPlanForConfirmation } from './cli-interaction.js';
 import { applyAddPlan, AddApplyError, renderAddImportPath } from './add-apply.js';
 import { createAddPlan, type AddPlan, type AddPlannerOptions } from './add-plan.js';
 
@@ -31,7 +32,7 @@ export async function runAddCommand(
     return;
   }
 
-  if (plan.plannedChanges.length > 0 && options.yes !== true && !isInteractive()) {
+  if (plan.plannedChanges.length > 0 && options.yes !== true && !isInteractive(io)) {
     const blockedPlan = {
       ...plan,
       ambiguities: [
@@ -51,6 +52,27 @@ export async function runAddCommand(
 
   if (options.json !== true) {
     io.stdout.write(renderHumanAdd(plan));
+  }
+
+  if (options.yes !== true && isInteractive(io) && plan.plannedChanges.length > 0) {
+    printJsonPlanForConfirmation(plan, options.json === true, io);
+    const confirmed = await confirmApply(io);
+
+    if (!confirmed) {
+      const cancelledPlan = {
+        ...plan,
+        ambiguities: [...plan.ambiguities, 'Add cancelled.'],
+        status: 'blocked' as const,
+      };
+
+      if (options.json === true) {
+        io.stdout.write(`${JSON.stringify(cancelledPlan, null, 2)}\n`);
+      } else {
+        io.stderr.write('Add cancelled.\n');
+      }
+
+      throw new CliCommandError(1);
+    }
   }
 
   try {
@@ -81,7 +103,9 @@ export async function runAddCommand(
       applied: false,
       completedSteps: error.completedSteps,
       error: error.message,
+      message: error.partialChanges ? 'Partial changes were made' : 'Add failed',
       pendingSteps: error.pendingSteps,
+      partialChanges: error.partialChanges,
       status: 'failed' as const,
     };
 
@@ -124,7 +148,7 @@ function renderAddSuccess(plan: AddPlan): string {
 }
 
 function renderAddFailure(error: AddApplyError): string {
-  const partial = error.completedSteps.length > 0 ? 'Partial changes were made.' : 'Add failed.';
+  const partial = error.partialChanges ? 'Partial changes were made.' : 'Add failed.';
 
   return [
     partial,
@@ -139,10 +163,6 @@ function toPascalCase(value: string): string {
     .split('-')
     .map((part) => `${part[0]?.toUpperCase() ?? ''}${part.slice(1)}`)
     .join('');
-}
-
-function isInteractive(): boolean {
-  return process.stdin.isTTY === true && process.stdout.isTTY === true;
 }
 
 function renderHumanAdd(plan: AddPlan): string {
