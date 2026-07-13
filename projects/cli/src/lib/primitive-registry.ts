@@ -1,6 +1,11 @@
 export type PrimitiveStatus = 'available' | 'planned';
 export type DependencyGroup =
-  'ai-runtime' | 'angular' | 'icons' | 'markdown' | 'spartan' | 'styling';
+  | 'ai-runtime'
+  | 'angular'
+  | 'icons'
+  | 'markdown'
+  | 'spartan'
+  | 'styling';
 export type DependencySection = 'dependencies' | 'devDependencies' | 'peerDependencies';
 export type PrimitiveRelationshipKind = 'composes' | 'pairs-with' | 'uses';
 
@@ -56,6 +61,7 @@ const primitiveIds = [
   'prompt-input',
   'queue',
   'reasoning',
+  'reasoning-effort',
   'shimmer',
   'sources',
   'task',
@@ -167,6 +173,29 @@ const registryEntries = [
     dependencies: [angularCore, tailwindMerge, ...collapsiblePeers, ...iconPeers],
     primitiveDependencies: ['markdown', 'code-block'],
     tokens: ['markdown', 'disclosure'],
+  }),
+  primitive({
+    id: 'reasoning-effort',
+    aliases: ['effort'],
+    title: 'Reasoning Effort',
+    description: 'Composable popover controls for selecting an AI reasoning-effort level.',
+    files: [
+      'reasoning-effort.ts',
+      'reasoning-effort-content.ts',
+      'reasoning-effort-item.ts',
+      'reasoning-effort-label.ts',
+      'reasoning-effort-list.ts',
+      'reasoning-effort-root.ts',
+      'reasoning-effort-slider.ts',
+      'reasoning-effort-trigger.ts',
+      'reasoning-effort.types.ts',
+      'reasoning-effort-value.ts',
+      'reasoning-effort.imports.ts',
+      'index.ts',
+    ],
+    dependencies: [angularCdk, angularCore, tailwindMerge, ...iconPeers, spartanBrain],
+    tokens: ['reasoning-effort', 'selection'],
+    optionalRelationships: [{ id: 'prompt-input', kind: 'pairs-with' }],
   }),
   primitive({
     id: 'tool',

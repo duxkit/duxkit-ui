@@ -17,6 +17,7 @@ export * from './lib/model-selector';
 export * from './lib/prompt-input';
 export * from './lib/queue';
 export * from './lib/reasoning';
+export * from './lib/reasoning-effort';
 export * from './lib/shimmer';
 export * from './lib/sources';
 export * from './lib/task';

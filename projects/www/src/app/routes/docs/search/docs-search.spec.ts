@@ -40,6 +40,21 @@ describe('docs search', () => {
     );
     expect(searchComponentDocs('promptSubmit').map((item) => item.slug)).toContain('prompt-input');
     expect(searchComponentDocs('ReasoningContent').map((item) => item.slug)).toContain('reasoning');
+    expect(searchComponentDocs('reasoning effort').map((item) => item.slug)).toContain(
+      'reasoning-effort',
+    );
+    expect(searchComponentDocs('ai-reasoning-effort-slider').map((item) => item.slug)).toContain(
+      'reasoning-effort',
+    );
+    expect(searchComponentDocs('ReasoningEffortList').map((item) => item.slug)).toContain(
+      'reasoning-effort',
+    );
+    expect(searchComponentDocs('thumbClass').map((item) => item.slug)).toContain(
+      'reasoning-effort',
+    );
+    expect(
+      searchComponentDocs('Emits after this item is selected').map((item) => item.slug),
+    ).toContain('reasoning-effort');
     expect(searchComponentDocs('collapsedMaxHeight').map((item) => item.slug)).toEqual(
       expect.arrayContaining(['reasoning', 'chain-of-thought']),
     );

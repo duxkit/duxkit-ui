@@ -66,6 +66,11 @@ export const componentDocs = [
     description: 'Reveal summarized reasoning in a collapsible markdown panel.',
   },
   {
+    slug: 'reasoning-effort',
+    title: 'Reasoning Effort',
+    description: 'Select AI reasoning effort with interchangeable slider and list controls.',
+  },
+  {
     slug: 'sources',
     title: 'Sources',
     description: 'Group the source links and references behind an expandable trigger.',

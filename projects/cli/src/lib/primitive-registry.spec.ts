@@ -26,6 +26,7 @@ describe('primitive registry', () => {
       'message',
       'prompt-input',
       'reasoning',
+      'reasoning-effort',
       'tool',
       'code-block',
       'markdown',
@@ -50,6 +51,7 @@ describe('primitive registry', () => {
     expect(normalizePrimitiveInput('Prompt Input')).toBe('prompt-input');
     expect(normalizePrimitiveInput('prompt')).toBe('prompt-input');
     expect(normalizePrimitiveInput('cot')).toBe('chain-of-thought');
+    expect(normalizePrimitiveInput('effort')).toBe('reasoning-effort');
     expect(normalizePrimitiveInput('promptInput')).toBe('prompt-input');
     expect(() => normalizePrimitiveInput('mesage')).toThrow(/Did you mean "message"/);
   });
@@ -82,6 +84,7 @@ describe('primitive registry', () => {
     const attachment = resolvePrimitivePlan(['attachment']);
     const context = resolvePrimitivePlan(['context']);
     const modelSelector = resolvePrimitivePlan(['model-selector']);
+    const reasoningEffort = resolvePrimitivePlan(['reasoning-effort']);
 
     expect(attachment.dependencies).toContainEqual(
       expect.objectContaining({ name: '@angular/cdk' }),
@@ -91,6 +94,12 @@ describe('primitive registry', () => {
       expect.arrayContaining([
         expect.objectContaining({ name: '@angular/cdk' }),
         expect.objectContaining({ name: '@angular/forms' }),
+      ]),
+    );
+    expect(reasoningEffort.dependencies).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ name: '@angular/cdk' }),
+        expect.objectContaining({ name: '@spartan-ng/brain' }),
       ]),
     );
   });

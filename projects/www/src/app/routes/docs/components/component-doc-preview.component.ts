@@ -1,4 +1,4 @@
-import { Component, input } from '@angular/core';
+import { Component, input, signal } from '@angular/core';
 import { HlmButton } from '@duxkit-private/ui/helm/button';
 import type { LanguageModelUsage } from 'ai';
 import {
@@ -33,7 +33,11 @@ import {
   ConfirmationRequest,
   ConfirmationTitle,
 } from 'duxkit-ai/confirmation';
-import { Conversation, ConversationContent, ConversationScrollAnchor } from 'duxkit-ai/conversation';
+import {
+  Conversation,
+  ConversationContent,
+  ConversationScrollAnchor,
+} from 'duxkit-ai/conversation';
 import {
   Context,
   ContextCacheUsage,
@@ -94,6 +98,14 @@ import {
   QueueSectionTrigger,
 } from 'duxkit-ai/queue';
 import { Reasoning, ReasoningContent, ReasoningTrigger } from 'duxkit-ai/reasoning';
+import {
+  ReasoningEffort,
+  ReasoningEffortContent,
+  ReasoningEffortLabel,
+  ReasoningEffortSlider,
+  ReasoningEffortTrigger,
+  ReasoningEffortValue,
+} from 'duxkit-ai/reasoning-effort';
 import { Shimmer } from 'duxkit-ai/shimmer';
 import { Source, Sources, SourcesContent, SourcesTrigger } from 'duxkit-ai/sources';
 import { Task, TaskContent, TaskItem, TaskItemFile, TaskTrigger } from 'duxkit-ai/task';
@@ -363,6 +375,19 @@ export const componentPreviewSnippets: Record<ComponentDocSlug, string> = {
   <button aiReasoningTrigger></button>
   <ai-reasoning-content [markdown]="reasoningMarkdown" />
 </ai-reasoning>`,
+  'reasoning-effort': `<ai-reasoning-effort
+  [value]="reasoningEffortValue()"
+  (valueChange)="reasoningEffortValue.set($event)"
+>
+  <button aiReasoningEffortTrigger></button>
+  <ai-reasoning-effort-content>
+    <div class="mb-4 flex items-center justify-between gap-4">
+      <ai-reasoning-effort-label />
+      <ai-reasoning-effort-value />
+    </div>
+    <ai-reasoning-effort-slider />
+  </ai-reasoning-effort-content>
+</ai-reasoning-effort>`,
   sources: `<ai-sources [expanded]="true">
   <button aiSourcesTrigger [count]="sources.length"></button>
   <ai-sources-content>
@@ -500,6 +525,12 @@ export const attachmentPreviewSnippets: Record<AttachmentsVariant, string> = {
     Reasoning,
     ReasoningContent,
     ReasoningTrigger,
+    ReasoningEffort,
+    ReasoningEffortContent,
+    ReasoningEffortLabel,
+    ReasoningEffortSlider,
+    ReasoningEffortTrigger,
+    ReasoningEffortValue,
     Shimmer,
     Source,
     Sources,
@@ -853,6 +884,22 @@ export const attachmentPreviewSnippets: Record<AttachmentsVariant, string> = {
         </ai-reasoning>
       }
 
+      @case ('reasoning-effort') {
+        <ai-reasoning-effort
+          [value]="reasoningEffortValue()"
+          (valueChange)="reasoningEffortValue.set($event)"
+        >
+          <button aiReasoningEffortTrigger></button>
+          <ai-reasoning-effort-content>
+            <div class="mb-4 flex items-center justify-between gap-4">
+              <ai-reasoning-effort-label />
+              <ai-reasoning-effort-value />
+            </div>
+            <ai-reasoning-effort-slider />
+          </ai-reasoning-effort-content>
+        </ai-reasoning-effort>
+      }
+
       @case ('sources') {
         <ai-sources [expanded]="true">
           <button aiSourcesTrigger [count]="sources.length"></button>
@@ -915,6 +962,7 @@ export class ComponentDocPreview {
     '2. **Choose the rendering pattern:** Use a collapsible region so the main answer stays readable.',
     '3. **Preserve streaming state:** Keep the trigger open while reasoning is streaming.',
   ].join('\n');
+  protected readonly reasoningEffortValue = signal('medium');
   protected readonly codeBlockCode = `import { Component, signal } from '@angular/core';
 
 @Component({

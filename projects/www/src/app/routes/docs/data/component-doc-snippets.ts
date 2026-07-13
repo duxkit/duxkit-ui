@@ -19,10 +19,11 @@ export const componentImports: Record<ComponentDocSlug, string> = {
     "import { Attachment, AttachmentPreview, AttachmentRemove, Attachments } from 'duxkit-ai/attachment';",
   'chain-of-thought':
     "import { ChainOfThought, ChainOfThoughtContent, ChainOfThoughtImage, ChainOfThoughtImageCaption, ChainOfThoughtStep, ChainOfThoughtStepDescription, ChainOfThoughtStepIcon, ChainOfThoughtStepLabel, ChainOfThoughtTrigger } from 'duxkit-ai/chain-of-thought';",
-  task:
-    "import { Task, TaskContent, TaskItem, TaskItemFile, TaskTrigger } from 'duxkit-ai/task';",
+  task: "import { Task, TaskContent, TaskItem, TaskItemFile, TaskTrigger } from 'duxkit-ai/task';",
   tool: "import { Tool, ToolContent, ToolTrigger } from 'duxkit-ai/tool';",
   reasoning: "import { Reasoning, ReasoningContent, ReasoningTrigger } from 'duxkit-ai/reasoning';",
+  'reasoning-effort':
+    "import { ReasoningEffort, ReasoningEffortContent, ReasoningEffortItem, ReasoningEffortLabel, ReasoningEffortList, ReasoningEffortSlider, ReasoningEffortTrigger, ReasoningEffortValue } from 'duxkit-ai/reasoning-effort';",
   sources: "import { Source, Sources, SourcesContent, SourcesTrigger } from 'duxkit-ai/sources';",
   confirmation:
     "import { Confirmation, ConfirmationAction, ConfirmationActions, ConfirmationRequest, ConfirmationTitle } from 'duxkit-ai/confirmation';",
@@ -172,6 +173,27 @@ export const anatomySnippets: Record<ComponentDocSlug, string> = {
   <button aiReasoningTrigger>Thought for 8 seconds</button>
   <ai-reasoning-content markdown="Summarized reasoning can render here." />
 </ai-reasoning>`,
+  'reasoning-effort': `<ai-reasoning-effort [(value)]="effort" [levels]="levels">
+  <button aiReasoningEffortTrigger></button>
+  <ai-reasoning-effort-content>
+    <div class="flex items-center justify-between">
+      <ai-reasoning-effort-label />
+      <ai-reasoning-effort-value />
+    </div>
+    <ai-reasoning-effort-slider />
+
+    <!-- Or replace the slider with a generated list. -->
+    <!-- <ai-reasoning-effort-list /> -->
+
+    <!-- A list can also contain custom items. -->
+    <!--
+    <ai-reasoning-effort-list>
+      <button aiReasoningEffortItem value="low">Fast</button>
+      <button aiReasoningEffortItem value="high">Deep</button>
+    </ai-reasoning-effort-list>
+    -->
+  </ai-reasoning-effort-content>
+</ai-reasoning-effort>`,
   sources: `<ai-sources [expanded]="true">
   <button aiSourcesTrigger [count]="sources.length"></button>
   <ai-sources-content>
