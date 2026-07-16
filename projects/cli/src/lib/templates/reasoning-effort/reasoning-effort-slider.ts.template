@@ -30,53 +30,55 @@ export const reasoningEffortSliderThumbClasses =
     '[class]': 'classes()',
   },
   template: `
-    <div
-      brnSlider
-      data-slot="reasoning-effort-slider"
-      [aria-label]="ariaLabel() ?? reasoningEffort.label()"
-      [class]="computedSliderClass()"
-      [disabled]="isDisabled()"
-      [max]="maxIndex()"
-      [min]="0"
-      [step]="1"
-      [value]="sliderValue()"
-      (valueChange)="selectSliderValue($event)"
-    >
-      <div brnSliderTrack [class]="computedTrackClass()">
-        <div brnSliderRange [class]="computedRangeClass()"></div>
-      </div>
-      <span
-        #thumb
-        brnSliderThumb
-        [attr.aria-valuetext]="reasoningEffort.selectedLabel()"
-        [class]="computedThumbClass()"
-      ></span>
-    </div>
-
-    @if (showLabels()) {
+    @if (hasSelectedLevel()) {
       <div
-        aria-hidden="true"
-        data-slot="reasoning-effort-slider-labels"
-        [class]="computedLabelsClass()"
-        [style.padding-inline.px]="labelsInset()"
+        brnSlider
+        data-slot="reasoning-effort-slider"
+        [aria-label]="ariaLabel() ?? reasoningEffort.label()"
+        [class]="computedSliderClass()"
+        [disabled]="isDisabled()"
+        [max]="maxIndex()"
+        [min]="0"
+        [step]="1"
+        [value]="sliderValue()"
+        (valueChange)="selectSliderValue($event)"
       >
-        @for (level of reasoningEffort.levels(); track level.value) {
-          <span
-            data-slot="reasoning-effort-slider-label-stop"
-            class="flex w-0 shrink-0 justify-center"
-            style="width: 0"
-          >
-            <span
-              [class]="computedLevelLabelClass()"
-              [class.font-medium]="level.value === reasoningEffort.selectedLevel()?.value"
-              [class.text-foreground]="level.value === reasoningEffort.selectedLevel()?.value"
-              [attr.title]="level.label"
-            >
-              {{ level.label }}
-            </span>
-          </span>
-        }
+        <div brnSliderTrack [class]="computedTrackClass()">
+          <div brnSliderRange [class]="computedRangeClass()"></div>
+        </div>
+        <span
+          #thumb
+          brnSliderThumb
+          [attr.aria-valuetext]="reasoningEffort.selectedLabel()"
+          [class]="computedThumbClass()"
+        ></span>
       </div>
+
+      @if (showLabels()) {
+        <div
+          aria-hidden="true"
+          data-slot="reasoning-effort-slider-labels"
+          [class]="computedLabelsClass()"
+          [style.padding-inline.px]="labelsInset()"
+        >
+          @for (level of reasoningEffort.levels(); track level.value) {
+            <span
+              data-slot="reasoning-effort-slider-label-stop"
+              class="flex w-0 shrink-0 justify-center"
+              style="width: 0"
+            >
+              <span
+                [class]="computedLevelLabelClass()"
+                [class.font-medium]="level.value === reasoningEffort.selectedLevel()?.value"
+                [class.text-foreground]="level.value === reasoningEffort.selectedLevel()?.value"
+                [attr.title]="level.label"
+              >
+                {{ level.label }}
+              </span>
+            </span>
+          }
+        </div>
+      }
     }
   `,
 })
@@ -120,9 +122,14 @@ export class ReasoningEffortSlider {
       .levels()
       .findIndex((level) => level.value === this.reasoningEffort.value());
 
-    return Math.max(0, selectedIndex);
+    return selectedIndex === -1 ? undefined : selectedIndex;
   });
-  protected readonly sliderValue = computed(() => [this.selectedIndex()]);
+  protected readonly hasSelectedLevel = computed(() => this.selectedIndex() !== undefined);
+  protected readonly sliderValue = computed(() => {
+    const selectedIndex = this.selectedIndex();
+
+    return selectedIndex === undefined ? [] : [selectedIndex];
+  });
   protected readonly labelsInset = computed(() => this.thumbWidth() / 2);
   protected readonly isDisabled = computed(
     () => this.disabled() || this.reasoningEffort.isDisabled(),

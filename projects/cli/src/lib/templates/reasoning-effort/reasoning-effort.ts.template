@@ -56,14 +56,13 @@ export class ReasoningEffort {
   public readonly selectedLabel = computed(
     () => this.selectedLevel()?.label ?? this.unavailableLabel(),
   );
-  public readonly isOpen = computed(() => this.popover.stateComputed() === 'open');
   public readonly isDisabled = computed(() => this.disabled() || this.levels().length === 0);
 
   protected readonly classes = computed(() => twMerge(reasoningEffortClasses, this.userClass()));
 
   /** Selects a value when the root is enabled. */
   public select(value: string): void {
-    if (!this.disabled()) {
+    if (!this.isDisabled()) {
       this.value.set(value);
     }
   }

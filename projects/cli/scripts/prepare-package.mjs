@@ -11,9 +11,14 @@ const sourcePackage = JSON.parse(await readFile(join(packageRoot, 'package.json'
 const outputPackage = {
   name: sourcePackage.name,
   version: sourcePackage.version,
+  description: sourcePackage.description,
+  license: sourcePackage.license,
+  repository: sourcePackage.repository,
+  publishConfig: sourcePackage.publishConfig,
   type: sourcePackage.type,
   bin: sourcePackage.bin,
   exports: sourcePackage.exports,
+  files: sourcePackage.files,
   dependencies: sourcePackage.dependencies,
   engines: sourcePackage.engines,
 };

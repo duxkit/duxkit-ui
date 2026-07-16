@@ -174,7 +174,12 @@ export const anatomySnippets: Record<ComponentDocSlug, string> = {
   <ai-reasoning-content markdown="Summarized reasoning can render here." />
 </ai-reasoning>`,
   'reasoning-effort': `<ai-reasoning-effort [(value)]="effort" [levels]="levels">
-  <button aiReasoningEffortTrigger></button>
+  <button
+    aiReasoningEffortTrigger
+    class="inline-flex items-center gap-1 rounded-md border border-border bg-background px-2.5 py-1.5 text-sm font-medium hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+  >
+    Reasoning effort: <span aiReasoningEffortValue></span>
+  </button>
   <ai-reasoning-effort-content>
     <div class="flex items-center justify-between">
       <ai-reasoning-effort-label />

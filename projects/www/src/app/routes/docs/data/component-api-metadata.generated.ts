@@ -2473,13 +2473,13 @@ export const componentApiMetadata = {
       'ReasoningEffortValue',
     ],
     inputs: [
+      'value',
       'levels',
       'label',
       'unavailableLabel',
       'disabled',
       'class',
       'ariaLabel',
-      'value',
       'showIndicator',
       'showLabels',
       'sliderClass',
@@ -2489,7 +2489,7 @@ export const componentApiMetadata = {
       'labelsClass',
       'levelLabelClass',
     ],
-    outputs: ['selected'],
+    outputs: ['valueChange', 'selected'],
     sourcePaths: [
       'projects/duxkit-ai/src/lib/reasoning-effort/reasoning-effort.ts',
       'projects/duxkit-ai/src/lib/reasoning-effort/reasoning-effort-content.ts',
@@ -2506,6 +2506,13 @@ export const componentApiMetadata = {
         selectors: ['ai-reasoning-effort', '[aiReasoningEffort]'],
         exportAs: 'aiReasoningEffort',
         inputs: [
+          {
+            name: 'value',
+            type: 'string',
+            defaultValue: "'medium'",
+            required: false,
+            description: 'Selected reasoning-effort value. Supports two-way binding.',
+          },
           {
             name: 'levels',
             type: 'readonly ReasoningEffortLevel[]',
@@ -2542,7 +2549,13 @@ export const componentApiMetadata = {
             description: 'Additional classes merged onto the reasoning-effort root.',
           },
         ],
-        outputs: [],
+        outputs: [
+          {
+            name: 'valueChange',
+            type: 'string',
+            description: 'Selected reasoning-effort value. Supports two-way binding.',
+          },
+        ],
         sourcePath: 'projects/duxkit-ai/src/lib/reasoning-effort/reasoning-effort.ts',
       },
       {
@@ -2572,25 +2585,11 @@ export const componentApiMetadata = {
         selectors: ['button[aiReasoningEffortTrigger]', 'button[ai-reasoning-effort-trigger]'],
         inputs: [
           {
-            name: 'ariaLabel',
-            type: 'string | undefined',
-            defaultValue: 'undefined',
-            required: false,
-            description: 'Accessible label for custom projected trigger content.',
-          },
-          {
             name: 'disabled',
             type: 'boolean',
             defaultValue: 'false',
             required: false,
             description: 'Whether this trigger alone is disabled.',
-          },
-          {
-            name: 'class',
-            type: 'string | undefined',
-            defaultValue: 'undefined',
-            required: false,
-            description: 'Additional classes merged onto the trigger button.',
           },
         ],
         outputs: [],

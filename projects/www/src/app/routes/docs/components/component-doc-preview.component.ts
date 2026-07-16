@@ -379,7 +379,9 @@ export const componentPreviewSnippets: Record<ComponentDocSlug, string> = {
   [value]="reasoningEffortValue()"
   (valueChange)="reasoningEffortValue.set($event)"
 >
-  <button aiReasoningEffortTrigger></button>
+  <button aiReasoningEffortTrigger hlmBtn variant="outline" size="sm">
+    Reasoning effort: <span aiReasoningEffortValue></span>
+  </button>
   <ai-reasoning-effort-content>
     <div class="mb-4 flex items-center justify-between gap-4">
       <ai-reasoning-effort-label />
@@ -889,7 +891,9 @@ export const attachmentPreviewSnippets: Record<AttachmentsVariant, string> = {
           [value]="reasoningEffortValue()"
           (valueChange)="reasoningEffortValue.set($event)"
         >
-          <button aiReasoningEffortTrigger></button>
+          <button aiReasoningEffortTrigger hlmBtn variant="outline" size="sm">
+            Reasoning effort: <span aiReasoningEffortValue></span>
+          </button>
           <ai-reasoning-effort-content>
             <div class="mb-4 flex items-center justify-between gap-4">
               <ai-reasoning-effort-label />

@@ -241,7 +241,7 @@ function readOutputMetadata(member) {
     return [];
   }
 
-  const outputCall = readOutputCall(member.initializer);
+  const outputCall = readOutputCall(member.initializer, propertyNameText(member.name));
 
   if (!outputCall) {
     return [];
@@ -249,7 +249,7 @@ function readOutputMetadata(member) {
 
   return [
     {
-      name: outputCall.alias ?? propertyNameText(member.name),
+      name: outputCall.name,
       type: outputCall.type,
       ...optionalDescription(member),
     },
@@ -257,6 +257,12 @@ function readOutputMetadata(member) {
 }
 
 function readInputCall(expression) {
+  const modelCall = readModelCall(expression);
+
+  if (modelCall) {
+    return modelCall;
+  }
+
   if (!ts.isCallExpression(expression)) {
     return undefined;
   }
@@ -287,19 +293,60 @@ function readInputCall(expression) {
   return undefined;
 }
 
-function readOutputCall(expression) {
+function readOutputCall(expression, memberName) {
   if (
-    !ts.isCallExpression(expression) ||
-    !ts.isIdentifier(expression.expression) ||
-    expression.expression.text !== 'output'
+    ts.isCallExpression(expression) &&
+    ts.isIdentifier(expression.expression) &&
+    expression.expression.text === 'output'
   ) {
+    return {
+      name: readAliasOption(expression.arguments[0]) ?? memberName,
+      type: readValueType(expression, undefined),
+    };
+  }
+
+  const modelCall = readModelCall(expression);
+
+  if (!modelCall) {
     return undefined;
   }
 
   return {
-    alias: readAliasOption(expression.arguments[0]),
-    type: readValueType(expression, undefined),
+    name: `${modelCall.alias ?? memberName}Change`,
+    type: modelCall.type,
+    description: modelCall.description,
   };
+}
+
+function readModelCall(expression) {
+  if (!ts.isCallExpression(expression)) {
+    return undefined;
+  }
+
+  if (ts.isIdentifier(expression.expression) && expression.expression.text === 'model') {
+    return {
+      alias: readAliasOption(expression.arguments[1]),
+      defaultValue: expression.arguments[0],
+      required: false,
+      type: readValueType(expression, expression.arguments[0]),
+    };
+  }
+
+  if (
+    ts.isPropertyAccessExpression(expression.expression) &&
+    ts.isIdentifier(expression.expression.expression) &&
+    expression.expression.expression.text === 'model' &&
+    expression.expression.name.text === 'required'
+  ) {
+    return {
+      alias: readAliasOption(expression.arguments[0]),
+      defaultValue: undefined,
+      required: true,
+      type: readValueType(expression, undefined),
+    };
+  }
+
+  return undefined;
 }
 
 function readValueType(callExpression, fallbackExpression) {

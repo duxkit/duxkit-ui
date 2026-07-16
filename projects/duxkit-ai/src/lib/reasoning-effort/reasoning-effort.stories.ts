@@ -33,7 +33,9 @@ const meta: Meta = {
     template: `
       <div class="flex flex-col items-start gap-3">
         <ai-reasoning-effort [value]="value" (valueChange)="value = $event">
-          <button aiReasoningEffortTrigger></button>
+          <button aiReasoningEffortTrigger hlmBtn variant="outline" size="sm">
+            Reasoning effort: <span aiReasoningEffortValue></span>
+          </button>
           <ai-reasoning-effort-content>
             <div class="mb-4 flex items-center justify-between gap-4">
               <ai-reasoning-effort-label />
@@ -65,8 +67,10 @@ export const DropdownList: Story = {
         [value]="value"
         (valueChange)="value = $event"
       >
-        <button aiReasoningEffortTrigger></button>
-        <ai-reasoning-effort-content>
+        <button aiReasoningEffortTrigger hlmBtn variant="outline" size="sm">
+          Reasoning effort: <span aiReasoningEffortValue></span>
+        </button>
+        <ai-reasoning-effort-content class="p-1">
           <div class="mb-2 flex items-center justify-between gap-4 px-2">
             <ai-reasoning-effort-label />
             <ai-reasoning-effort-value />
@@ -117,7 +121,9 @@ export const CustomSliderStyling: Story = {
   render: () => ({
     template: `
       <ai-reasoning-effort>
-        <button aiReasoningEffortTrigger></button>
+        <button aiReasoningEffortTrigger hlmBtn variant="outline" size="sm">
+          Reasoning effort: <span aiReasoningEffortValue></span>
+        </button>
         <ai-reasoning-effort-content>
           <ai-reasoning-effort-slider
             class="gap-5"
@@ -135,7 +141,9 @@ export const Disabled: Story = {
   render: () => ({
     template: `
       <ai-reasoning-effort disabled>
-        <button aiReasoningEffortTrigger></button>
+        <button aiReasoningEffortTrigger hlmBtn variant="outline" size="sm">
+          Reasoning effort: <span aiReasoningEffortValue></span>
+        </button>
         <ai-reasoning-effort-content>
           <ai-reasoning-effort-slider />
         </ai-reasoning-effort-content>

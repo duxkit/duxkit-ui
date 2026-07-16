@@ -52,6 +52,9 @@ describe('docs search', () => {
     expect(searchComponentDocs('thumbClass').map((item) => item.slug)).toContain(
       'reasoning-effort',
     );
+    expect(searchComponentDocs('valueChange').map((item) => item.slug)).toContain(
+      'reasoning-effort',
+    );
     expect(
       searchComponentDocs('Emits after this item is selected').map((item) => item.slug),
     ).toContain('reasoning-effort');

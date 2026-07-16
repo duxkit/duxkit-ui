@@ -32,7 +32,9 @@ class ResizeObserverMock implements ResizeObserver {
       [value]="value()"
       (valueChange)="value.set($event)"
     >
-      <button aiReasoningEffortTrigger class="custom-trigger"></button>
+      <button aiReasoningEffortTrigger aria-label="Choose reasoning effort" class="custom-trigger">
+        {{ label() }}: <span aiReasoningEffortValue></span>
+      </button>
       <ai-reasoning-effort-content class="custom-content">
         <div class="mb-4 flex items-center justify-between gap-4">
           <ai-reasoning-effort-label />
@@ -156,9 +158,11 @@ describe('ReasoningEffort', () => {
     expect(root?.classList).toContain('custom-root');
     expect(trigger.type).toBe('button');
     expect(trigger.textContent).toContain('Reasoning effort: Medium');
+    expect(trigger.getAttribute('aria-label')).toBe('Choose reasoning effort');
     expect(trigger.getAttribute('aria-haspopup')).toBe('dialog');
     expect(trigger.getAttribute('aria-expanded')).toBe('false');
     expect(trigger.classList).toContain('custom-trigger');
+    expect(trigger.querySelector('ng-icon')).toBeNull();
 
     await open(fixture);
 
@@ -211,6 +215,18 @@ describe('ReasoningEffort', () => {
     expect(fixture.componentInstance.value()).toBe('high');
     expect(thumb?.getAttribute('aria-valuenow')).toBe('2');
     expect(thumb?.getAttribute('aria-valuetext')).toBe('High');
+  });
+
+  it('does not render a misleading slider position for an unavailable controlled value', async () => {
+    fixture.componentInstance.value.set('provider-only');
+    await settle(fixture);
+    await open(fixture);
+
+    const content = getContent();
+
+    expect(getTrigger(fixture).textContent).toContain('Reasoning effort: Unavailable');
+    expect(content.querySelector('[data-slot="reasoning-effort-slider"]')).toBeNull();
+    expect(content.querySelector('[data-slot="reasoning-effort-slider-labels"]')).toBeNull();
   });
 
   it('swaps the slider for a default list generated from configurable levels', async () => {
