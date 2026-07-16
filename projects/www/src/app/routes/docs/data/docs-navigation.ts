@@ -12,7 +12,7 @@ export const docsPages = [
   {
     slug: 'installation',
     title: 'Installation',
-    description: 'Install Duxkit AI, configure Tailwind CSS v4, and render the first primitive.',
+    description: 'Use the @duxkit/ui CLI to configure Angular and add editable primitives.',
     href: '/docs/installation',
   },
 ] as const;

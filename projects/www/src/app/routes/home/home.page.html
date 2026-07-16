@@ -19,13 +19,13 @@
         class="install-command"
         type="button"
         variant="outline"
-        [disabled]="true"
         size="lg"
         [attr.aria-label]="installCopyLabel()"
         [title]="installCopyLabel()"
+        (click)="copyInstallCommand()"
       >
         <span aria-hidden="true">$</span>
-        <code>Coming soon</code>
+        <code>{{ installCommand }}</code>
         <ng-icon
           hlmIcon
           size="sm"

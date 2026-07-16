@@ -81,6 +81,11 @@
     <priority>0.8</priority>
   </url>
   <url>
+    <loc>https://duxkit.com/components/reasoning-effort</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
     <loc>https://duxkit.com/components/sources</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>

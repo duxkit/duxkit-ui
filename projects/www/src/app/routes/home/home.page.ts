@@ -3,15 +3,14 @@ import { NgIcon, provideIcons } from '@ng-icons/core';
 import { lucideCheck, lucideCopy } from '@ng-icons/lucide';
 import { RouterLink } from '@angular/router';
 import { ConversationDemoComponent } from './conversation-demo.component';
-import { Conversation, ConversationContent, ConversationScrollAnchor } from 'duxkit-ai/conversation';
+import {
+  Conversation,
+  ConversationContent,
+  ConversationScrollAnchor,
+} from 'duxkit-ai/conversation';
 import { Message, MessageContent } from 'duxkit-ai/message';
 import { Task, TaskContent, TaskItem, TaskItemFile, TaskTrigger } from 'duxkit-ai/task';
-import {
-  type AiToolPart,
-  Tool,
-  ToolContent,
-  ToolTrigger,
-} from 'duxkit-ai/tool';
+import { type AiToolPart, Tool, ToolContent, ToolTrigger } from 'duxkit-ai/tool';
 import { HlmButton } from '@duxkit-private/ui/helm/button';
 import { HlmIcon } from '@duxkit-private/ui/helm/icon';
 import { SeoService } from '../../shared/seo/seo.service';
@@ -44,7 +43,7 @@ import { SeoService } from '../../shared/seo/seo.service';
 export class HomePage {
   private readonly seo = inject(SeoService);
 
-  protected readonly installCommand = 'pnpm add duxkit-ai';
+  protected readonly installCommand = 'npx @duxkit/ui@latest init';
   protected readonly databaseToolPart: AiToolPart = {
     type: 'tool-database_query',
     toolCallId: 'call-database-query',

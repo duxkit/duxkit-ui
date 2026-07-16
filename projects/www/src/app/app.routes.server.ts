@@ -11,6 +11,10 @@ export const appServerRoutes: ServerRoute[] = [
     renderMode: RenderMode.Prerender,
   },
   {
+    path: 'docs/installation',
+    renderMode: RenderMode.Prerender,
+  },
+  {
     path: 'components',
     renderMode: RenderMode.Prerender,
   },

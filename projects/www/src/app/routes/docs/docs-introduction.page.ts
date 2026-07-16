@@ -40,7 +40,7 @@ const faqs = [
   template: `
     <section class="docs-introduction-page container" aria-labelledby="docs-introduction-title">
       <header class="docs-introduction-hero">
-        <h1 id="docs-introduction-title" class="text-foreground">Duxkit AI</h1>
+        <h1 id="docs-introduction-title" class="text-foreground">Duxkit UI</h1>
         <p class="text-muted-foreground">
           Angular UI primitives for AI chat and agent screens. Build the product experience you need
           without starting from a boxed-in chatbot shell.

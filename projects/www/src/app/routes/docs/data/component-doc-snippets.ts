@@ -2,33 +2,35 @@ import { type ComponentDocSlug } from './component-docs.registry';
 
 export const componentImports: Record<ComponentDocSlug, string> = {
   conversation:
-    "import { Conversation, ConversationContent, ConversationScrollAnchor } from 'duxkit-ai/conversation';",
+    "import { Conversation, ConversationContent, ConversationScrollAnchor } from './components/ai/conversation';\nimport { Message, MessageContent } from './components/ai/message';",
   message:
-    "import { Message, MessageActions, MessageContent, MessageCopy } from 'duxkit-ai/message';",
+    "import { Message, MessageActions, MessageContent, MessageCopy } from './components/ai/message';",
   checkpoint:
-    "import { Checkpoint, CheckpointIcon, CheckpointTrigger } from 'duxkit-ai/checkpoint';",
+    "import { Checkpoint, CheckpointIcon, CheckpointTrigger } from './components/ai/checkpoint';",
   context:
-    "import { Context, ContextContent, ContextContentBody, ContextContentFooter, ContextContentHeader, ContextInputUsage, ContextOutputUsage, ContextTrigger } from 'duxkit-ai/context';",
+    "import { Context, ContextContent, ContextContentBody, ContextContentFooter, ContextContentHeader, ContextInputUsage, ContextOutputUsage, ContextTrigger } from './components/ai/context';",
   'model-selector':
-    "import { ModelSelector, ModelSelectorContent, ModelSelectorDescription, ModelSelectorEmpty, ModelSelectorGroup, ModelSelectorGroupHeading, ModelSelectorInput, ModelSelectorItem, ModelSelectorList, ModelSelectorLogo, ModelSelectorName, ModelSelectorShortcut, ModelSelectorTitle, ModelSelectorTrigger } from 'duxkit-ai/model-selector';",
+    "import { ModelSelector, ModelSelectorContent, ModelSelectorDescription, ModelSelectorEmpty, ModelSelectorGroup, ModelSelectorGroupHeading, ModelSelectorInput, ModelSelectorItem, ModelSelectorList, ModelSelectorLogo, ModelSelectorName, ModelSelectorShortcut, ModelSelectorTitle, ModelSelectorTrigger } from './components/ai/model-selector';",
   'prompt-input':
-    "import { ModelSelector, ModelSelectorContent, ModelSelectorDescription, ModelSelectorEmpty, ModelSelectorGroup, ModelSelectorGroupHeading, ModelSelectorInput, ModelSelectorItem, ModelSelectorList, ModelSelectorLogo, ModelSelectorName, ModelSelectorTitle, ModelSelectorTrigger } from 'duxkit-ai/model-selector';\nimport { PromptInput, PromptInputAddAttachment, PromptInputAttachments, PromptInputSubmit, PromptInputTextarea, PromptInputToolbar, PromptInputTools } from 'duxkit-ai/prompt-input';",
+    "import { ModelSelector, ModelSelectorContent, ModelSelectorDescription, ModelSelectorEmpty, ModelSelectorGroup, ModelSelectorGroupHeading, ModelSelectorInput, ModelSelectorItem, ModelSelectorList, ModelSelectorLogo, ModelSelectorName, ModelSelectorTitle, ModelSelectorTrigger } from './components/ai/model-selector';\nimport { PromptInput, PromptInputAddAttachment, PromptInputAttachments, PromptInputSubmit, PromptInputTextarea, PromptInputToolbar, PromptInputTools } from './components/ai/prompt-input';",
   queue:
-    "import { Queue, QueueItem, QueueItemAction, QueueItemActions, QueueItemAttachment, QueueItemContent, QueueItemDescription, QueueItemFile, QueueItemImage, QueueItemIndicator, QueueList, QueueSection, QueueSectionContent, QueueSectionCount, QueueSectionLabel, QueueSectionTrigger } from 'duxkit-ai/queue';",
+    "import { Queue, QueueItem, QueueItemAction, QueueItemActions, QueueItemAttachment, QueueItemContent, QueueItemDescription, QueueItemFile, QueueItemImage, QueueItemIndicator, QueueList, QueueSection, QueueSectionContent, QueueSectionCount, QueueSectionLabel, QueueSectionTrigger } from './components/ai/queue';",
   attachment:
-    "import { Attachment, AttachmentPreview, AttachmentRemove, Attachments } from 'duxkit-ai/attachment';",
+    "import { Attachment, AttachmentPreview, AttachmentRemove, Attachments } from './components/ai/attachment';",
   'chain-of-thought':
-    "import { ChainOfThought, ChainOfThoughtContent, ChainOfThoughtImage, ChainOfThoughtImageCaption, ChainOfThoughtStep, ChainOfThoughtStepDescription, ChainOfThoughtStepIcon, ChainOfThoughtStepLabel, ChainOfThoughtTrigger } from 'duxkit-ai/chain-of-thought';",
-  task: "import { Task, TaskContent, TaskItem, TaskItemFile, TaskTrigger } from 'duxkit-ai/task';",
-  tool: "import { Tool, ToolContent, ToolTrigger } from 'duxkit-ai/tool';",
-  reasoning: "import { Reasoning, ReasoningContent, ReasoningTrigger } from 'duxkit-ai/reasoning';",
+    "import { ChainOfThought, ChainOfThoughtContent, ChainOfThoughtImage, ChainOfThoughtImageCaption, ChainOfThoughtStep, ChainOfThoughtStepDescription, ChainOfThoughtStepIcon, ChainOfThoughtStepLabel, ChainOfThoughtTrigger } from './components/ai/chain-of-thought';",
+  task: "import { Task, TaskContent, TaskItem, TaskItemFile, TaskTrigger } from './components/ai/task';",
+  tool: "import { Tool, ToolContent, ToolTrigger } from './components/ai/tool';",
+  reasoning:
+    "import { Reasoning, ReasoningContent, ReasoningTrigger } from './components/ai/reasoning';",
   'reasoning-effort':
-    "import { ReasoningEffort, ReasoningEffortContent, ReasoningEffortItem, ReasoningEffortLabel, ReasoningEffortList, ReasoningEffortSlider, ReasoningEffortTrigger, ReasoningEffortValue } from 'duxkit-ai/reasoning-effort';",
-  sources: "import { Source, Sources, SourcesContent, SourcesTrigger } from 'duxkit-ai/sources';",
+    "import { ReasoningEffort, ReasoningEffortContent, ReasoningEffortItem, ReasoningEffortLabel, ReasoningEffortList, ReasoningEffortSlider, ReasoningEffortTrigger, ReasoningEffortValue } from './components/ai/reasoning-effort';",
+  sources:
+    "import { Source, Sources, SourcesContent, SourcesTrigger } from './components/ai/sources';",
   confirmation:
-    "import { Confirmation, ConfirmationAction, ConfirmationActions, ConfirmationRequest, ConfirmationTitle } from 'duxkit-ai/confirmation';",
-  'code-block': "import { CodeBlock } from 'duxkit-ai/code-block';",
-  shimmer: "import { Shimmer } from 'duxkit-ai/shimmer';",
+    "import { Confirmation, ConfirmationAction, ConfirmationActions, ConfirmationRequest, ConfirmationTitle } from './components/ai/confirmation';",
+  'code-block': "import { CodeBlock } from './components/ai/code-block';",
+  shimmer: "import { Shimmer } from './components/ai/shimmer';",
 };
 
 export const anatomySnippets: Record<ComponentDocSlug, string> = {

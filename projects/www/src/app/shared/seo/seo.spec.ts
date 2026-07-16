@@ -38,7 +38,7 @@ describe('www SEO configuration', () => {
       canonicalPath: '/docs',
     });
     expect(getSeoPage('/docs/installation')).toMatchObject({
-      title: 'Install Duxkit AI - Angular Setup Guide',
+      title: 'Install Duxkit UI - Angular CLI Setup Guide',
       canonicalPath: '/docs/installation',
     });
     expect(getSeoPage('/components')).toMatchObject({

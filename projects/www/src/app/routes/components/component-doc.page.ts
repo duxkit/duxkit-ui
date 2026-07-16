@@ -14,13 +14,14 @@ import {
 } from '../docs/components/component-doc-preview.component';
 import { DocsCodeTabs } from '../docs/components/docs-code-tabs.component';
 import { DocsTableOfContents } from '../docs/components/docs-table-of-contents.component';
-import { apiSymbolHeadingId, buildComponentDocsTableOfContents } from '../docs/utils/docs-table-of-contents';
+import {
+  apiSymbolHeadingId,
+  buildComponentDocsTableOfContents,
+} from '../docs/utils/docs-table-of-contents';
 import { componentDocs, findComponentDoc } from '../docs/data/component-docs.registry';
 import { componentHref } from '../docs/data/docs-navigation';
 import { docsComponentRoutePath } from '../../shared/seo/seo';
 import { SeoService } from '../../shared/seo/seo.service';
-
-const packagePublished = false;
 
 const attachmentPreviewExamples = [
   { variant: 'grid', label: 'Grid' },
@@ -42,31 +43,16 @@ const attachmentPreviewExamples = [
           <section class="docs-section border-b border-border" aria-labelledby="install">
             <div class="docs-section-copy">
               <h2 id="install" class="text-foreground">Install</h2>
-              @if (packagePublished) {
-                <p class="text-muted-foreground">
-                  Install the package once, then import the component from the public API.
-                </p>
-              } @else {
-                <p class="text-muted-foreground">
-                  These docs are a preview while the package API is being finalized.
-                </p>
-              }
+              <p class="text-muted-foreground">
+                After running <code>&#64;duxkit/ui init</code> once, copy this primitive into your
+                app. Its source and any missing dependencies are added to your workspace.
+              </p>
             </div>
-            @if (packagePublished) {
-              <app-docs-code-tabs
-                ariaLabel="Installation options"
-                copyLabel="Copy installation snippet"
-                [tabs]="installTabs()"
-              />
-            } @else {
-              <aside class="docs-install-soon border border-border bg-card text-muted-foreground">
-                <h3 class="text-foreground">Coming soon</h3>
-                <p>
-                  The component APIs and examples are still moving. Install instructions are hidden
-                  until the package is ready to publish.
-                </p>
-              </aside>
-            }
+            <app-docs-code-tabs
+              ariaLabel="Installation options"
+              copyLabel="Copy installation snippet"
+              [tabs]="installTabs()"
+            />
           </section>
 
           <section class="docs-section border-b border-border" aria-labelledby="anatomy">
@@ -321,35 +307,6 @@ const attachmentPreviewExamples = [
       gap: 8px;
     }
 
-    .docs-install-soon {
-      display: grid;
-      gap: 8px;
-      border-radius: 8px;
-      padding: 16px;
-      font-size: 15px;
-      line-height: 1.55;
-    }
-
-    .docs-install-soon h3 {
-      margin: 0;
-      font-size: 15px;
-      line-height: 1.4;
-      font-weight: 600;
-      letter-spacing: 0;
-    }
-
-    .docs-install-soon p {
-      margin: 0;
-    }
-
-    .docs-install-soon code {
-      border-radius: 4px;
-      padding: 2px 4px;
-      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-      font-size: 13px;
-      line-height: 1.45;
-    }
-
     .docs-section h2 {
       font-size: 22px;
       line-height: 1.25;
@@ -518,7 +475,6 @@ export class ComponentDocPage {
     initialValue: 'conversation',
   });
 
-  protected readonly packagePublished = packagePublished;
   protected readonly doc = computed(() => findComponentDoc(this.slug() ?? ''));
   protected readonly attachmentPreviewExamples = attachmentPreviewExamples;
   protected readonly componentHref = componentHref;
@@ -530,8 +486,19 @@ export class ComponentDocPage {
   protected readonly tableOfContents = computed(() =>
     buildComponentDocsTableOfContents(this.apiMetadata()?.symbols ?? []),
   );
-  protected readonly installSnippet = computed(() => 'pnpm add duxkit-ai');
+  protected readonly installPrimitives = computed(() => {
+    const slug = this.doc()?.slug ?? '';
 
+    if (slug === 'conversation') {
+      return 'conversation message';
+    }
+
+    if (slug === 'prompt-input') {
+      return 'prompt-input model-selector';
+    }
+
+    return slug;
+  });
   constructor() {
     effect(() => {
       const doc = this.doc();
@@ -554,18 +521,18 @@ export class ComponentDocPage {
     {
       id: 'pnpm',
       label: 'pnpm',
-      code: this.installSnippet(),
+      code: `pnpm dlx @duxkit/ui@latest add ${this.installPrimitives()}`,
       language: 'bash',
     },
     {
       id: 'npm',
       label: 'npm',
-      code: 'npm install duxkit-ai',
+      code: `npx @duxkit/ui@latest add ${this.installPrimitives()}`,
       language: 'bash',
     },
     {
       id: 'import',
-      label: 'Manual',
+      label: 'Import',
       code: this.importSnippet(),
       language: 'ts',
     },

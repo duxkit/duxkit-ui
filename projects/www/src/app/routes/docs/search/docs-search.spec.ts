@@ -105,7 +105,7 @@ describe('docs search', () => {
 describe('component docs snippets', () => {
   it('keeps import, anatomy, and preview snippets for every registered component doc', () => {
     for (const doc of componentDocs) {
-      expect(componentImports[doc.slug]).toContain("from 'duxkit-ai/");
+      expect(componentImports[doc.slug]).toContain("from './components/ai/");
       expect(anatomySnippets[doc.slug].trim().length).toBeGreaterThan(0);
       expect(componentPreviewSnippets[doc.slug].trim().length).toBeGreaterThan(0);
     }

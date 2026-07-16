@@ -10,7 +10,7 @@ import { footerLinkGroups } from './footer-link-groups';
     <footer class="site-footer">
       <div class="site-footer-container">
         <section class="site-footer-cta" aria-labelledby="site-footer-title">
-          <h2 id="site-footer-title">Build the AI screens your Angular app actually needs.</h2>
+          <h2 id="site-footer-title">AI interfaces, built for Angular.</h2>
 
           <a hlmBtn class="site-footer-button" routerLink="/components"> Explore components </a>
         </section>

@@ -14,6 +14,9 @@ export interface DocsCodeTab {
 
 @Component({
   selector: 'app-docs-code-tabs',
+  host: {
+    class: 'docs-code-tabs-host',
+  },
   imports: [HlmButton, HlmIcon, NgIcon],
   providers: [provideIcons({ lucideCheck, lucideCopy })],
   encapsulation: ViewEncapsulation.None,
@@ -106,7 +109,16 @@ export interface DocsCodeTab {
     }
   `,
   styles: `
+    .docs-code-tabs-host {
+      min-width: 0;
+      max-width: 100%;
+      display: block;
+    }
+
     .docs-code-tabs {
+      width: 100%;
+      min-width: 0;
+      max-width: 100%;
       overflow: hidden;
       border-radius: 6px;
     }

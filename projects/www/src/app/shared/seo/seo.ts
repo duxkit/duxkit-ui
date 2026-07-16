@@ -57,16 +57,17 @@ export function getSeoPage(path: string): SeoPage {
   if (path === '/docs/installation') {
     return buildSeoPage({
       canonicalPath: '/docs/installation',
-      title: 'Install Duxkit AI - Angular Setup Guide',
-      description: 'Install Duxkit AI, configure Tailwind CSS v4, and render the first primitive.',
+      title: 'Install Duxkit UI - Angular CLI Setup Guide',
+      description:
+        'Use the @duxkit/ui CLI to configure an Angular app and add editable AI UI primitives.',
       jsonLd: [
         breadcrumbJsonLd([
           { name: 'Docs', path: '/docs' },
           { name: 'Installation', path: '/docs/installation' },
         ]),
         techArticleJsonLd(
-          'Install Duxkit AI',
-          'Install Duxkit AI in an Angular app with Tailwind CSS v4.',
+          'Install Duxkit UI',
+          'Use the @duxkit/ui CLI to configure an Angular app and add editable AI UI primitives.',
           '/docs/installation',
         ),
       ],
