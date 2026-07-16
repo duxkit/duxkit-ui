@@ -35,6 +35,10 @@ import { footerLinkGroups } from './footer-link-groups';
             </section>
           }
         </nav>
+
+        <div class="site-footer-legal">
+          <p>&copy; {{ currentYear }} Duxkit UI. All rights reserved.</p>
+        </div>
       </div>
     </footer>
   `,
@@ -145,6 +149,18 @@ import { footerLinkGroups } from './footer-link-groups';
       color: var(--foreground);
     }
 
+    .site-footer-legal {
+      border-top: 1px solid var(--border);
+      padding: 20px 0 24px;
+    }
+
+    .site-footer-legal p {
+      margin: 0;
+      color: var(--muted-foreground);
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
     @media (max-width: 860px) {
       .site-footer-nav {
         grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -174,4 +190,5 @@ import { footerLinkGroups } from './footer-link-groups';
 })
 export class FooterComponent {
   protected readonly footerLinkGroups = footerLinkGroups;
+  protected readonly currentYear = new Date().getFullYear();
 }

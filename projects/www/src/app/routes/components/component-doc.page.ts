@@ -58,9 +58,6 @@ const attachmentPreviewExamples = [
           <section class="docs-section border-b border-border" aria-labelledby="anatomy">
             <div class="docs-section-copy">
               <h2 id="anatomy" class="text-foreground">Anatomy</h2>
-              <p class="text-muted-foreground">
-                Use this as the baseline structure before adding your own state and styling.
-              </p>
             </div>
             <app-docs-code-tabs
               ariaLabel="Component anatomy code"
@@ -72,9 +69,6 @@ const attachmentPreviewExamples = [
           <section class="docs-section border-b border-border" aria-labelledby="preview">
             <div class="docs-section-copy">
               <h2 id="preview" class="text-foreground">Preview</h2>
-              <p class="text-muted-foreground">
-                Angular examples rendered with the same pieces shown in the code tab.
-              </p>
             </div>
             @if (doc.slug === 'attachment') {
               <div class="docs-preview-examples">
@@ -110,9 +104,6 @@ const attachmentPreviewExamples = [
           <section class="docs-section border-b border-border" aria-labelledby="api">
             <div class="docs-section-copy">
               <h2 id="api" class="text-foreground">API</h2>
-              <p class="text-muted-foreground">
-                Selector, input, output, export, and source metadata generated from the library.
-              </p>
             </div>
             @if (apiMetadata(); as api) {
               <div class="docs-api-reference">
@@ -519,15 +510,15 @@ export class ComponentDocPage {
   });
   protected readonly installTabs = computed(() => [
     {
-      id: 'pnpm',
-      label: 'pnpm',
-      code: `pnpm dlx @duxkit/ui@latest add ${this.installPrimitives()}`,
-      language: 'bash',
-    },
-    {
       id: 'npm',
       label: 'npm',
       code: `npx @duxkit/ui@latest add ${this.installPrimitives()}`,
+      language: 'bash',
+    },
+    {
+      id: 'pnpm',
+      label: 'pnpm',
+      code: `pnpm dlx @duxkit/ui@latest add ${this.installPrimitives()}`,
       language: 'bash',
     },
     {
