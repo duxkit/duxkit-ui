@@ -15,7 +15,7 @@ export const attachmentRemoveVariants = cva(
           'absolute top-2 right-2 size-7 rounded-md border border-border bg-background/85 shadow-sm backdrop-blur hover:bg-background focus-visible:ring-offset-2 focus-visible:ring-offset-background',
         inline: '',
         'inline-preview':
-          '!size-5 aspect-square overflow-hidden rounded bg-background focus-visible:ring-offset-1 focus-visible:ring-offset-background [&_ng-icon]:!size-3',
+          'absolute inset-y-0 left-0 my-auto !size-5 aspect-square overflow-hidden rounded bg-background focus-visible:ring-offset-1 focus-visible:ring-offset-background [&_ng-icon]:!size-3',
         list: 'ml-auto size-8 rounded-md hover:bg-muted focus-visible:ring-offset-2 focus-visible:ring-offset-background',
       },
     },
@@ -37,7 +37,7 @@ export type AttachmentRemoveVariants = VariantProps<typeof attachmentRemoveVaria
     '[attr.role]': 'customRole()',
     '[attr.tabindex]': 'customTabIndex()',
     '[attr.data-slot-variant]': 'slotVariant()',
-    '[class.hidden]': 'hidden()',
+    '[attr.hidden]': 'hidden() ? "" : null',
     '[class.opacity-0]': 'gridConcealed()',
     '[class.opacity-100]': 'gridVisible()',
     '[attr.aria-label]': 'label()',

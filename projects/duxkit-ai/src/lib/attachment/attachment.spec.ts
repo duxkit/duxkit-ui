@@ -317,21 +317,30 @@ describe('Attachment', () => {
     const element = inlineFixture.nativeElement as HTMLElement;
     const attachment = element.querySelector('ai-attachment');
     const preview = element.querySelector('ai-attachment-preview');
+    const inlineThumbnail = preview?.querySelector('[data-slot="inline-thumbnail"]');
+    const button = preview?.querySelector<HTMLButtonElement>('button[aiAttachmentRemove]');
 
     expect(preview?.querySelector('img')?.getAttribute('src')).toBe(
       'https://example.com/mountain-landscape.jpg',
     );
-    expect(preview?.querySelector('button[aiAttachmentRemove]')).toBeNull();
+    expect(preview?.classList).toContain('relative');
+    expect(inlineThumbnail?.classList).not.toContain('opacity-0');
+    expect(button?.hasAttribute('hidden')).toBe(true);
 
     attachment?.dispatchEvent(new MouseEvent('mouseenter'));
     inlineFixture.detectChanges();
     await inlineFixture.whenStable();
 
-    const button = preview?.querySelector<HTMLButtonElement>('button[aiAttachmentRemove]');
-
     expect(button?.getAttribute('data-slot-variant')).toBe('inline-preview');
+    expect(button?.hasAttribute('hidden')).toBe(false);
     expect(button?.classList).toContain('group/button');
     expect(button?.classList).toContain('!size-5');
+    expect(button?.classList).toContain('absolute');
+    expect(button?.classList).toContain('left-0');
+    expect(button?.classList).toContain('inset-y-0');
+    expect(button?.classList).toContain('my-auto');
+    expect(button?.classList).not.toContain('-translate-y-1/2');
+    expect(inlineThumbnail?.classList).toContain('opacity-0');
   });
 
   it('keeps the inline remove button reachable when focus moves within the attachment', async () => {

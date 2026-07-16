@@ -28,7 +28,7 @@ export const attachmentPreviewVariants = cva('', {
   variants: {
     variant: {
       grid: 'block min-w-0',
-      inline: 'inline-flex min-w-0 max-w-full',
+      inline: 'relative inline-flex min-w-0 max-w-full',
       list: 'contents',
     },
   },
@@ -73,7 +73,9 @@ export type AttachmentPreviewVariants = VariantProps<typeof attachmentPreviewVar
               [attr.aria-label]="attachment.previewLabel()"
             >
               <span
-                class="inline-flex size-5 aspect-square shrink-0 items-center justify-center overflow-hidden rounded bg-background text-muted-foreground"
+                data-slot="inline-thumbnail"
+                class="inline-flex size-5 aspect-square shrink-0 items-center justify-center overflow-hidden rounded bg-background text-muted-foreground transition-opacity motion-reduce:transition-none"
+                [class.opacity-0]="inlineRemoveVisible()"
               >
                 @if (attachment.kind() === 'image' && attachment.url() !== undefined) {
                   <img
@@ -180,8 +182,13 @@ export class AttachmentPreview {
   protected readonly showProjectedRemove = computed(
     () =>
       this.projectedRemove() !== undefined &&
-      (this.hasProjectedPreview() ||
-        (this.attachment.variant() === 'inline' && this.attachment.hovered())),
+      (this.hasProjectedPreview() || this.attachment.variant() === 'inline'),
+  );
+  protected readonly inlineRemoveVisible = computed(
+    () =>
+      this.attachment.variant() === 'inline' &&
+      this.projectedRemove() !== undefined &&
+      this.attachment.hovered(),
   );
   protected readonly iconName = computed(() => attachmentIconNames[this.attachment.kind()]);
   protected readonly classes = computed(() =>
