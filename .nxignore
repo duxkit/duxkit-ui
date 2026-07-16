@@ -1,0 +1,2 @@
+# Nested workspace manifests are CLI test fixtures, not root Nx projects.
+projects/cli/src/testing/fixtures/**/project.json
