@@ -1,5 +1,6 @@
 import { readFile, realpath, stat } from 'node:fs/promises';
 import { dirname, extname, isAbsolute, join, relative, resolve, sep } from 'node:path';
+import { DEFAULT_LIBRARY_PATH } from './library-path.js';
 import {
   hasPrimitiveTemplate,
   listPrimitiveTemplates,
@@ -161,20 +162,10 @@ export async function createAddPlan(
   );
 
   if (componentDestination === null) {
-    ambiguities.push('A component destination cannot be inferred. Pass --components-path <path>.');
+    ambiguities.push('A library path cannot be inferred. Pass --library-path <path>.');
   } else if (!isSafeWorkspacePath(componentDestination)) {
     errors.push(
-      `The component destination is unsafe: ${componentDestination}. It must be a relative path inside the workspace.`,
-    );
-  }
-
-  if (
-    options.componentsPath !== undefined &&
-    inspection.config.value?.componentsPath !== undefined &&
-    normalizePath(options.componentsPath) !== normalizePath(inspection.config.value.componentsPath)
-  ) {
-    ambiguities.push(
-      'The explicit --components-path conflicts with duxkit-ai.json. Use the configured destination or update the config with init.',
+      `The library path is unsafe: ${componentDestination}. It must be a relative path inside the workspace.`,
     );
   }
 
@@ -349,17 +340,15 @@ function selectComponentDestination(
   project: AngularApplicationProject | null,
   explicitPath: string | undefined,
 ): string | null {
-  if (inspection.config.value?.componentsPath !== undefined) {
-    return normalizePath(inspection.config.value.componentsPath);
-  }
-
   if (explicitPath !== undefined) {
     return normalizePath(explicitPath);
   }
 
-  return project?.sourceRoot === null || project?.sourceRoot === undefined
-    ? inspection.componentDestination
-    : normalizePath(join(project.sourceRoot, 'app/components/ai'));
+  if (inspection.config.value?.componentsPath !== undefined) {
+    return normalizePath(inspection.config.value.componentsPath);
+  }
+
+  return project === null ? inspection.componentDestination : DEFAULT_LIBRARY_PATH;
 }
 
 async function loadTemplates(
@@ -686,7 +675,15 @@ async function createConfigPlan(
     if (project !== null) after['project'] = project.name;
     if (inspection.styleLanguage !== 'unknown') after['style'] = inspection.styleLanguage;
     if (inspection.stylesheet !== null) after['stylesheet'] = inspection.stylesheet;
-    after['componentsPath'] = componentDestination;
+  }
+
+  after['componentsPath'] = componentDestination;
+
+  if (isRecord(after['tailwind'])) {
+    after['tailwind'] = {
+      ...after['tailwind'],
+      sourcePath: `./${componentDestination}`,
+    };
   }
 
   const primitiveList = Array.isArray(after['primitives'])

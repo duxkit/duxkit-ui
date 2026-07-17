@@ -1,5 +1,6 @@
 import { access, readFile, readdir } from 'node:fs/promises';
 import { dirname, extname, isAbsolute, join, relative, resolve, sep } from 'node:path';
+import { DEFAULT_LIBRARY_PATH } from './library-path.js';
 import {
   listPrimitives,
   resolvePrimitivePlan,
@@ -774,8 +775,8 @@ function selectComponentDestination(
     return normalizeWorkspacePath(config.componentsPath);
   }
 
-  if (project?.sourceRoot !== null && project?.sourceRoot !== undefined) {
-    return normalizeWorkspacePath(join(project.sourceRoot, 'app/components/ai'));
+  if (project !== null) {
+    return DEFAULT_LIBRARY_PATH;
   }
 
   return null;
@@ -954,6 +955,7 @@ async function detectComponentsPaths(
     paths.add(inspection.componentDestination);
   }
 
+  paths.add(DEFAULT_LIBRARY_PATH);
   paths.add('src/app/components/ai');
 
   for (const root of ['apps', 'projects']) {

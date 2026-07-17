@@ -135,8 +135,8 @@ describe('CLI fixture harness', () => {
   });
 
   it.each([
-    ['angular-cli-app', 'src/app/components/ai', 'src/styles.css'],
-    ['nx-workspace', 'apps/chat/src/app/components/ai', 'apps/chat/src/styles.css'],
+    ['angular-cli-app', 'libs/dux-ui', 'src/styles.css'],
+    ['nx-workspace', 'libs/dux-ui', 'apps/chat/src/styles.css'],
   ] as const)(
     'applies safe init mutations to the %s fixture without installation',
     async (fixtureName, componentsPath, stylesheetPath) => {
@@ -170,6 +170,81 @@ describe('CLI fixture harness', () => {
       });
     },
   );
+
+  it('uses the library path chosen during interactive init', async () => {
+    await withCliFixtureWorkspace('angular-cli-app', async (workspace) => {
+      const result = await workspace.run(
+        ['init', '--no-install', '--package-manager', 'npm', '--tokens', 'add'],
+        {},
+        {
+          confirmations: [true],
+          libraryPaths: ['libs/custom-ui'],
+        },
+      );
+
+      result.assertExitCode(0);
+      result.assertStderrIncludes('Library path (libs/dux-ui): libs/custom-ui');
+      expect((await stat(workspace.resolve('libs/custom-ui'))).isDirectory()).toBe(true);
+      expect(JSON.parse(await workspace.readText('duxkit-ai.json'))).toEqual(
+        expect.objectContaining({ componentsPath: 'libs/custom-ui' }),
+      );
+    });
+  });
+
+  it('uses the default library path when the init prompt is left empty', async () => {
+    await withCliFixtureWorkspace('angular-cli-app', async (workspace) => {
+      const result = await workspace.run(
+        ['init', '--no-install', '--package-manager', 'npm', '--tokens', 'add'],
+        {},
+        {
+          confirmations: [true],
+          libraryPaths: [''],
+        },
+      );
+
+      result.assertExitCode(0);
+      result.assertStderrIncludes('Library path (libs/dux-ui):');
+      expect(JSON.parse(await workspace.readText('duxkit-ai.json'))).toEqual(
+        expect.objectContaining({ componentsPath: 'libs/dux-ui' }),
+      );
+      expect((await stat(workspace.resolve('libs/dux-ui'))).isDirectory()).toBe(true);
+    });
+  });
+
+  it('lets add redirect an initialized workspace to another library path', async () => {
+    await withCliFixtureWorkspace('angular-cli-app', async (workspace) => {
+      const initialized = await workspace.run([
+        'init',
+        '--yes',
+        '--no-install',
+        '--package-manager',
+        'npm',
+        '--tokens',
+        'add',
+      ]);
+      initialized.assertExitCode(0);
+
+      const result = await workspace.run([
+        'add',
+        'message',
+        '--library-path',
+        'libs/custom-ui',
+        '--yes',
+        '--no-install',
+        '--package-manager',
+        'npm',
+      ]);
+
+      result.assertExitCode(0);
+      result.assertFileChanged('libs/custom-ui/message/message.ts');
+      expect(JSON.parse(await workspace.readText('duxkit-ai.json'))).toEqual(
+        expect.objectContaining({
+          componentsPath: 'libs/custom-ui',
+          tailwind: expect.objectContaining({ sourcePath: './libs/custom-ui' }),
+        }),
+      );
+    });
+  });
 
   it('prints a concise init summary by default', async () => {
     await withCliFixtureWorkspace('angular-cli-app', async (workspace) => {
@@ -279,7 +354,7 @@ describe('CLI fixture harness', () => {
         '--no-install',
         '--package-manager',
         'npm',
-        '--components-path',
+        '--library-path',
         'src/app/components/other',
         '--json',
       ]);
@@ -292,7 +367,7 @@ describe('CLI fixture harness', () => {
       expect(result.stderr).toBe('');
       expect(parsed.status).toBe('blocked');
       expect(parsed.ambiguities).toContainEqual(
-        expect.objectContaining({ flag: '--components-path (or --force)' }),
+        expect.objectContaining({ flag: '--library-path (or --force)' }),
       );
       result.assertReadOnly();
     });
@@ -394,7 +469,7 @@ describe('CLI fixture harness', () => {
       );
       expect(parsed.stylesheet).toBe('src/styles.css');
       expect(parsed.styleLanguage).toBe('css');
-      expect(parsed.componentDestination).toBe('src/app/components/ai');
+      expect(parsed.componentDestination).toBe('libs/dux-ui');
       expect(parsed.packageManager.name).toBe('unknown');
       expect(parsed.tailwind).toEqual(
         expect.objectContaining({ sourceCoverage: 'missing', v4Imports: false }),
@@ -426,7 +501,7 @@ describe('CLI fixture harness', () => {
         expect.objectContaining({ name: 'chat', sourceRoot: 'apps/chat/src' }),
       );
       expect(parsed.stylesheet).toBe('apps/chat/src/styles.css');
-      expect(parsed.componentDestination).toBe('apps/chat/src/app/components/ai');
+      expect(parsed.componentDestination).toBe('libs/dux-ui');
     });
   });
 
@@ -501,8 +576,8 @@ describe('CLI fixture harness', () => {
       result.assertExitCode(0);
       expect(result.stderr).toBe('');
       expect(result.packageChanges).toEqual([]);
-      result.assertFileChanged('src/app/components/ai/message/message.ts');
-      result.assertFileChanged('src/app/components/ai/markdown/markdown.scss');
+      result.assertFileChanged('libs/dux-ui/message/message.ts');
+      result.assertFileChanged('libs/dux-ui/markdown/markdown.scss');
       result.assertFileChanged('duxkit-ai.json');
       expect(JSON.parse(await workspace.readText('duxkit-ai.json'))).toEqual(
         expect.objectContaining({
@@ -514,7 +589,7 @@ describe('CLI fixture harness', () => {
         }),
       );
       expect(result.stdout).toContain('Import examples');
-      expect(result.stdout).toContain('./components/ai/message');
+      expect(result.stdout).toContain('../../libs/dux-ui/message');
       expect(result.stdout).toContain(
         'Generated files are now part of your app and can be edited.',
       );
@@ -536,8 +611,8 @@ describe('CLI fixture harness', () => {
       result.assertExitCode(0);
       result.assertStderrIncludes('Select components to add: conversation, message');
       result.assertStdoutIncludes('Ready to add conversation, message');
-      result.assertFileChanged('src/app/components/ai/conversation/index.ts');
-      result.assertFileChanged('src/app/components/ai/message/index.ts');
+      result.assertFileChanged('libs/dux-ui/conversation/index.ts');
+      result.assertFileChanged('libs/dux-ui/message/index.ts');
     });
   });
 
@@ -598,7 +673,7 @@ describe('CLI fixture harness', () => {
       result.assertStdoutIncludes('and 15 more');
       expect(result.stdout).not.toContain('AttachmentPrimitive');
       for (const primitive of remainingV1PrimitiveIds) {
-        result.assertFileChanged(`src/app/components/ai/${primitive}/index.ts`);
+        result.assertFileChanged(`libs/dux-ui/${primitive}/index.ts`);
       }
 
       await symlink(resolve('node_modules'), workspace.resolve('node_modules'), 'dir');
@@ -651,7 +726,7 @@ describe('CLI fixture harness', () => {
       result.assertStdoutIncludes('Ready to add message');
       result.assertStdoutIncludes('13 files to create');
       result.assertStderrIncludes('Apply these changes? (y/N) y');
-      result.assertFileChanged('src/app/components/ai/message/message.ts');
+      result.assertFileChanged('libs/dux-ui/message/message.ts');
     });
   });
 
@@ -696,7 +771,7 @@ describe('CLI fixture harness', () => {
       const result = await workspace.run([
         'add',
         'message',
-        '--components-path',
+        '--library-path',
         'generated/ai',
         '--yes',
         '--no-install',
@@ -717,7 +792,7 @@ describe('CLI fixture harness', () => {
         '.test-bin/npm',
         [
           '#!/bin/sh',
-          'if [ -e "$DUXKIT_ROOT/src/app/components/ai" ]; then exit 17; fi',
+          'if [ -e "$DUXKIT_ROOT/libs/dux-ui" ]; then exit 17; fi',
           'printf "%s\\n" "$@" > "$DUXKIT_LOG"',
           'touch "$DUXKIT_MARKER"',
         ].join('\n') + '\n',
@@ -734,7 +809,7 @@ describe('CLI fixture harness', () => {
       expect(await workspace.readText('.test-bin/install-complete')).toBe('');
       expect(await workspace.readText('.test-bin/install.log')).toContain('install');
       expect(await workspace.readText('.test-bin/install.log')).toContain('ai@^6.0.207');
-      result.assertFileChanged('src/app/components/ai/message/message.ts');
+      result.assertFileChanged('libs/dux-ui/message/message.ts');
       result.assertSourceFixtureUnchanged();
     });
   });
@@ -804,7 +879,7 @@ describe('CLI fixture harness', () => {
         '.test-bin/npm',
         [
           '#!/bin/sh',
-          'mkdir -p "$DUXKIT_ROOT/src/app/components/ai/message/message-action-classes.ts"',
+          'mkdir -p "$DUXKIT_ROOT/libs/dux-ui/message/message-action-classes.ts"',
         ].join('\n') + '\n',
       );
       const result = await workspace.run(['add', 'message', '--yes', '--package-manager', 'npm'], {
@@ -816,11 +891,11 @@ describe('CLI fixture harness', () => {
       result.assertStderrIncludes('Partial changes were made.');
       result.assertStderrIncludes('primitive markdown files written');
       result.assertStderrIncludes('primitive message files written');
-      result.assertFileChanged('src/app/components/ai/markdown/markdown.ts');
+      result.assertFileChanged('libs/dux-ui/markdown/markdown.ts');
       result.assertFileUnchanged('duxkit-ai.json');
       expect(
         (
-          await stat(workspace.resolve('src/app/components/ai/message/message-action-classes.ts'))
+          await stat(workspace.resolve('libs/dux-ui/message/message-action-classes.ts'))
         ).isDirectory(),
       ).toBe(true);
       result.assertSourceFixtureUnchanged();
@@ -831,7 +906,7 @@ describe('CLI fixture harness', () => {
     await withCliFixtureWorkspace('angular-cli-app', async (workspace) => {
       await workspace.writeExecutable(
         '.test-bin/npm',
-        '#!/bin/sh\nmkdir -p "$DUXKIT_ROOT/src/app/components/ai/message/message-action-classes.ts"\n',
+        '#!/bin/sh\nmkdir -p "$DUXKIT_ROOT/libs/dux-ui/message/message-action-classes.ts"\n',
       );
       const result = await workspace.run(
         ['add', 'message', '--yes', '--json', '--package-manager', 'npm'],
@@ -928,9 +1003,9 @@ describe('CLI fixture harness', () => {
         'npm',
       ]);
       initial.assertExitCode(0);
-      const generated = initial.after.file('src/app/components/ai/message/message.ts');
+      const generated = initial.after.file('libs/dux-ui/message/message.ts');
       await workspace.writeText(
-        'src/app/components/ai/message/message.ts',
+        'libs/dux-ui/message/message.ts',
         'export const customized = true;\n',
       );
       await workspace.writeText('src/app/app.config.ts', 'export const appConfig = "foreign";\n');
@@ -948,7 +1023,7 @@ describe('CLI fixture harness', () => {
       ]);
 
       result.assertExitCode(0);
-      expect(await workspace.readText('src/app/components/ai/message/message.ts')).toBe(generated);
+      expect(await workspace.readText('libs/dux-ui/message/message.ts')).toBe(generated);
       expect(await workspace.readText('src/app/app.config.ts')).toBe(
         'export const appConfig = "foreign";\n',
       );
@@ -963,9 +1038,9 @@ describe('CLI fixture harness', () => {
 
   it('--force never overwrites foreign generated targets', async () => {
     await withCliFixtureWorkspace('angular-cli-app', async (workspace) => {
-      await mkdir(workspace.resolve('src/app/components/ai/markdown'), { recursive: true });
+      await mkdir(workspace.resolve('libs/dux-ui/markdown'), { recursive: true });
       await workspace.writeText(
-        'src/app/components/ai/markdown/markdown.ts',
+        'libs/dux-ui/markdown/markdown.ts',
         'export const foreign = true;\n',
       );
       const result = await workspace.run([
@@ -979,7 +1054,7 @@ describe('CLI fixture harness', () => {
       ]);
 
       result.assertExitCode(1);
-      expect(await workspace.readText('src/app/components/ai/markdown/markdown.ts')).toBe(
+      expect(await workspace.readText('libs/dux-ui/markdown/markdown.ts')).toBe(
         'export const foreign = true;\n',
       );
       result.assertReadOnly();
@@ -997,7 +1072,7 @@ describe('CLI fixture harness', () => {
         'npm',
       ]);
       initial.assertExitCode(0);
-      const target = 'src/app/components/ai/message/message.ts';
+      const target = 'libs/dux-ui/message/message.ts';
       await workspace.writeText(target, 'export const customized = true;\n');
       await workspace.writeText('src/app/app.config.ts', 'export const protectedValue = true;\n');
       await workspace.writeExecutable(
@@ -1063,7 +1138,7 @@ describe('CLI fixture harness', () => {
       expect(parsed.status).toBe('ready');
       expect(parsed.requested).toEqual(['message']);
       expect(parsed.included).toEqual(['markdown', 'code-block']);
-      expect(parsed.componentDestination).toBe('src/app/components/ai');
+      expect(parsed.componentDestination).toBe('libs/dux-ui');
       expect(parsed.config.action).toBe('create');
       expect(parsed.files).toHaveLength(13);
       expect(parsed.files.every((file) => file.status === 'create')).toBe(true);
@@ -1089,7 +1164,7 @@ describe('CLI fixture harness', () => {
     });
   });
 
-  it('uses the configured Nx component destination and resolves aliases', async () => {
+  it('uses the shared Nx library default and resolves aliases', async () => {
     await withCliFixtureWorkspace('nx-workspace', async (workspace) => {
       const result = await workspace.run(['add', 'prompt', '--dry-run', '--json', '--no-install']);
       const parsed = JSON.parse(result.stdout) as {
@@ -1101,7 +1176,7 @@ describe('CLI fixture harness', () => {
       result.assertExitCode(0);
       expect(parsed).toEqual(
         expect.objectContaining({
-          componentDestination: 'apps/chat/src/app/components/ai',
+          componentDestination: 'libs/dux-ui',
           requested: ['prompt-input'],
           status: 'ready',
         }),
@@ -1116,7 +1191,7 @@ describe('CLI fixture harness', () => {
       const result = await workspace.run([
         'add',
         'message',
-        '--components-path',
+        '--library-path',
         'generated/ai',
         '--package-manager',
         'npm',
@@ -1230,12 +1305,12 @@ describe('CLI fixture harness', () => {
     });
   });
 
-  it('blocks unsafe component destinations during preflight', async () => {
+  it('blocks unsafe library paths during preflight', async () => {
     await withCliFixtureWorkspace('nx-workspace', async (workspace) => {
       const result = await workspace.run([
         'add',
         'message',
-        '--components-path',
+        '--library-path',
         '../outside',
         '--dry-run',
         '--json',
@@ -1337,7 +1412,7 @@ describe('CLI fixture harness', () => {
     });
   });
 
-  it('detects installed primitives from default local files without duxkit config', async () => {
+  it('detects installed primitives from the legacy default without duxkit config', async () => {
     await withCliFixtureWorkspace('angular-cli-app', async (workspace) => {
       await mkdir(workspace.resolve('src/app/components/ai/message'), { recursive: true });
       await workspace.writeText(
@@ -1477,7 +1552,7 @@ describe('CLI fixture harness', () => {
       );
       expect(parsed.stylesheet).toBe('apps/desk/src/styles.scss');
       expect(parsed.styleLanguage).toBe('scss');
-      expect(parsed.componentDestination).toBe('apps/desk/src/app/components/ai');
+      expect(parsed.componentDestination).toBe('libs/dux-ui');
       result.assertSourceFixtureUnchanged();
     });
   });

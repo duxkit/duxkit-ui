@@ -1,5 +1,6 @@
 import { readFile, stat } from 'node:fs/promises';
 import { dirname, extname, isAbsolute, join, relative, resolve, sep } from 'node:path';
+import { DEFAULT_LIBRARY_PATH } from './library-path.js';
 import {
   inspectWorkspace,
   type AngularApplicationProject,
@@ -202,8 +203,8 @@ export async function createInitPlan(
 
   if (componentsPath === null) {
     ambiguities.push({
-      flag: '--components-path <path>',
-      message: 'A component destination cannot be inferred. Pass --components-path <path>.',
+      flag: '--library-path <path>',
+      message: 'A library path cannot be inferred. Pass --library-path <path>.',
     });
   }
 
@@ -223,7 +224,7 @@ export async function createInitPlan(
 
   if (!isSafeWorkspacePath(stylesheet) || !isSafeWorkspacePath(componentsPath)) {
     ambiguities.push({
-      flag: '--stylesheet <path> and --components-path <path>',
+      flag: '--stylesheet <path> and --library-path <path>',
       message: 'Init paths must be relative paths inside the workspace.',
     });
 
@@ -361,7 +362,7 @@ function addConfigConflicts(
   const conflicts = [
     ['--project', options.project, config.project],
     ['--stylesheet', options.stylesheet, config.stylesheet],
-    ['--components-path', options.componentsPath, config.componentsPath],
+    ['--library-path', options.componentsPath, config.componentsPath],
     ['--style', options.style, config.style],
   ] as const;
 
@@ -420,9 +421,7 @@ function selectInitComponentsPath(
     return normalizePath(inspection.config.value.componentsPath);
   }
 
-  return project?.sourceRoot === null || project?.sourceRoot === undefined
-    ? null
-    : normalizePath(join(project.sourceRoot, 'app/components/ai'));
+  return project === null ? null : DEFAULT_LIBRARY_PATH;
 }
 
 function selectInitStyle(
@@ -740,8 +739,8 @@ async function createDirectoryPlan(
 
     if (!targetStat.isDirectory()) {
       ambiguities.push({
-        flag: '--components-path <path>',
-        message: `The component destination exists but is not a directory: ${componentsPath}.`,
+        flag: '--library-path <path>',
+        message: `The library path exists but is not a directory: ${componentsPath}.`,
       });
 
       return null;

@@ -2,7 +2,9 @@
 
 Command-line tooling for adding editable Duxkit AI primitives to Angular workspaces.
 
-The CLI detects Angular CLI and Nx workspaces, writes generated primitive source into your app, installs only the dependencies needed by the selected primitives, and records the result in `duxkit-ai.json`.
+The CLI detects Angular CLI and Nx workspaces, writes generated primitive source into a shared
+library, installs only the dependencies needed by the selected primitives, and records the result
+in `duxkit-ai.json`.
 
 ## Install
 
@@ -63,7 +65,7 @@ It can:
 - create or update JSON PostCSS config for Tailwind CSS v4
 - add Tailwind CSS v4 imports and Spartan Brain preset imports to the selected global stylesheet
 - add missing Duxkit theme tokens without overwriting existing token values
-- create the configured generated-components directory
+- create the configured generated library directory
 
 Common usage:
 
@@ -72,15 +74,19 @@ duxkit-ui init
 duxkit-ui init --dry-run
 duxkit-ui init --yes
 duxkit-ui init --project app --stylesheet src/styles.css
+duxkit-ui init --library-path libs/shared/ai
 duxkit-ui init --no-install
 ```
+
+Interactive initialization asks for the generated library path. Press Enter to use
+`libs/dux-ui`.
 
 Useful options:
 
 - `--cwd <path>`: inspect a workspace directory other than the current directory
 - `--project <name>`: choose the Angular application project
 - `--stylesheet <path>`: choose the global stylesheet to configure
-- `--components-path <path>`: choose where generated primitive files are written
+- `--library-path <path>`: choose the generated primitive library
 - `--style <language>`: set generated style language
 - `--tokens <add|skip|require-existing>`: control theme-token handling
 - `--tailwind <add|skip|require-existing>`: control Tailwind stylesheet handling
@@ -95,13 +101,13 @@ Useful options:
 
 ### `duxkit-ui add`
 
-Adds one or more Duxkit AI primitives to the configured component destination.
+Adds one or more Duxkit AI primitives to the configured library.
 
 It can:
 
 - resolve requested primitives and transitive primitive dependencies
 - install only the package dependencies required by the selected primitives
-- copy generated component, helper, type, and style files into your app
+- copy generated component, helper, type, and style files into the library
 - update `duxkit-ai.json` after successful source writes
 - print import examples after generation
 
@@ -116,6 +122,7 @@ duxkit-ui add message --dry-run
 duxkit-ui add message --yes
 duxkit-ui add message --force
 duxkit-ui add message --no-install
+duxkit-ui add message --library-path libs/shared/ai
 ```
 
 Useful options:
@@ -123,14 +130,14 @@ Useful options:
 - `--all`: add every available primitive
 - `--cwd <path>`: inspect a workspace directory other than the current directory
 - `--project <name>`: choose the Angular application project
-- `--components-path <path>`: choose where generated primitive files are written
+- `--library-path <path>`: choose the generated primitive library
 - `--package-manager <npm|pnpm|yarn|bun>`: set the install command package manager
 - `--dry-run`: print the plan without writing files or installing packages
 - `--json`: print machine-readable JSON to stdout
 - `--verbose`: print every planned package, file, and configuration change
 - `--yes`: accept safe defaults and skip the final apply confirmation
 - `--no-install`: skip package installation and print the exact install command
-- `--force`: overwrite only safe Duxkit-owned generated files under the configured component destination
+- `--force`: overwrite only safe Duxkit-owned generated files under the configured library
 
 `--force` is intentionally narrow. It does not overwrite foreign files, directories, unsafe paths, token values, JavaScript or TypeScript PostCSS files, Angular bootstrap or routing files, or unrelated app files.
 
@@ -163,7 +170,7 @@ It reports:
 
 - workspace type and package manager
 - selected project and project candidates
-- source root, stylesheet, style language, and component destination
+- source root, stylesheet, style language, and library path
 - `duxkit-ai.json` path and validity
 - Tailwind source coverage
 - present and missing theme tokens
@@ -205,11 +212,11 @@ The CLI stores workspace configuration in `duxkit-ai.json`:
   "$schema": "https://duxkit.com/schemas/duxkit-ai.json",
   "project": "app",
   "style": "css",
-  "componentsPath": "src/app/components/ai",
+  "componentsPath": "libs/dux-ui",
   "stylesheet": "src/styles.css",
   "tailwind": {
     "version": 4,
-    "sourcePath": "./src/app/components/ai"
+    "sourcePath": "./libs/dux-ui"
   },
   "aliases": {
     "components": "@/app/components"
@@ -225,19 +232,17 @@ The CLI stores workspace configuration in `duxkit-ai.json`:
 
 ## Generated Files
 
-Generated primitive files are copied into the configured component destination, which defaults to:
+Generated primitive files are copied into the configured library. Angular CLI and Nx workspaces
+use the same default:
 
 ```text
-src/app/components/ai
+libs/dux-ui
 ```
 
-For Nx app projects, the default is resolved from the selected app source root, for example:
-
-```text
-apps/chat/src/app/components/ai
-```
-
-Generated files are intended to be edited by the consuming app. Re-run with `--dry-run` before using `--force` so you can see exactly which files would be overwritten.
+Each primitive gets its own directory, such as `libs/dux-ui/message`. Choose another location
+during `init`, or pass `--library-path`. Generated files are intended to be edited by the
+consuming app. Re-run with `--dry-run` before using `--force` so you can see exactly which files
+would be overwritten.
 
 ## Available Primitives
 

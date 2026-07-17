@@ -42,7 +42,7 @@ try {
     'npm',
   ]);
 
-  const generatedRoot = join(canonicalWorkspace, 'src/app/components/ai');
+  const generatedRoot = join(canonicalWorkspace, 'libs/dux-ui');
   const generatedFiles = await collectFiles(generatedRoot);
   const generatedTypeScriptFiles = generatedFiles.filter((file) => file.endsWith('.ts'));
 
@@ -68,7 +68,7 @@ try {
           noEmit: true,
           skipLibCheck: true,
         },
-        include: ['src/**/*.ts'],
+        include: ['libs/**/*.ts', 'src/**/*.ts'],
       },
       null,
       2,

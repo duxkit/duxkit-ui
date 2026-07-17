@@ -61,6 +61,7 @@ export interface CliFixtureCommandResult {
 
 export interface CliFixtureInteraction {
   readonly confirmations: readonly boolean[];
+  readonly libraryPaths?: readonly string[];
   readonly primitiveSelections?: readonly (readonly PrimitiveId[] | null)[];
 }
 
@@ -140,6 +141,7 @@ export class CliFixtureWorkspace {
     let stderr = '';
     let stdout = '';
     const confirmations = [...(interaction?.confirmations ?? [])];
+    const libraryPaths = [...(interaction?.libraryPaths ?? [])];
     const primitiveSelections = [...(interaction?.primitiveSelections ?? [])];
     const io: CliIo = {
       confirm:
@@ -157,6 +159,20 @@ export class CliFixtureWorkspace {
               return answer;
             },
       interactive: interaction === undefined ? false : true,
+      inputLibraryPath:
+        interaction === undefined
+          ? undefined
+          : async (defaultPath) => {
+              const path = libraryPaths.shift();
+
+              if (path === undefined) {
+                stderr += `Library path (${defaultPath}): \n`;
+                return defaultPath;
+              }
+
+              stderr += `Library path (${defaultPath}): ${path}\n`;
+              return path;
+            },
       selectPrimitives:
         interaction === undefined
           ? undefined

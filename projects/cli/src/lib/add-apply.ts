@@ -220,14 +220,14 @@ async function writePrimitiveFile(plan: AddPlan, file: AddFilePlan): Promise<voi
 
 function assertTargetInsideDestination(plan: AddPlan, target: string): void {
   if (plan.componentDestination === null) {
-    throw new Error('The configured component destination is missing.');
+    throw new Error('The configured library path is missing.');
   }
 
   const destination = resolve(plan.workspace.root, plan.componentDestination);
   const targetRelative = relative(destination, target);
 
   if (targetRelative === '' || targetRelative === '..' || targetRelative.startsWith(`..${sep}`)) {
-    throw new Error(`Refusing to write outside the configured component destination: ${target}.`);
+    throw new Error(`Refusing to write outside the configured library path: ${target}.`);
   }
 }
 
@@ -275,6 +275,19 @@ async function writeConfigForCompletedPrimitives(
   const after = existing === null ? { ...plan.config.after } : { ...existing };
   const plannedPrimitives = plan.config.after['primitives'];
   const currentPrimitives = existing?.['primitives'];
+  const plannedComponentsPath = plan.config.after['componentsPath'];
+  const plannedTailwind = plan.config.after['tailwind'];
+
+  if (typeof plannedComponentsPath === 'string') {
+    after['componentsPath'] = plannedComponentsPath;
+  }
+
+  if (isRecord(plannedTailwind)) {
+    after['tailwind'] = {
+      ...(isRecord(after['tailwind']) ? after['tailwind'] : {}),
+      ...plannedTailwind,
+    };
+  }
 
   after['primitives'] = mergeCompletedPrimitives(
     currentPrimitives,

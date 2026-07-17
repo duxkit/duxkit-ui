@@ -59,6 +59,7 @@ export function renderVerboseInitPlan(plan: InitPlan): string {
     `  workspace: ${plan.workspace.root}`,
     `  type: ${plan.workspace.type}`,
     `  project: ${plan.project?.name ?? 'None'}`,
+    `  library path: ${plan.directory?.path ?? 'None'}`,
     `  stylesheet: ${plan.stylesheet ?? 'None'}`,
     `  package manager: ${plan.packageManager}`,
     '',

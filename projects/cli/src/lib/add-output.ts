@@ -94,7 +94,7 @@ export function renderVerboseAddPlan(plan: AddPlan): string {
     `  workspace: ${plan.workspace.root}`,
     `  type: ${plan.workspace.type}`,
     `  project: ${plan.project?.name ?? 'None'}`,
-    `  component destination: ${plan.componentDestination ?? 'None'}`,
+    `  library path: ${plan.componentDestination ?? 'None'}`,
     `  package manager: ${plan.packageManager}`,
     '',
     'Requested primitives',

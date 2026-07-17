@@ -10,12 +10,14 @@ import {
   renderVerboseAddPlan,
 } from './add-output.js';
 import { createAddPlan, type AddPlan, type AddPlannerOptions } from './add-plan.js';
+import { resolveLibraryPathOption } from './library-path.js';
 import { promptForPrimitives } from './primitive-picker.js';
 
-export interface AddCommandOptions extends AddPlannerOptions {
+export interface AddCommandOptions extends Omit<AddPlannerOptions, 'componentsPath'> {
   readonly dryRun?: boolean;
   readonly install?: boolean;
   readonly json?: boolean;
+  readonly libraryPath?: string;
   readonly verbose?: boolean;
 }
 
@@ -25,13 +27,14 @@ export async function runAddCommand(
   io: CliIo,
 ): Promise<void> {
   const noInstall = options.noInstall === true || options.install === false;
+  const libraryPath = resolveLibraryPathOption(options.libraryPath);
   const selectedInputs =
     inputs.length === 0 && options.all !== true && options.json !== true && isInteractive(io)
       ? await promptForPrimitives(io)
       : inputs;
   const plan = await createAddPlan(
     selectedInputs,
-    { ...options, noInstall },
+    { ...options, componentsPath: libraryPath, noInstall },
     resolve(options.cwd ?? process.cwd()),
   );
 

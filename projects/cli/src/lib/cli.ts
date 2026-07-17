@@ -19,6 +19,7 @@ export interface CliPrimitiveChoice {
 
 export interface CliIo {
   readonly confirm?: (message: string) => Promise<boolean>;
+  readonly inputLibraryPath?: (defaultPath: string) => Promise<string>;
   readonly interactive?: boolean;
   readonly selectPrimitives?: (
     choices: readonly CliPrimitiveChoice[],
@@ -66,7 +67,7 @@ export function createCli(io: CliIo): Command {
     .option('--cwd <path>', 'Workspace directory to inspect.')
     .option('--project <name>', 'Angular application project to configure.')
     .option('--stylesheet <path>', 'Global stylesheet to configure.')
-    .option('--components-path <path>', 'Destination directory for generated AI primitives.')
+    .option('--library-path <path>', 'Library directory for generated AI primitives.')
     .option('--style <language>', 'Generated component style language.')
     .option(
       '--tokens <mode>',
@@ -102,7 +103,7 @@ export function createCli(io: CliIo): Command {
     .option('--all', 'Select every available primitive.')
     .option('--cwd <path>', 'Workspace directory to inspect.')
     .option('--project <name>', 'Angular application project to configure.')
-    .option('--components-path <path>', 'Destination directory for generated AI primitives.')
+    .option('--library-path <path>', 'Library directory for generated AI primitives.')
     .option(
       '--package-manager <manager>',
       'Package manager to use for the planned install command.',

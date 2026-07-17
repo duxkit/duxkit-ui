@@ -31,7 +31,7 @@ function renderHumanInspect(inspection: WorkspaceInspection): string {
     `  source root: ${inspection.project?.sourceRoot ?? 'Unknown'}`,
     `  stylesheet: ${inspection.stylesheet ?? 'None inferred'}`,
     `  style language: ${inspection.styleLanguage}`,
-    `  component destination: ${inspection.componentDestination ?? 'None inferred'}`,
+    `  library path: ${inspection.componentDestination ?? 'None inferred'}`,
     '',
     'Duxkit config',
     `  path: ${inspection.config.path}`,

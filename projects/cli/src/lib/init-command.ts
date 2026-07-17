@@ -4,6 +4,8 @@ import type { CliIo } from './cli.js';
 import { CliCommandError } from './cli-errors.js';
 import { confirmApply, isInteractive, printJsonPlanForConfirmation } from './cli-interaction.js';
 import { applyInitPlan, InitApplyError } from './init-apply.js';
+import { DEFAULT_LIBRARY_PATH, resolveLibraryPathOption } from './library-path.js';
+import { promptForLibraryPath } from './library-path-prompt.js';
 import { renderInitFailure, renderInitSummary, renderVerboseInitPlan } from './init-output.js';
 import {
   createInitPlan,
@@ -13,10 +15,11 @@ import {
 } from './init-plan.js';
 import { inspectWorkspace } from './workspace-state.js';
 
-export interface InitCommandOptions extends InitPlannerOptions {
+export interface InitCommandOptions extends Omit<InitPlannerOptions, 'componentsPath'> {
   readonly dryRun?: boolean;
   readonly install?: boolean;
   readonly json?: boolean;
+  readonly libraryPath?: string;
   readonly noInstall?: boolean;
   readonly verbose?: boolean;
 }
@@ -24,10 +27,30 @@ export interface InitCommandOptions extends InitPlannerOptions {
 export async function runInitCommand(options: InitCommandOptions, io: CliIo): Promise<void> {
   const cwd = resolve(options.cwd ?? process.cwd());
   const noInstall = options.noInstall === true || options.install === false;
-  let plan = await createInitPlan(options, cwd);
+  const libraryPath = resolveLibraryPathOption(options.libraryPath);
+  let plannerOptions: InitPlannerOptions = {
+    ...options,
+    componentsPath: libraryPath,
+  };
+
+  if (
+    isInteractive(io) &&
+    options.yes !== true &&
+    options.json !== true &&
+    libraryPath === undefined
+  ) {
+    const inspection = await inspectWorkspace(cwd);
+    const defaultPath = inspection.config.value?.componentsPath ?? DEFAULT_LIBRARY_PATH;
+    plannerOptions = {
+      ...plannerOptions,
+      componentsPath: await promptForLibraryPath(io, defaultPath),
+    };
+  }
+
+  let plan = await createInitPlan(plannerOptions, cwd);
 
   if (plan.status === 'blocked' && isInteractive(io)) {
-    const promptedOptions = await promptForInitAmbiguities(options, plan);
+    const promptedOptions = await promptForInitAmbiguities(plannerOptions, plan);
 
     if (promptedOptions !== null) {
       plan = await createInitPlan(promptedOptions, cwd);
@@ -143,7 +166,7 @@ function withBlockedAmbiguity(plan: InitPlan, message: string): InitPlan {
 }
 
 async function promptForInitAmbiguities(
-  options: InitCommandOptions,
+  options: InitPlannerOptions,
   plan: InitPlan,
 ): Promise<InitPlannerOptions | null> {
   const workspace = await inspectWorkspace(plan.workspace.root);
