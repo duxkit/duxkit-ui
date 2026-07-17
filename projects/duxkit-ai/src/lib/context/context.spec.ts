@@ -140,6 +140,12 @@ describe('Context', () => {
     expect(context.clampedUsedPercent()).toBe(0.3125);
   });
 
+  it('keeps the context root sized to its content', () => {
+    const root = fixture.nativeElement.querySelector('ai-context') as HTMLElement | null;
+
+    expect(root?.classList).toContain('w-fit');
+  });
+
   it('renders the default trigger with percentage text, hover-card hooks, and progress icon', () => {
     const element = fixture.nativeElement as HTMLElement;
     const trigger = element.querySelector('button[aicontexttrigger]');

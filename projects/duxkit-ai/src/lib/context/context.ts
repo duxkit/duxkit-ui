@@ -37,7 +37,8 @@ function clamp(value: number, min: number, max: number): number {
   return Math.min(Math.max(value, min), max);
 }
 
-export const contextClasses = 'not-prose inline-flex items-center text-muted-foreground text-xs';
+export const contextClasses =
+  'not-prose inline-flex w-fit items-center text-muted-foreground text-xs';
 
 @Component({
   selector: 'ai-context,[aiContext]',
