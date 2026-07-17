@@ -6,4 +6,8 @@ This project is pre-1.0. Breaking changes may happen before a stable release and
 
 ## Unreleased
 
-- Preparing the project for an early public open-source release.
+## 0.0.1 - 2026-07-17
+
+- Published the first public Duxkit AI component library and source installer.
+- Added interactive CLI setup and primitive selection for Angular and Nx workspaces.
+- Added shared-library generation under `libs/dux-ui` with configurable library paths.
