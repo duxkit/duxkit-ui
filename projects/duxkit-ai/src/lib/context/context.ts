@@ -6,12 +6,12 @@ import { ContextContent } from './context-content';
 
 const PERCENT_MAX = 100;
 
-const compactTokenFormat = new Intl.NumberFormat(undefined, {
+const compactTokenFormat = new Intl.NumberFormat('en-US', {
   maximumFractionDigits: 1,
   notation: 'compact',
 });
 
-const percentFormat = new Intl.NumberFormat(undefined, {
+const percentFormat = new Intl.NumberFormat('en-US', {
   maximumFractionDigits: 1,
   style: 'percent',
 });

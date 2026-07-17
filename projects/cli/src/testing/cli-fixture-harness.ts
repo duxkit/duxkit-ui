@@ -7,7 +7,10 @@ import { runCli, type CliIo } from '../lib/cli.js';
 export type CliFixtureName = 'angular-cli-app' | 'nx-workspace';
 
 export type PackageDependencySection =
-  'dependencies' | 'devDependencies' | 'peerDependencies' | 'optionalDependencies';
+  | 'dependencies'
+  | 'devDependencies'
+  | 'peerDependencies'
+  | 'optionalDependencies';
 
 export interface FileChange {
   readonly path: string;
@@ -164,12 +167,17 @@ export class CliFixtureWorkspace {
     };
 
     const previousCwd = process.cwd();
+    const environmentKeys = new Set([...Object.keys(environment), 'npm_config_user_agent']);
     const previousEnvironment = new Map(
-      Object.keys(environment).map((key) => [key, process.env[key]] as const),
+      [...environmentKeys].map((key) => [key, process.env[key]] as const),
     );
     let exitCode: number;
 
     try {
+      if (!Object.hasOwn(environment, 'npm_config_user_agent')) {
+        delete process.env['npm_config_user_agent'];
+      }
+
       for (const [key, value] of Object.entries(environment)) {
         process.env[key] = value;
       }

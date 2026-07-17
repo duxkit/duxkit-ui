@@ -1,9 +1,9 @@
-name: Publish CLI
+name: Publish library
 
 on:
   push:
     tags:
-      - 'ui-v*'
+      - 'ai-v*'
 
 permissions:
   contents: read
@@ -22,7 +22,6 @@ jobs:
         with:
           node-version-file: .nvmrc
           registry-url: https://registry.npmjs.org
-          scope: '@duxkit'
 
       - name: Enable Corepack
         run: corepack enable
@@ -30,24 +29,24 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Test
-        run: pnpm test:cli
+      - name: Test library
+        run: pnpm exec nx test duxkit-ai -- --watch=false
 
-      - name: Build CLI
-        run: pnpm build:cli
+      - name: Build library
+        run: pnpm build:lib
 
       - name: Check release version
-        run: node scripts/check-release-version.mjs projects/cli/package.json ui-v
+        run: node scripts/check-release-version.mjs projects/duxkit-ai/package.json ai-v
 
-      - name: Smoke test packaged CLI
-        run: pnpm smoke:cli
+      - name: Check package entrypoints
+        run: pnpm check:package-entrypoints
 
       - name: Verify package contents
-        working-directory: dist/cli
+        working-directory: dist/duxkit-ai
         run: npm pack --dry-run
 
       - name: Publish package
-        working-directory: dist/cli
+        working-directory: dist/duxkit-ai
         run: npm publish --access public --provenance
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

@@ -15,7 +15,7 @@ import {
   PromptInputTools,
   type PromptInputFileError,
 } from './';
-import type { AiPromptSubmit } from '../types';
+import type { AiPromptSubmit } from './prompt-input.types';
 
 @Component({
   imports: [
@@ -297,12 +297,39 @@ describe('PromptInput', () => {
     fixture.detectChanges();
 
     expect(fixture.componentInstance.error()?.code).toBe('max_files');
+    expect(fixture.componentInstance.error()?.files.map((file) => file.name)).toEqual(['two.png']);
     expect(
       fixture.componentInstance
         .promptInput()
         .files()
         .map((file) => file.filename),
     ).toEqual(['one.png']);
+  });
+
+  it('adds valid files while reporting only rejected files from a mixed batch', () => {
+    fixture.componentInstance.accept.set('image/*');
+    fixture.detectChanges();
+
+    fixture.componentInstance
+      .promptInput()
+      .addFiles([
+        createFile('diagram.png', 'image/png'),
+        createFile('brief.pdf', 'application/pdf'),
+      ]);
+    fixture.detectChanges();
+
+    expect(
+      fixture.componentInstance
+        .promptInput()
+        .files()
+        .map((file) => file.filename),
+    ).toEqual(['diagram.png']);
+    expect(fixture.componentInstance.error()).toEqual(
+      expect.objectContaining({
+        code: 'accept',
+        files: [expect.objectContaining({ name: 'brief.pdf' })],
+      }),
+    );
   });
 
   it('submits text and files as stable data URLs, then clears local input state', async () => {

@@ -5,4 +5,3 @@ export * from './prompt-input-root';
 export * from './prompt-input-submit';
 export * from './prompt-input-textarea';
 export * from './prompt-input.types';
-export type { AiPromptSubmit } from '../types';

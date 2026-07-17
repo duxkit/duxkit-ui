@@ -7,7 +7,7 @@ import { Tool } from './tool';
 import { ToolStatus } from './tool-status';
 
 @Component({
-  selector: 'button[aiToolTrigger],ai-tool-trigger',
+  selector: 'button[aiToolTrigger]',
   imports: [NgIcon, ToolStatus],
   providers: [provideIcons({ lucideChevronDown, lucideWrench })],
   hostDirectives: [{ directive: BrnCollapsibleTrigger, inputs: ['type'] }],

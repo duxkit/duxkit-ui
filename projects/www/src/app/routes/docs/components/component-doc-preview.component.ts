@@ -957,8 +957,7 @@ export class ComponentDocPreview {
 
   protected readonly assistantMessage =
     'London is partly cloudy today. I can call the weather tool if you want a deterministic test result.';
-  protected readonly toolMessage =
-    'The test tool returned `24°C`, partly cloudy, from `playground-test-tool`.';
+  protected readonly toolMessage = 'The weather tool returned `24°C` and partly cloudy.';
   protected readonly messageMarkdown =
     'Here is a response with **markdown** and a small code example.\n\n```ts\nconst message = "Hello from AI SDK Angular";\n```';
   protected readonly reasoningMarkdown = [

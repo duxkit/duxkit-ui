@@ -1,31 +1,34 @@
-# Publishing Checklist
+# Publishing
 
-Use this checklist before publishing `duxkit-ai`.
+`duxkit-ai` and `@duxkit/ui` are published independently to npm by GitHub Actions.
 
-1. Start from a clean install.
+## Before release
 
-   ```bash
-   nvm use
-   pnpm install --frozen-lockfile
-   ```
-
-2. Run the required checks.
+1. Update the package version and `CHANGELOG.md`.
+2. Run the release checks:
 
    ```bash
-   pnpm build:lib
+   pnpm check:conventions
    pnpm test:ci
-   pnpm build:www
+   pnpm build
+   pnpm check:package-entrypoints
+   pnpm smoke:cli
    pnpm build:storybook
    ```
 
-3. Inspect the package tarball.
+3. Inspect both packages:
 
    ```bash
    npm pack --dry-run ./dist/duxkit-ai
+   npm pack --dry-run ./dist/cli
    ```
 
-4. Confirm the package README, license, peer dependency ranges, and public API exports are intentional.
+## Release
 
-5. Publish with npm 2FA enabled. Use provenance publishing if the release workflow is configured for it.
+Push the matching tag for the package being released:
 
-6. Tag the release and update `CHANGELOG.md` with user-facing changes.
+- `ai-v<version>` publishes `duxkit-ai`
+- `ui-v<version>` publishes `@duxkit/ui`
+
+The workflows reject tags that do not match the package version. npm publishing uses public access,
+provenance, and the repository `NPM_TOKEN` secret.

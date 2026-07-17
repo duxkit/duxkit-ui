@@ -44,15 +44,34 @@ const primitiveDirs = readdirSync(primitiveRoot, { withFileTypes: true })
   .filter((entry) => entry.isDirectory())
   .map((entry) => entry.name)
   .sort();
-const publicApi = readFileSync(join(root, 'projects/duxkit-ai/src/public-api.ts'), 'utf8');
-
 for (const name of primitiveDirs) {
   const dir = join(primitiveRoot, name);
   if (!existsSync(join(dir, 'index.ts'))) {
     fail(`projects/duxkit-ai/src/lib/${name} is missing index.ts`);
   }
-  if (!publicApi.includes(`export * from './lib/${name}';`)) {
-    fail(`projects/duxkit-ai/src/lib/${name} is not exported from public-api.ts`);
+  if (!existsSync(join(root, `projects/duxkit-ai/${name}/ng-package.json`))) {
+    fail(`projects/duxkit-ai/src/lib/${name} is missing its secondary entrypoint`);
+  }
+}
+
+for (const name of primitiveDirs) {
+  const dir = join(primitiveRoot, name);
+  for (const entry of readdirSync(dir, { withFileTypes: true })) {
+    if (
+      !entry.isFile() ||
+      !entry.name.endsWith('.ts') ||
+      entry.name.endsWith('.spec.ts') ||
+      entry.name.endsWith('.stories.ts')
+    ) {
+      continue;
+    }
+
+    const source = readFileSync(join(dir, entry.name), 'utf8');
+    if (/(?:from\s+|import\()\s*['"]\.\.\//.test(source)) {
+      fail(
+        `projects/duxkit-ai/src/lib/${name}/${entry.name} imports another primitive by a relative path`,
+      );
+    }
   }
 }
 

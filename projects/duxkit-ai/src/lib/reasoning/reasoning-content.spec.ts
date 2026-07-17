@@ -116,7 +116,7 @@ describe('ReasoningContent', () => {
     expect(element.querySelector('ai-code-block code.language-json')).not.toBeNull();
     expect(element.querySelector('ai-code-block .hljs-attr')?.textContent).toContain('status');
     expect(script).toBeNull();
-    expect(image?.getAttribute('onerror')).toBeNull();
+    expect(image).toBeNull();
   });
 
   it('can clamp long reasoning content behind a show more control', async () => {

@@ -3,7 +3,7 @@ import { Component, computed, inject, input, signal, ViewEncapsulation } from '@
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { lucideCheck, lucideCopy, lucideDownload } from '@ng-icons/lucide';
 import { twMerge } from 'tailwind-merge';
-import { AI_MARKDOWN_OPTIONS, renderHighlightedCode } from '../markdown';
+import { AI_MARKDOWN_OPTIONS, renderHighlightedCode } from 'duxkit-ai/markdown';
 
 const languageExtensions: Record<string, string> = {
   bash: 'sh',

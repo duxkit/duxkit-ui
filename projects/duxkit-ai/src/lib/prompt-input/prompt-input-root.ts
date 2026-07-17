@@ -14,9 +14,8 @@ import {
 } from '@angular/core';
 import { DOCUMENT, isPlatformBrowser } from '@angular/common';
 import { twMerge } from 'tailwind-merge';
-import type { AiAttachmentPart } from '../attachment';
-import type { AiPromptSubmit } from '../types';
 import type {
+  AiPromptSubmit,
   PromptInputFileError,
   PromptInputFilePart,
   PromptInputStatus,
@@ -110,18 +109,17 @@ export class PromptInput {
       return;
     }
 
+    const rejectedByType = incoming.filter((file) => !this.matchesAccept(file));
     const accepted = incoming.filter((file) => this.matchesAccept(file));
-
-    if (accepted.length === 0) {
-      this.emitFileError('accept', 'No files match the accepted types.', incoming);
-      return;
-    }
-
+    const rejectedBySize = accepted.filter((file) => !this.matchesMaxFileSize(file));
     const sized = accepted.filter((file) => this.matchesMaxFileSize(file));
 
-    if (sized.length === 0) {
-      this.emitFileError('max_file_size', 'All files exceed the maximum size.', accepted);
-      return;
+    if (rejectedByType.length > 0) {
+      this.emitFileError('accept', 'Some files do not match the accepted types.', rejectedByType);
+    }
+
+    if (rejectedBySize.length > 0) {
+      this.emitFileError('max_file_size', 'Some files exceed the maximum size.', rejectedBySize);
     }
 
     const maxFiles = this.maxFiles();
@@ -129,9 +127,10 @@ export class PromptInput {
     const capacity =
       typeof maxFiles === 'number' ? Math.max(0, maxFiles - existing.length) : sized.length;
     const capped = sized.slice(0, capacity);
+    const rejectedByCount = sized.slice(capacity);
 
-    if (capped.length < sized.length) {
-      this.emitFileError('max_files', 'Too many files. Some were not added.', sized);
+    if (rejectedByCount.length > 0) {
+      this.emitFileError('max_files', 'Too many files. Some were not added.', rejectedByCount);
     }
 
     if (capped.length === 0) {
@@ -171,11 +170,10 @@ export class PromptInput {
       text: this.text(),
       files: await Promise.all(
         this.files().map(async ({ file, id: _id, ...part }) => {
-          const attachment: AiAttachmentPart = {
+          return {
             ...part,
             url: await fileToDataUrl(file),
           };
-          return attachment;
         }),
       ),
     };

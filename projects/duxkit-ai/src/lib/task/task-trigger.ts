@@ -6,7 +6,7 @@ import { twMerge } from 'tailwind-merge';
 import { Task } from './task';
 
 @Component({
-  selector: 'button[aiTaskTrigger],ai-task-trigger',
+  selector: 'button[aiTaskTrigger]',
   imports: [NgIcon],
   providers: [provideIcons({ lucideChevronDown, lucideSearch })],
   hostDirectives: [{ directive: BrnCollapsibleTrigger, inputs: ['type'] }],

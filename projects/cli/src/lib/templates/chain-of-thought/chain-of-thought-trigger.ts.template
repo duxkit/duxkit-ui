@@ -7,7 +7,7 @@ import { ChainOfThought } from './chain-of-thought';
 import { Shimmer } from '../shimmer';
 
 @Component({
-  selector: 'button[aiChainOfThoughtTrigger],ai-chain-of-thought-trigger',
+  selector: 'button[aiChainOfThoughtTrigger]',
   imports: [NgIcon, Shimmer],
   providers: [provideIcons({ lucideBrain, lucideChevronDown })],
   hostDirectives: [{ directive: BrnCollapsibleTrigger, inputs: ['type'] }],

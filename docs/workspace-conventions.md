@@ -38,4 +38,6 @@ Every public primitive folder under `projects/duxkit-ai/src/lib/<primitive>` mus
 - `<primitive>.spec.ts`
 - `<primitive>.stories.ts`
 
-Every public primitive folder must be exported from `projects/duxkit-ai/src/public-api.ts`.
+Every public primitive folder must have a secondary entrypoint in
+`projects/duxkit-ai/<primitive>/ng-package.json`. Runtime imports between primitive families must
+use `duxkit-ai/<primitive>` so Angular classes are not bundled into more than one entrypoint.

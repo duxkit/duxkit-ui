@@ -1,12 +1,10 @@
-import { readFile } from 'node:fs/promises';
-import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from 'vitest';
 import {
   PrimitiveTemplateValidationError,
   validatePrimitiveTemplates,
   type PrimitiveTemplateSource,
 } from './primitive-template-validation.js';
-import { listPrimitiveTemplates } from './primitive-templates.js';
+import { listPrimitiveTemplates, readPrimitiveTemplateSource } from './primitive-templates.js';
 import {
   listPrimitives,
   normalizePrimitiveInput,
@@ -156,7 +154,7 @@ describe('primitive registry', () => {
 
     for (const template of templates) {
       expect(template.content, `${template.primitiveId}/${template.file}`).not.toMatch(
-        /from\s+['"]@duxkit(?:\/|-)/,
+        /from\s+['"](?:@duxkit-private|duxkit-ai(?:\/|['"]))/,
       );
     }
   });
@@ -203,10 +201,7 @@ async function loadPrimitiveTemplates(): Promise<readonly PrimitiveTemplateSourc
   return Promise.all(
     listPrimitiveTemplates().map(async (template) => ({
       ...template,
-      content: await readFile(
-        fileURLToPath(new URL(template.templatePath, import.meta.url)),
-        'utf8',
-      ),
+      content: await readPrimitiveTemplateSource(template),
     })),
   );
 }

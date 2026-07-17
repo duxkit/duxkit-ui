@@ -32,9 +32,6 @@ class MessagesHost {
 
 describe('ConversationContent', () => {
   let fixture: ComponentFixture<Host>;
-  let originalResizeObserver: typeof ResizeObserver | undefined;
-  let originalMutationObserver: typeof MutationObserver;
-  let originalRequestAnimationFrame: typeof requestAnimationFrame;
   let originalScrollIntoView: typeof HTMLElement.prototype.scrollIntoView | undefined;
   let originalScrollTo: typeof HTMLElement.prototype.scrollTo | undefined;
   let mutationObservers: TestMutationObserver[];
@@ -59,23 +56,23 @@ describe('ConversationContent', () => {
   }
 
   beforeEach(async () => {
-    originalResizeObserver = globalThis.ResizeObserver;
-    originalMutationObserver = globalThis.MutationObserver;
-    originalRequestAnimationFrame = globalThis.requestAnimationFrame;
     originalScrollIntoView = HTMLElement.prototype.scrollIntoView;
     originalScrollTo = HTMLElement.prototype.scrollTo;
     mutationObservers = [];
-    globalThis.ResizeObserver = TestResizeObserver as unknown as typeof ResizeObserver;
-    globalThis.MutationObserver = class extends TestMutationObserver {
-      constructor(callback: MutationCallback) {
-        super(callback);
-        mutationObservers.push(this);
-      }
-    } as unknown as typeof MutationObserver;
-    globalThis.requestAnimationFrame = ((callback: FrameRequestCallback) => {
+    vi.stubGlobal('ResizeObserver', TestResizeObserver);
+    vi.stubGlobal(
+      'MutationObserver',
+      class extends TestMutationObserver {
+        constructor(callback: MutationCallback) {
+          super(callback);
+          mutationObservers.push(this);
+        }
+      },
+    );
+    vi.stubGlobal('requestAnimationFrame', (callback: FrameRequestCallback) => {
       callback(0);
       return 0;
-    }) as typeof requestAnimationFrame;
+    });
 
     await TestBed.configureTestingModule({
       imports: [Host],
@@ -87,14 +84,7 @@ describe('ConversationContent', () => {
   });
 
   afterEach(() => {
-    if (originalResizeObserver) {
-      globalThis.ResizeObserver = originalResizeObserver;
-    } else {
-      delete (globalThis as { ResizeObserver?: typeof ResizeObserver }).ResizeObserver;
-    }
-
-    globalThis.MutationObserver = originalMutationObserver;
-    globalThis.requestAnimationFrame = originalRequestAnimationFrame;
+    vi.unstubAllGlobals();
 
     if (originalScrollIntoView) {
       HTMLElement.prototype.scrollIntoView = originalScrollIntoView;
@@ -127,6 +117,20 @@ describe('ConversationContent', () => {
     expect(element.classList).toContain('custom-content');
     expect(element.classList).not.toContain('overflow-y-auto');
     expect(element.classList).not.toContain('grow');
+  });
+
+  it('stops autoscrolling after the user scrolls away from the bottom', () => {
+    const element = fixture.nativeElement.querySelector('ai-conversation-content') as HTMLElement;
+
+    Object.defineProperties(element, {
+      clientHeight: { configurable: true, value: 200 },
+      scrollHeight: { configurable: true, value: 1_000 },
+      scrollTop: { configurable: true, value: 200 },
+    });
+
+    element.dispatchEvent(new Event('scroll'));
+
+    expect(fixture.componentInstance.content().autoScroll).toBe(false);
   });
 
   it('forces container scroll when a user message is added after the user intentionally scrolled up', async () => {
@@ -168,8 +172,7 @@ describe('ConversationContent', () => {
   });
 
   it('skips autoscroll scheduling when requestAnimationFrame is unavailable', async () => {
-    delete (globalThis as { requestAnimationFrame?: typeof requestAnimationFrame })
-      .requestAnimationFrame;
+    vi.stubGlobal('requestAnimationFrame', undefined);
 
     await TestBed.resetTestingModule()
       .configureTestingModule({

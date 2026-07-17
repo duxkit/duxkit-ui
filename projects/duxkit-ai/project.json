@@ -31,12 +31,10 @@
     "storybook": {
       "executor": "@storybook/angular:start-storybook",
       "options": {
-        "browserTarget": "playground:build:development",
+        "browserTarget": "www:build:development",
         "configDir": ".storybook",
         "tsConfig": "projects/duxkit-ai/tsconfig.storybook.json",
-        "styles": [
-          "projects/playground/src/styles.scss"
-        ],
+        "styles": ["projects/www/src/styles.scss"],
         "port": 6006,
         "compodoc": false,
         "experimentalZoneless": true
@@ -45,12 +43,10 @@
     "build-storybook": {
       "executor": "@storybook/angular:build-storybook",
       "options": {
-        "browserTarget": "playground:build:development",
+        "browserTarget": "www:build:development",
         "configDir": ".storybook",
         "tsConfig": "projects/duxkit-ai/tsconfig.storybook.json",
-        "styles": [
-          "projects/playground/src/styles.scss"
-        ],
+        "styles": ["projects/www/src/styles.scss"],
         "outputDir": "dist/storybook/duxkit-ai",
         "compodoc": false,
         "experimentalZoneless": true

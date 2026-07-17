@@ -10,8 +10,12 @@ import {
 import { cva, type VariantProps } from 'class-variance-authority';
 import { clsx } from 'clsx';
 import { twMerge } from 'tailwind-merge';
-import { AI_MARKDOWN_OPTIONS, markdownContentClasses, parseMarkdownBlocks } from '../markdown';
-import { CodeBlock } from '../code-block';
+import { CodeBlock } from 'duxkit-ai/code-block';
+import {
+  AI_MARKDOWN_OPTIONS,
+  markdownContentClasses,
+  parseMarkdownBlocks,
+} from 'duxkit-ai/markdown';
 import { Message } from './message';
 
 export const messageContentVariants = cva(

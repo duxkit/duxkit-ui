@@ -8,7 +8,6 @@ Thanks for taking the time to improve DuxKit AI. This project is early, pre-1.0,
 projects/duxkit-ai/   publishable Angular library
 projects/cli/         Duxkit UI CLI package published as @duxkit/ui
 projects/www/         docs and marketing site
-projects/playground/  local AI SDK playground
 projects/ui/          private Spartan Helm workspace primitives
 ```
 
@@ -41,7 +40,8 @@ Small, focused PRs are preferred. Include tests or docs when the change affects 
 
 Good first contributions are usually documentation, examples, or small accessibility fixes. Primitive internals are more sensitive because they define the public API and should include regression tests.
 
-When creating or changing a `duxkit-ai` primitive, follow the repo-local agent instructions in `AGENTS.md`, including the relevant files under `docs/agent-skills` when present in your local checkout. If the primitive should be available through the CLI, update the bundled registry in `projects/cli/src/lib/primitive-registry.ts` and run the CLI checks.
+If a primitive should be available through the CLI, update the bundled registry in
+`projects/cli/src/lib/primitive-registry.ts` and run the CLI checks.
 
 ## Scope
 

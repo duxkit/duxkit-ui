@@ -281,7 +281,6 @@ export const componentApiMetadata = {
       'ai-checkpoint',
       '[aiCheckpoint]',
       'button[aiCheckpointTrigger]',
-      'ai-checkpoint-trigger',
       'ai-checkpoint-icon',
       '[aiCheckpointIcon]',
     ],
@@ -311,7 +310,7 @@ export const componentApiMetadata = {
       },
       {
         name: 'CheckpointTrigger',
-        selectors: ['button[aiCheckpointTrigger]', 'ai-checkpoint-trigger'],
+        selectors: ['button[aiCheckpointTrigger]'],
         inputs: [
           {
             name: 'ariaLabel',
@@ -369,7 +368,6 @@ export const componentApiMetadata = {
       'ai-context-content',
       '[aiContextContent]',
       'button[aiContextTrigger]',
-      'ai-context-trigger',
       'ai-context-content-body',
       '[aiContextContentBody]',
       'ai-context-content-footer',
@@ -474,7 +472,7 @@ export const componentApiMetadata = {
       },
       {
         name: 'ContextTrigger',
-        selectors: ['button[aiContextTrigger]', 'ai-context-trigger'],
+        selectors: ['button[aiContextTrigger]'],
         inputs: [
           {
             name: 'class',
@@ -1301,7 +1299,6 @@ export const componentApiMetadata = {
       '[aiQueueSectionLabel]',
       'ai-queue-section-label',
       'button[aiQueueSectionTrigger]',
-      'ai-queue-section-trigger',
       '[aiQueueSection]',
       'ai-queue-section',
     ],
@@ -1619,7 +1616,7 @@ export const componentApiMetadata = {
       },
       {
         name: 'QueueSectionTrigger',
-        selectors: ['button[aiQueueSectionTrigger]', 'ai-queue-section-trigger'],
+        selectors: ['button[aiQueueSectionTrigger]'],
         inputs: [
           {
             name: 'class',
@@ -1828,7 +1825,6 @@ export const componentApiMetadata = {
       '[aiChainOfThoughtContent]',
       'ai-chain-of-thought-content',
       'button[aiChainOfThoughtTrigger]',
-      'ai-chain-of-thought-trigger',
       '[aiChainOfThoughtImageCaption]',
       'ai-chain-of-thought-image-caption',
       '[aiChainOfThoughtImage]',
@@ -1932,7 +1928,7 @@ export const componentApiMetadata = {
       },
       {
         name: 'ChainOfThoughtTrigger',
-        selectors: ['button[aiChainOfThoughtTrigger]', 'ai-chain-of-thought-trigger'],
+        selectors: ['button[aiChainOfThoughtTrigger]'],
         inputs: [
           {
             name: 'class',
@@ -2111,7 +2107,6 @@ export const componentApiMetadata = {
       '[aiTaskContent]',
       'ai-task-content',
       'button[aiTaskTrigger]',
-      'ai-task-trigger',
       '[aiTaskItemFile]',
       'ai-task-item-file',
       '[aiTaskItem]',
@@ -2175,7 +2170,7 @@ export const componentApiMetadata = {
       },
       {
         name: 'TaskTrigger',
-        selectors: ['button[aiTaskTrigger]', 'ai-task-trigger'],
+        selectors: ['button[aiTaskTrigger]'],
         inputs: [
           {
             name: 'class',
@@ -2227,7 +2222,6 @@ export const componentApiMetadata = {
       '[aiToolContent]',
       'ai-tool-content',
       'button[aiToolTrigger]',
-      'ai-tool-trigger',
       '[aiToolStatus]',
       'ai-tool-status',
     ],
@@ -2280,7 +2274,7 @@ export const componentApiMetadata = {
       },
       {
         name: 'ToolTrigger',
-        selectors: ['button[aiToolTrigger]', 'ai-tool-trigger'],
+        selectors: ['button[aiToolTrigger]'],
         inputs: [
           {
             name: 'class',
@@ -2324,7 +2318,6 @@ export const componentApiMetadata = {
       '[aiReasoningContent]',
       'ai-reasoning-content',
       'button[aiReasoningTrigger]',
-      'ai-reasoning-trigger',
     ],
     exports: ['Reasoning', 'ReasoningContent', 'ReasoningTrigger'],
     inputs: [
@@ -2428,7 +2421,7 @@ export const componentApiMetadata = {
       },
       {
         name: 'ReasoningTrigger',
-        selectors: ['button[aiReasoningTrigger]', 'ai-reasoning-trigger'],
+        selectors: ['button[aiReasoningTrigger]'],
         inputs: [
           {
             name: 'class',

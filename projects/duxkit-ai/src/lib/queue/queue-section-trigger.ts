@@ -3,7 +3,7 @@ import { BrnCollapsibleTrigger } from '@spartan-ng/brain/collapsible';
 import { twMerge } from 'tailwind-merge';
 
 @Component({
-  selector: 'button[aiQueueSectionTrigger],ai-queue-section-trigger',
+  selector: 'button[aiQueueSectionTrigger]',
   hostDirectives: [{ directive: BrnCollapsibleTrigger, inputs: ['type'] }],
   host: {
     '[class]': 'classes()',

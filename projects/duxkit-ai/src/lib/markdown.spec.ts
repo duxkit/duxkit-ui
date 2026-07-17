@@ -81,4 +81,21 @@ describe('markdown', () => {
     expect(html).toContain('language-ts');
     expect(html).not.toContain('hljs-keyword');
   });
+
+  it('escapes raw HTML and removes unsafe link protocols', () => {
+    const html = renderMarkdown(
+      [
+        '<script>alert("unsafe")</script>',
+        '<img src="x" onerror="alert(1)">',
+        '[unsafe](javascript:alert(1))',
+        '[safe](https://duxkit.com)',
+      ].join('\n\n'),
+    );
+
+    expect(html).not.toContain('<script');
+    expect(html).not.toContain('<img');
+    expect(html).not.toContain('javascript:');
+    expect(html).toContain('&lt;script&gt;');
+    expect(html).toContain('href="https://duxkit.com"');
+  });
 });

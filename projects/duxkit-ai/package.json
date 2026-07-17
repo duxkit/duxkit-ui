@@ -6,12 +6,16 @@
   "author": "Liam Langstaff",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/liam-langstaff/duxkit.git",
+    "url": "git+https://github.com/duxkit/duxkit.git",
     "directory": "projects/duxkit-ai"
   },
   "homepage": "https://duxkit.com",
   "bugs": {
-    "url": "https://github.com/liam-langstaff/duxkit/issues"
+    "url": "https://github.com/duxkit/duxkit/issues"
+  },
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org"
   },
   "keywords": [
     "angular",

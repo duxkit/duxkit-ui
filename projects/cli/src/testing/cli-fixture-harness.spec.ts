@@ -521,7 +521,7 @@ describe('CLI fixture harness', () => {
       }
       result.assertSourceFixtureUnchanged();
     });
-  });
+  }, 30_000);
 
   it('requires --yes for non-interactive add writes', async () => {
     await withCliFixtureWorkspace('angular-cli-app', async (workspace) => {

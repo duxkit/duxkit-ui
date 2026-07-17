@@ -1,20 +1,27 @@
-# DuxKit AI
+# DuxKit
 
-Angular AI UI primitives for teams building chat, agent, tool-call, reasoning, and generated-output interfaces with Angular and the AI SDK.
+Angular primitives and a source installer for building chat, agent, tool-call, reasoning, and
+generated-output interfaces with the AI SDK.
 
-The package is for Angular applications that want composable UI primitives instead of a full chat application shell. It is not a backend framework, provider SDK, design system replacement, or hosted AI product.
+DuxKit is composable UI infrastructure rather than a chat application, backend framework, or
+provider SDK. It currently targets Angular 22+, `@ai-sdk/angular` 2+, and AI SDK 6+.
 
-The project is pre-1.0 and currently targets Angular 22+, `@ai-sdk/angular` 2+, and AI SDK 6+.
+Documentation and examples are available at [duxkit.com](https://duxkit.com).
 
-## Install
+## Packages
+
+- [`duxkit-ai`](projects/duxkit-ai/README.md) — packaged Angular AI UI primitives
+- [`@duxkit/ui`](projects/cli/README.md) — CLI for installing primitive source into an application
+
+Both packages are published to npm.
+
+## Install the library
 
 ```bash
 pnpm add duxkit-ai
 ```
 
-Consumers must also configure Tailwind CSS v4 and the Spartan Tailwind preset. See the package README in `projects/duxkit-ai/README.md` for setup details.
-
-## Basic Usage
+Import primitives from their family entrypoints:
 
 ```ts
 import { Conversation, ConversationContent } from 'duxkit-ai/conversation';
@@ -31,244 +38,21 @@ import { Message, MessageContent } from 'duxkit-ai/message';
 </ai-conversation>
 ```
 
-Docs: <https://duxkit.com>
+The root entrypoint only contains shared AI SDK types. Using family entrypoints keeps application
+bundles focused and ensures each Angular primitive has one dependency-injection identity.
 
-## Repository
-
-## Workspace
-
-```text
-projects/
-  duxkit-ai/   # publishable Angular library
-  playground/       # local app for testing chat, tools, reasoning, and streaming UI
-  www/              # marketing/docs site
-```
-
-Nx project names:
+## Install source with the CLI
 
 ```bash
-pnpm nx show projects
+pnpm dlx @duxkit/ui@latest init
+pnpm dlx @duxkit/ui@latest add conversation message prompt-input
 ```
 
-Expected projects:
+See the [CLI README](projects/cli/README.md) for configuration and command options.
 
-```text
-duxkit-ai
-playground
-www
-```
+## Consumer styling
 
-## Workspace conventions
-
-File and folder ownership rules are documented in [docs/workspace-conventions.md](docs/workspace-conventions.md).
-
-## Stack
-
-- Angular 22
-- Nx 23
-- `@ai-sdk/angular` and `ai`
-- Spartan `@spartan-ng/brain`
-- Spartan Helm generated secondary entrypoints
-- Tailwind CSS v4
-- `@tailwindcss/postcss`
-- Storybook 10
-- Vitest through the Angular test builder
-
-## Node And Install
-
-Use the pinned Node version before running workspace commands:
-
-```bash
-nvm use
-pnpm install
-```
-
-The repo currently expects Node `24.15.0`, from `.nvmrc`.
-
-If a host shell overrides `node`, use:
-
-```bash
-unset npm_config_prefix
-source ~/.nvm/nvm.sh
-export PATH="$(dirname "$(nvm which 24.15.0)"):$PATH"
-```
-
-## Common Commands
-
-Run the playground:
-
-```bash
-pnpm start:playground
-```
-
-This starts both the local Express API and the Angular playground. Use `pnpm start` only when you want the Angular playground dev server without the API process.
-
-Run the marketing/docs site:
-
-```bash
-pnpm start:www
-```
-
-Run Storybook:
-
-```bash
-pnpm storybook
-```
-
-Default local ports:
-
-```text
-playground Angular app: http://localhost:4200
-playground API:         http://localhost:8787
-www Angular app:        http://localhost:4200
-storybook:              http://localhost:6006
-```
-
-Build everything:
-
-```bash
-pnpm build
-```
-
-Build individual projects:
-
-```bash
-pnpm build:lib
-pnpm build:playground
-pnpm build:www
-pnpm build:storybook
-```
-
-Run tests:
-
-```bash
-pnpm test:ci
-```
-
-Inspect the Nx graph:
-
-```bash
-pnpm nx graph
-pnpm nx graph --file=tmp/nx-graph.json
-```
-
-Run a direct Nx target:
-
-```bash
-pnpm nx build duxkit-ai
-pnpm nx serve playground
-pnpm nx serve www
-pnpm nx run duxkit-ai:storybook
-```
-
-## Build Notes
-
-`playground` imports from the package name:
-
-```ts
-import { Conversation, Message, MessageContent } from 'duxkit-ai';
-```
-
-That is intentional. The playground should exercise the library like a consumer would. The `playground` Nx project has an implicit dependency on `duxkit-ai`, so workspace builds build the library before the playground.
-
-Library output is written to:
-
-```text
-dist/duxkit-ai
-```
-
-App outputs are written to:
-
-```text
-dist/playground
-dist/www
-```
-
-Storybook output is written to:
-
-```text
-dist/storybook/duxkit-ai
-```
-
-Current non-blocking warnings you may see:
-
-- The playground production bundle is over its warning budget.
-- Storybook emits CommonJS and asset-size warnings.
-- Some Nx, Storybook, or Spartan peer ranges may lag Angular 22 even when builds pass.
-
-## Library Entrypoints
-
-Prefer family entrypoints in consumer applications:
-
-```ts
-import { ChainOfThought } from 'duxkit-ai/chain-of-thought';
-import { Conversation } from 'duxkit-ai/conversation';
-import { Message, MessageContent } from 'duxkit-ai/message';
-import { PromptInput, PromptInputSubmit } from 'duxkit-ai/prompt-input';
-import { ReasoningContent } from 'duxkit-ai/reasoning';
-import { Tool } from 'duxkit-ai/tool';
-```
-
-The root package remains available for quick starts and compatibility:
-
-```ts
-import {
-  ChainOfThought,
-  Conversation,
-  Message,
-  MessageContent,
-  ReasoningContent,
-  Tool,
-} from 'duxkit-ai';
-```
-
-Published secondary entrypoints:
-
-```text
-duxkit-ai/attachment
-duxkit-ai/chain-of-thought
-duxkit-ai/checkpoint
-duxkit-ai/code-block
-duxkit-ai/confirmation
-duxkit-ai/context
-duxkit-ai/conversation
-duxkit-ai/message
-duxkit-ai/markdown
-duxkit-ai/model-selector
-duxkit-ai/prompt-input
-duxkit-ai/queue
-duxkit-ai/reasoning
-duxkit-ai/shimmer
-duxkit-ai/sources
-duxkit-ai/task
-duxkit-ai/tool
-```
-
-Private app UI primitives:
-
-```ts
-import { HlmButton } from '@duxkit-private/ui/helm/button';
-import { HlmTabs } from '@duxkit-private/ui/helm/tabs';
-import { HlmNavigationMenu } from '@duxkit-private/ui/helm/navigation-menu';
-```
-
-These imports are for workspace apps only. They are not part of the published `duxkit-ai` package.
-
-The public API surface lives in:
-
-```text
-projects/duxkit-ai/src/public-api.ts
-```
-
-## Spartan And Tailwind Setup
-
-The playground is initialized with the Spartan Tailwind preset and theme in:
-
-```text
-projects/playground/src/styles.scss
-```
-
-Consumers of the package need Tailwind CSS v4, the Tailwind PostCSS plugin, and the Spartan preset. Angular's Tailwind setup expects a PostCSS config for Tailwind v4:
+DuxKit uses Tailwind CSS v4 and the Spartan Tailwind preset. Add the Tailwind PostCSS plugin:
 
 ```json
 {
@@ -278,7 +62,7 @@ Consumers of the package need Tailwind CSS v4, the Tailwind PostCSS plugin, and 
 }
 ```
 
-The app stylesheet should include Tailwind layers and the Spartan preset:
+Then include the layers, preset, and published package in the application stylesheet:
 
 ```scss
 @layer theme, base, components, utilities;
@@ -290,141 +74,79 @@ The app stylesheet should include Tailwind layers and the Spartan preset:
 @source '../node_modules/duxkit-ai';
 ```
 
-The Spartan preset already imports `tw-animate-css` and the Angular CDK overlay stylesheet.
-The `@source` path should be relative to the consumer app stylesheet and makes Tailwind scan
-Duxkit AI's published utility classes.
+The `@source` path is relative to the consumer stylesheet.
 
-## Generate More Helm Components
-
-The Spartan CLI is configured by `components.json` to generate Helm entrypoints under:
+## Repository
 
 ```text
-projects/ui/helm
+projects/
+  cli/         @duxkit/ui source installer
+  duxkit-ai/   publishable Angular library
+  ui/          private Helm primitives used by workspace applications
+  www/         documentation site
 ```
 
-Generate only the primitives the workspace apps actually need:
+Use the pinned Node version and pnpm:
 
 ```bash
-pnpm exec nx g @spartan-ng/cli:ui navigation-menu --interactive=false
-pnpm exec nx g @spartan-ng/cli:ui button --interactive=false
-pnpm exec nx g @spartan-ng/cli:ui tabs --interactive=false
+nvm use
+pnpm install
 ```
 
-## Playground With Ollama
-
-The playground uses a local Express API so provider calls stay out of the Angular browser bundle. By default it targets Ollama's OpenAI-compatible endpoint:
-
-```text
-http://127.0.0.1:11434/v1
-```
-
-Install and start Ollama, then pull a model:
+Common commands:
 
 ```bash
-ollama pull qwen3:4b
-```
-
-Run the Angular app and playground API together:
-
-```bash
-pnpm start:playground
-```
-
-Override the local model with environment variables:
-
-```bash
-OLLAMA_MODEL=llama3.2 pnpm start:playground
-```
-
-The Angular app calls `/api/chat`; `projects/playground/proxy.conf.json` forwards that to the Express server on port `8787`.
-
-## Website
-
-The `www` app is the starter marketing/docs site.
-
-```bash
-pnpm start:www
-pnpm build:www
-```
-
-Source files:
-
-```text
-projects/www/src/app
-```
-
-## Docs And Metadata
-
-When adding a new component to the docs, follow:
-
-```text
-docs/adding-component-docs.md
-```
-
-The docs registry, snippets, previews, search, and generated API metadata are checked in under:
-
-```text
-projects/www/src/app/routes/docs/data
-projects/www/src/app/routes/docs/components
-projects/www/src/app/routes/docs/search
-projects/www/src/app/routes/docs/data/component-api-metadata.generated.ts
-```
-
-When changing component APIs, regenerate `component-api-metadata.generated.ts` and verify the docs search index:
-
-```bash
-pnpm docs:generate-metadata
-pnpm exec vitest run projects/www/src/app/routes/docs/search/docs-search.spec.ts --environment jsdom
-```
-
-When adding a primitive that should be installable through `duxkit-ui`, update the bundled CLI registry and verify it:
-
-```bash
-pnpm test:cli
-pnpm build:cli
-```
-
-Input and output descriptions in the API tables are generated from JSDoc comments on the source `input()` and `output()` properties.
-
-Run the docs site locally or build it with:
-
-```bash
-pnpm start:www
-pnpm build:www
-```
-
-Storybook examples are separate from the `www` docs pages:
-
-```bash
-pnpm storybook
-pnpm build:storybook
-```
-
-## Before Committing
-
-Run:
-
-```bash
-pnpm build
+pnpm start
 pnpm test:ci
+pnpm build
 pnpm build:storybook
+pnpm docs:generate-metadata
 ```
 
-For a faster library-only check:
+Library output is written to `dist/duxkit-ai`, CLI output to `dist/cli`, and the documentation site
+to `dist/www`.
 
-```bash
-pnpm build:lib
-pnpm nx test duxkit-ai -- --watch=false
+## Published library entrypoints
+
+```text
+duxkit-ai/attachment
+duxkit-ai/chain-of-thought
+duxkit-ai/checkpoint
+duxkit-ai/code-block
+duxkit-ai/confirmation
+duxkit-ai/context
+duxkit-ai/conversation
+duxkit-ai/markdown
+duxkit-ai/message
+duxkit-ai/model-selector
+duxkit-ai/prompt-input
+duxkit-ai/queue
+duxkit-ai/reasoning
+duxkit-ai/reasoning-effort
+duxkit-ai/shimmer
+duxkit-ai/sources
+duxkit-ai/task
+duxkit-ai/tool
 ```
 
 ## Contributing
 
-See `CONTRIBUTING.md` for setup, scope, and PR expectations.
+Read [CONTRIBUTING.md](CONTRIBUTING.md) before opening a pull request. When component APIs change,
+regenerate the checked-in docs metadata:
 
-## Security
+```bash
+pnpm docs:generate-metadata
+```
 
-See `SECURITY.md` for supported versions and vulnerability reporting.
+Run the release-level checks before submitting:
+
+```bash
+pnpm check:conventions
+pnpm test:ci
+pnpm build
+pnpm build:storybook
+```
 
 ## License
 
-MIT. See `LICENSE`.
+MIT

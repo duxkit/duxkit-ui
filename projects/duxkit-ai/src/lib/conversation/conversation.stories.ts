@@ -40,7 +40,7 @@ const meta: Meta = {
     props: {
       assistantMessage:
         'London is partly cloudy today. I can call the weather tool if you want a deterministic test result.',
-      toolMessage: 'The test tool returned `24°C`, partly cloudy, from `playground-test-tool`.',
+      toolMessage: 'The weather tool returned `24°C` and partly cloudy.',
     },
   }),
 };

@@ -8,7 +8,7 @@ import {
   AttachmentPreview,
   AttachmentRemove,
   Attachments,
-} from '../attachment';
+} from 'duxkit-ai/attachment';
 import { promptInputButtonVariants } from './prompt-input-button';
 import { injectPromptInput } from './prompt-input-root';
 import type { PromptInputButtonVariants } from './prompt-input-button';

@@ -1,0 +1,107 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://duxkit.com/schemas/duxkit-ai.json",
+  "title": "DuxKit AI configuration",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "$schema": {
+      "type": "string"
+    },
+    "project": {
+      "type": "string",
+      "minLength": 1
+    },
+    "style": {
+      "enum": ["css", "less", "sass", "scss"]
+    },
+    "componentsPath": {
+      "type": "string",
+      "minLength": 1
+    },
+    "stylesheet": {
+      "type": "string",
+      "minLength": 1
+    },
+    "tailwind": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "version": {
+          "type": "number"
+        },
+        "sourcePath": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "aliases": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "components": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "primitives": {
+      "oneOf": [
+        {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/primitiveId"
+          },
+          "uniqueItems": true
+        },
+        {
+          "type": "object",
+          "propertyNames": {
+            "$ref": "#/$defs/primitiveId"
+          },
+          "additionalProperties": {
+            "oneOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "version": {
+                    "type": "string"
+                  }
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  },
+  "$defs": {
+    "primitiveId": {
+      "enum": [
+        "attachment",
+        "chain-of-thought",
+        "checkpoint",
+        "code-block",
+        "confirmation",
+        "context",
+        "conversation",
+        "markdown",
+        "message",
+        "model-selector",
+        "prompt-input",
+        "queue",
+        "reasoning",
+        "reasoning-effort",
+        "shimmer",
+        "sources",
+        "task",
+        "tool"
+      ]
+    }
+  }
+}

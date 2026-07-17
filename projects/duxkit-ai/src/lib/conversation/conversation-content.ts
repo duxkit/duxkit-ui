@@ -15,9 +15,7 @@ import { Conversation } from './conversation';
 @Directive({
   selector: '[aiConversationContent], ai-conversation-content',
   host: {
-    '(wheel)': 'onUserScroll()',
-    '(touchmove)': 'onUserScroll()',
-    '(keydown)': 'onUserScroll()',
+    '(scroll)': 'onUserScroll()',
     '[class]': 'classes()',
   },
 })

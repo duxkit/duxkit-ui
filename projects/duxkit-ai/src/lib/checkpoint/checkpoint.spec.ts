@@ -21,7 +21,7 @@ import { Checkpoint, CheckpointIcon, CheckpointTrigger } from './';
 
     <div aiCheckpoint>
       <span aiCheckpointIcon>Custom marker</span>
-      <ai-checkpoint-trigger>Restore alternate</ai-checkpoint-trigger>
+      <button aiCheckpointTrigger>Restore alternate</button>
     </div>
   `,
 })
@@ -47,15 +47,16 @@ class HlmTriggerHost {}
 @Component({
   imports: [CheckpointTrigger],
   template: `
-    <ai-checkpoint-trigger
+    <button
+      aiCheckpointTrigger
       [disabled]="disabled()"
       (checkpointRestore)="restoreCount.update((count) => count + 1)"
     >
-      Restore element trigger
-    </ai-checkpoint-trigger>
+      Restore checkpoint
+    </button>
   `,
 })
-class ElementTriggerHost {
+class NativeButtonTriggerHost {
   readonly disabled = signal(false);
   readonly restoreCount = signal(0);
 }
@@ -138,35 +139,32 @@ describe('Checkpoint', () => {
     expect(trigger?.classList).toContain('hover:text-foreground');
   });
 
-  it('supports keyboard activation and disabled state for element triggers', async () => {
+  it('uses native button semantics and respects the disabled state', async () => {
     await TestBed.resetTestingModule()
       .configureTestingModule({
-        imports: [ElementTriggerHost],
+        imports: [NativeButtonTriggerHost],
       })
       .compileComponents();
 
-    const elementFixture = TestBed.createComponent(ElementTriggerHost);
-    elementFixture.detectChanges();
+    const buttonFixture = TestBed.createComponent(NativeButtonTriggerHost);
+    buttonFixture.detectChanges();
 
-    const element = elementFixture.nativeElement as HTMLElement;
-    const trigger = element.querySelector<HTMLElement>('ai-checkpoint-trigger');
+    const element = buttonFixture.nativeElement as HTMLElement;
+    const trigger = element.querySelector<HTMLButtonElement>('button[aiCheckpointTrigger]');
 
-    expect(trigger?.getAttribute('role')).toBe('button');
-    expect(trigger?.getAttribute('tabindex')).toBe('0');
+    expect(trigger?.type).toBe('button');
+    trigger?.click();
+    buttonFixture.detectChanges();
 
-    trigger?.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true }));
-    elementFixture.detectChanges();
+    expect(buttonFixture.componentInstance.restoreCount()).toBe(1);
 
-    expect(elementFixture.componentInstance.restoreCount()).toBe(1);
+    buttonFixture.componentInstance.disabled.set(true);
+    buttonFixture.detectChanges();
 
-    elementFixture.componentInstance.disabled.set(true);
-    elementFixture.detectChanges();
-
-    expect(trigger?.getAttribute('aria-disabled')).toBe('true');
-    expect(trigger?.getAttribute('tabindex')).toBe('-1');
+    expect(trigger?.disabled).toBe(true);
 
     trigger?.click();
 
-    expect(elementFixture.componentInstance.restoreCount()).toBe(1);
+    expect(buttonFixture.componentInstance.restoreCount()).toBe(1);
   });
 });

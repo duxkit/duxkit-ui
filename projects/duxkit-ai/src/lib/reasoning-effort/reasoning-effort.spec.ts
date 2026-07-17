@@ -136,10 +136,7 @@ describe('ReasoningEffort', () => {
   let fixture: ComponentFixture<Host>;
 
   beforeEach(async () => {
-    Object.defineProperty(globalThis, 'ResizeObserver', {
-      configurable: true,
-      value: ResizeObserverMock,
-    });
+    vi.stubGlobal('ResizeObserver', ResizeObserverMock);
     document.body.querySelectorAll('.cdk-overlay-container').forEach((element) => element.remove());
 
     await TestBed.configureTestingModule({
@@ -148,6 +145,10 @@ describe('ReasoningEffort', () => {
 
     fixture = TestBed.createComponent(Host);
     await settle(fixture);
+  });
+
+  afterEach(() => {
+    vi.unstubAllGlobals();
   });
 
   it('composes a root, native trigger, content, label, value, and slider', async () => {

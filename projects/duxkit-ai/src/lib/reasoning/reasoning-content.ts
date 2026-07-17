@@ -17,8 +17,8 @@ import {
   AI_MARKDOWN_OPTIONS,
   parseMarkdownBlocks,
   reasoningMarkdownContentClasses,
-} from '../markdown';
-import { CodeBlock } from '../code-block';
+} from 'duxkit-ai/markdown';
+import { CodeBlock } from 'duxkit-ai/code-block';
 
 @Component({
   selector: '[aiReasoningContent],ai-reasoning-content',

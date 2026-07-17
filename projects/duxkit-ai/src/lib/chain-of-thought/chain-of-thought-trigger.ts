@@ -3,11 +3,11 @@ import { BrnCollapsible, BrnCollapsibleTrigger } from '@spartan-ng/brain/collaps
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { lucideBrain, lucideChevronDown } from '@ng-icons/lucide';
 import { twMerge } from 'tailwind-merge';
+import { Shimmer } from 'duxkit-ai/shimmer';
 import { ChainOfThought } from './chain-of-thought';
-import { Shimmer } from '../shimmer';
 
 @Component({
-  selector: 'button[aiChainOfThoughtTrigger],ai-chain-of-thought-trigger',
+  selector: 'button[aiChainOfThoughtTrigger]',
   imports: [NgIcon, Shimmer],
   providers: [provideIcons({ lucideBrain, lucideChevronDown })],
   hostDirectives: [{ directive: BrnCollapsibleTrigger, inputs: ['type'] }],

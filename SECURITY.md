@@ -24,4 +24,5 @@ This is a solo-maintained project. Expect a best-effort initial response within 
 
 ## Secrets
 
-The library should not require provider secrets in browser code. Application servers or API routes should own provider credentials. The local playground server is for development and should not be treated as production infrastructure.
+The library does not require provider secrets in browser code. Application servers or API routes
+should own provider credentials.

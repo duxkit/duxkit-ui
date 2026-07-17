@@ -4,7 +4,7 @@ on:
   pull_request:
   push:
     branches:
-      - main
+      - master
 
 jobs:
   build-and-test:
@@ -25,11 +25,23 @@ jobs:
       - name: Install
         run: pnpm install --frozen-lockfile
 
+      - name: Check workspace conventions
+        run: pnpm check:conventions
+
       - name: Build library
         run: pnpm build:lib
 
+      - name: Check package entrypoints
+        run: pnpm check:package-entrypoints
+
       - name: Test
         run: pnpm test:ci
+
+      - name: Build CLI
+        run: pnpm build:cli
+
+      - name: Smoke test packaged CLI
+        run: pnpm smoke:cli
 
       - name: Build docs site
         run: pnpm build:www

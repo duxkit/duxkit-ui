@@ -6,7 +6,7 @@ import { NgIcon, provideIcons } from '@ng-icons/core';
 import { lucideBrain, lucideChevronDown } from '@ng-icons/lucide';
 
 @Component({
-  selector: 'button[aiReasoningTrigger],ai-reasoning-trigger',
+  selector: 'button[aiReasoningTrigger]',
   imports: [NgIcon],
   providers: [provideIcons({ lucideBrain, lucideChevronDown })],
   hostDirectives: [{ directive: BrnCollapsibleTrigger, inputs: ['type'] }],

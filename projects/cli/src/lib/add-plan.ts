@@ -3,6 +3,7 @@ import { dirname, extname, isAbsolute, join, relative, resolve, sep } from 'node
 import {
   hasPrimitiveTemplate,
   listPrimitiveTemplates,
+  readPrimitiveTemplateSource,
   type PrimitiveTemplateFile,
 } from './primitive-templates.js';
 import {
@@ -387,10 +388,7 @@ async function loadTemplates(
       }
 
       try {
-        const content = await readFile(
-          new URL(`./${metadata.templatePath}`, import.meta.url),
-          'utf8',
-        );
+        const content = await readPrimitiveTemplateSource(metadata);
         loaded.set(templateKey(primitive.id, file), { ...metadata, content });
       } catch (error) {
         errors.push(

@@ -28,14 +28,12 @@ yarn-error.log
 !.vscode/tasks.json
 !.vscode/launch.json
 !.vscode/extensions.json
-!.vscode/mcp.json
 .history/*
 
 # Miscellaneous
 /.env
 /.env.local
 /.playwright-cli/
-/projects/playground/server/chat-store.json
 /.angular/cache
 .sass-cache/
 /connect.lock
@@ -56,6 +54,9 @@ Thumbs.db
 
 .angular
 
-# Local agent artifacts
+# Local tooling and review artifacts
 /.agents/
-/docs/
+/docs/superpowers/
+/docs/open-source-readiness-checklist.md
+/docs/www-seo-audit.md
+/docs/cloudflare-pages-deployment.md

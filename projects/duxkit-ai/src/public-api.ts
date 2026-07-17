@@ -1,24 +1,7 @@
-/*
- * Public API Surface of duxkit-ai
+/**
+ * Shared AI SDK types.
+ *
+ * UI primitives are available from focused secondary entrypoints such as
+ * `duxkit-ai/conversation` and `duxkit-ai/prompt-input`.
  */
-
-export * from './lib/duxkit-ai';
-export * from './lib/attachment';
-export * from './lib/chain-of-thought';
-export * from './lib/checkpoint';
 export * from './lib/types';
-export * from './lib/code-block';
-export * from './lib/confirmation';
-export * from './lib/conversation';
-export * from './lib/context';
-export * from './lib/markdown';
-export * from './lib/message';
-export * from './lib/model-selector';
-export * from './lib/prompt-input';
-export * from './lib/queue';
-export * from './lib/reasoning';
-export * from './lib/reasoning-effort';
-export * from './lib/shimmer';
-export * from './lib/sources';
-export * from './lib/task';
-export * from './lib/tool';

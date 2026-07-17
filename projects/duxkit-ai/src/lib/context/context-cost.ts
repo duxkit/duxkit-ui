@@ -21,7 +21,7 @@ export const AI_CONTEXT_COST_CALCULATOR = new InjectionToken<ContextCostCalculat
   'AI_CONTEXT_COST_CALCULATOR',
 );
 
-export const currencyFormat = new Intl.NumberFormat(undefined, {
+export const currencyFormat = new Intl.NumberFormat('en-US', {
   currency: 'USD',
   style: 'currency',
 });

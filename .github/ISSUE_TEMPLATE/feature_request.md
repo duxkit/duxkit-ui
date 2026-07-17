@@ -18,4 +18,4 @@ What workaround are you using today?
 
 ## Scope
 
-Is this for the library, docs site, playground, or examples?
+Is this for the library, CLI, docs site, or examples?

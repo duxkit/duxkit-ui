@@ -19,7 +19,6 @@ export const markdownContentClasses = 'ai-markdown markdown-body';
 
 export const reasoningMarkdownContentClasses = 'ai-markdown ai-markdown-reasoning markdown-body';
 
-
 export interface AiMarkdownOptions {
   readonly highlight?: AiMarkdownHighlightOptions;
 }
@@ -89,6 +88,30 @@ export function renderMarkdown(markdown: string, options: AiMarkdownOptions = {}
     renderer: {
       code(token: Tokens.Code): string {
         return renderCodeBlock(token, options);
+      },
+      html(token: Tokens.HTML | Tokens.Tag): string {
+        return escapeHtml(token.text);
+      },
+      image(token: Tokens.Image): string {
+        const source = safeMarkdownUrl(token.href);
+
+        if (!source) {
+          return escapeHtml(token.text);
+        }
+
+        const title = token.title ? ` title="${escapeHtml(token.title)}"` : '';
+        return `<img src="${escapeHtml(source)}" alt="${escapeHtml(token.text)}"${title}>`;
+      },
+      link(token: Tokens.Link): string {
+        const label = this.parser.parseInline(token.tokens);
+        const href = safeMarkdownUrl(token.href);
+
+        if (!href) {
+          return label;
+        }
+
+        const title = token.title ? ` title="${escapeHtml(token.title)}"` : '';
+        return `<a href="${escapeHtml(href)}"${title}>${label}</a>`;
       },
     },
   });
@@ -285,4 +308,15 @@ function escapeHtml(value: string): string {
     .replaceAll('>', '&gt;')
     .replaceAll('"', '&quot;')
     .replaceAll("'", '&#39;');
+}
+
+function safeMarkdownUrl(value: string): string | undefined {
+  const url = value.trim();
+
+  if (!url || /[\u0000-\u001f\u007f]/.test(url)) {
+    return undefined;
+  }
+
+  const scheme = /^([a-z][a-z\d+.-]*):/i.exec(url)?.[1]?.toLowerCase();
+  return !scheme || ['http', 'https', 'mailto', 'tel'].includes(scheme) ? url : undefined;
 }
