@@ -17,6 +17,7 @@ import {
 export interface ListCommandOptions {
   readonly cwd?: string;
   readonly json?: boolean;
+  readonly verbose?: boolean;
 }
 
 interface ListPrimitiveOutput {
@@ -51,7 +52,7 @@ export async function runListCommand(options: ListCommandOptions, io: CliIo): Pr
     return;
   }
 
-  io.stdout.write(renderHumanList(output));
+  io.stdout.write(options.verbose === true ? renderHumanList(output) : renderConciseList(output));
 }
 
 function buildListOutput(installed: readonly InstalledPrimitive[]): ListJsonOutput {
@@ -97,6 +98,28 @@ function renderHumanList(output: ListJsonOutput): string {
     '',
     'Dependency groups',
     ...output.dependencyGroups.map((group) => `  - ${group.label}: ${group.primitives.join(', ')}`),
+    '',
+  ].join('\n');
+}
+
+function renderConciseList(output: ListJsonOutput): string {
+  const available = output.primitives.filter((primitive) => primitive.status === 'available');
+  const installed =
+    output.installed.length === 0
+      ? ['  None detected']
+      : output.installed.map(renderInstalledPrimitive);
+
+  return [
+    `Available components (${available.length})`,
+    ...available.map(
+      (primitive) =>
+        `  ${primitive.id.padEnd(20)} ${primitive.title}${primitive.installed ? ' (installed)' : ''}`,
+    ),
+    '',
+    'Installed components',
+    ...installed,
+    '',
+    'Run `duxkit-ui add` to choose components interactively.',
     '',
   ].join('\n');
 }

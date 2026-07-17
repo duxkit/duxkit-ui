@@ -171,6 +171,51 @@ describe('CLI fixture harness', () => {
     },
   );
 
+  it('prints a concise init summary by default', async () => {
+    await withCliFixtureWorkspace('angular-cli-app', async (workspace) => {
+      const result = await workspace.run([
+        'init',
+        '--dry-run',
+        '--no-install',
+        '--package-manager',
+        'npm',
+        '--tokens',
+        'add',
+      ]);
+
+      result.assertExitCode(0);
+      result.assertReadOnly();
+      result.assertStdoutIncludes('Ready to initialize Duxkit AI');
+      result.assertStdoutIncludes('9 changes planned');
+      result.assertStdoutIncludes('npm install @spartan-ng/brain@^1.0.2 tw-animate-css@^1.4.0');
+      expect(result.stdout).not.toContain('Planned changes');
+      expect(result.stdout).not.toContain('once init mutations are available');
+    });
+  });
+
+  it('prints the complete init plan once with --verbose', async () => {
+    await withCliFixtureWorkspace('angular-cli-app', async (workspace) => {
+      const result = await workspace.run([
+        'init',
+        '--dry-run',
+        '--no-install',
+        '--package-manager',
+        'npm',
+        '--tokens',
+        'add',
+        '--verbose',
+      ]);
+      const installCommand = 'npm install @spartan-ng/brain@^1.0.2 tw-animate-css@^1.4.0';
+
+      result.assertExitCode(0);
+      result.assertReadOnly();
+      result.assertStdoutIncludes('Init plan (ready)');
+      result.assertStdoutIncludes('Planned changes');
+      expect(result.stdout.split(installCommand)).toHaveLength(2);
+      expect(result.stdout).not.toContain('once init mutations are available');
+    });
+  });
+
   it('requires --yes for non-interactive init writes', async () => {
     await withCliFixtureWorkspace('angular-cli-app', async (workspace) => {
       const result = await workspace.run(['init', '--package-manager', 'npm', '--tokens', 'add']);
@@ -182,7 +227,7 @@ describe('CLI fixture harness', () => {
     });
   });
 
-  it('prints the init plan and asks one final confirmation in interactive mode', async () => {
+  it('prints the init summary and asks one final confirmation in interactive mode', async () => {
     await withCliFixtureWorkspace('angular-cli-app', async (workspace) => {
       const result = await workspace.run(
         ['init', '--no-install', '--package-manager', 'npm', '--tokens', 'add'],
@@ -191,8 +236,8 @@ describe('CLI fixture harness', () => {
       );
 
       result.assertExitCode(1);
-      result.assertStdoutIncludes('Init plan (ready)');
-      result.assertStdoutIncludes('Planned changes');
+      result.assertStdoutIncludes('Ready to initialize Duxkit AI');
+      result.assertStdoutIncludes('9 changes planned');
       result.assertStderrIncludes('Apply these changes? (y/N) n');
       result.assertStderrIncludes('Initialization cancelled.');
       result.assertReadOnly();
@@ -415,15 +460,30 @@ describe('CLI fixture harness', () => {
     });
   });
 
-  it('supports read-only dry-run assertions', async () => {
+  it('prints a concise add summary by default', async () => {
     await withCliFixtureWorkspace('nx-workspace', async (workspace) => {
       const result = await workspace.runDryRun(['add', 'message', '--no-install']);
 
       result.assertExitCode(0);
       result.assertReadOnly();
       result.assertFileUnchanged('package.json');
-      result.assertStdoutIncludes('Requested primitives');
+      result.assertStdoutIncludes('Ready to add message');
+      result.assertStdoutIncludes('13 files to create');
+      expect(result.stdout).not.toContain('Generated files');
+      expect(result.stdout).not.toContain('message/message-content.ts');
       result.assertSourceFixtureUnchanged();
+    });
+  });
+
+  it('prints the complete add plan with --verbose', async () => {
+    await withCliFixtureWorkspace('nx-workspace', async (workspace) => {
+      const result = await workspace.runDryRun(['add', 'message', '--no-install', '--verbose']);
+
+      result.assertExitCode(0);
+      result.assertReadOnly();
+      result.assertStdoutIncludes('Requested primitives');
+      result.assertStdoutIncludes('Generated files');
+      result.assertStdoutIncludes('message/message-content.ts');
     });
   });
 
@@ -455,8 +515,46 @@ describe('CLI fixture harness', () => {
       );
       expect(result.stdout).toContain('Import examples');
       expect(result.stdout).toContain('./components/ai/message');
-      expect(result.stdout).toContain('These files are yours to edit.');
+      expect(result.stdout).toContain(
+        'Generated files are now part of your app and can be edited.',
+      );
       result.assertSourceFixtureUnchanged();
+    });
+  });
+
+  it('lets interactive users choose components when add receives no names', async () => {
+    await withCliFixtureWorkspace('angular-cli-app', async (workspace) => {
+      const result = await workspace.run(
+        ['add', '--yes', '--no-install', '--package-manager', 'npm'],
+        {},
+        {
+          confirmations: [],
+          primitiveSelections: [['conversation', 'message']],
+        },
+      );
+
+      result.assertExitCode(0);
+      result.assertStderrIncludes('Select components to add: conversation, message');
+      result.assertStdoutIncludes('Ready to add conversation, message');
+      result.assertFileChanged('src/app/components/ai/conversation/index.ts');
+      result.assertFileChanged('src/app/components/ai/message/index.ts');
+    });
+  });
+
+  it('exits cleanly when interactive component selection is cancelled', async () => {
+    await withCliFixtureWorkspace('angular-cli-app', async (workspace) => {
+      const result = await workspace.run(
+        ['add', '--no-install', '--package-manager', 'npm'],
+        {},
+        {
+          confirmations: [],
+          primitiveSelections: [null],
+        },
+      );
+
+      result.assertExitCode(1);
+      result.assertStderrIncludes('Component selection cancelled.');
+      result.assertReadOnly();
     });
   });
 
@@ -497,6 +595,8 @@ describe('CLI fixture harness', () => {
       ]);
 
       result.assertExitCode(0);
+      result.assertStdoutIncludes('and 15 more');
+      expect(result.stdout).not.toContain('AttachmentPrimitive');
       for (const primitive of remainingV1PrimitiveIds) {
         result.assertFileChanged(`src/app/components/ai/${primitive}/index.ts`);
       }
@@ -539,7 +639,7 @@ describe('CLI fixture harness', () => {
     });
   });
 
-  it('prints the add plan and asks one final confirmation in interactive mode', async () => {
+  it('prints the add summary and asks one final confirmation in interactive mode', async () => {
     await withCliFixtureWorkspace('angular-cli-app', async (workspace) => {
       const result = await workspace.run(
         ['add', 'message', '--no-install', '--package-manager', 'npm'],
@@ -548,8 +648,8 @@ describe('CLI fixture harness', () => {
       );
 
       result.assertExitCode(0);
-      result.assertStdoutIncludes('Add plan (ready)');
-      result.assertStdoutIncludes('Planned changes');
+      result.assertStdoutIncludes('Ready to add message');
+      result.assertStdoutIncludes('13 files to create');
       result.assertStderrIncludes('Apply these changes? (y/N) y');
       result.assertFileChanged('src/app/components/ai/message/message.ts');
     });
@@ -1200,7 +1300,7 @@ describe('CLI fixture harness', () => {
       const result = await workspace.run(['list']);
 
       result.assertExitCode(0);
-      result.assertStdoutIncludes('Available primitives');
+      result.assertStdoutIncludes('Available components');
       result.assertStdoutIncludes('None detected');
       result.assertSourceFixtureUnchanged();
     });

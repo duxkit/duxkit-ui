@@ -3,6 +3,7 @@ import { tmpdir } from 'node:os';
 import { dirname, join, relative, resolve, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { runCli, type CliIo } from '../lib/cli.js';
+import type { PrimitiveId } from '../lib/primitive-registry.js';
 
 export type CliFixtureName = 'angular-cli-app' | 'nx-workspace';
 
@@ -60,6 +61,7 @@ export interface CliFixtureCommandResult {
 
 export interface CliFixtureInteraction {
   readonly confirmations: readonly boolean[];
+  readonly primitiveSelections?: readonly (readonly PrimitiveId[] | null)[];
 }
 
 export class WorkspaceSnapshot {
@@ -138,6 +140,7 @@ export class CliFixtureWorkspace {
     let stderr = '';
     let stdout = '';
     const confirmations = [...(interaction?.confirmations ?? [])];
+    const primitiveSelections = [...(interaction?.primitiveSelections ?? [])];
     const io: CliIo = {
       confirm:
         interaction === undefined
@@ -154,6 +157,32 @@ export class CliFixtureWorkspace {
               return answer;
             },
       interactive: interaction === undefined ? false : true,
+      selectPrimitives:
+        interaction === undefined
+          ? undefined
+          : async (choices) => {
+              const selection = primitiveSelections.shift();
+
+              if (selection === undefined) {
+                throw new Error('No fixture primitive selection remains.');
+              }
+
+              if (selection === null) {
+                const error = new Error('User force closed the prompt');
+                error.name = 'ExitPromptError';
+                throw error;
+              }
+
+              const availableIds = new Set(choices.map((choice) => choice.id));
+              for (const id of selection) {
+                if (!availableIds.has(id)) {
+                  throw new Error(`Fixture selected an unavailable primitive: ${id}`);
+                }
+              }
+
+              stderr += `Select components to add: ${selection.join(', ')}\n`;
+              return selection;
+            },
       stderr: {
         write: (chunk) => {
           stderr += chunk;

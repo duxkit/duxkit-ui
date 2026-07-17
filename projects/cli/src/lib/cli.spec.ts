@@ -110,8 +110,22 @@ describe('duxkit-ui command shell', () => {
     expect(parsed.componentDestination).toBeNull();
   });
 
-  it('lists primitives in human-readable form', async () => {
+  it('lists components concisely by default', async () => {
     const result = await run(['list']);
+
+    expect(result.exitCode).toBe(0);
+    expect(result.stderr).toBe('');
+    expect(result.stdout).toContain('Available components (18)');
+    expect(result.stdout).toContain('message');
+    expect(result.stdout).toContain('Message');
+    expect(result.stdout).toContain('Installed components');
+    expect(result.stdout).toContain('None detected');
+    expect(result.stdout).not.toContain('Dependency groups');
+    expect(result.stdout).not.toContain('groups:');
+  });
+
+  it('lists component metadata with --verbose', async () => {
+    const result = await run(['list', '--verbose']);
 
     expect(result.exitCode).toBe(0);
     expect(result.stderr).toBe('');
@@ -119,10 +133,7 @@ describe('duxkit-ui command shell', () => {
     expect(result.stdout).toContain(
       '- message (Message) groups: Angular, Styling, Markdown, Icons, AI runtime deps: markdown, code-block',
     );
-    expect(result.stdout).toContain('Installed primitives');
-    expect(result.stdout).toContain('None detected');
     expect(result.stdout).toContain('Dependency groups');
-    expect(result.stdout).not.toContain('Planned primitives');
   });
 
   it('lists primitives as JSON', async () => {
@@ -146,6 +157,35 @@ describe('duxkit-ui command shell', () => {
         status: 'available',
       }),
     );
+  });
+
+  it('reports blocked add guidance once', async () => {
+    const result = await run(['add', '--cwd', '/tmp/app', '--dry-run']);
+
+    expect(result.exitCode).toBe(1);
+    expect(result.stdout).toBe('');
+    expect(result.stderr.split('No primitives were selected.')).toHaveLength(2);
+  });
+
+  it('keeps blocked add guidance in verbose output', async () => {
+    const result = await run(['add', '--cwd', '/tmp/app', '--dry-run', '--verbose']);
+
+    expect(result.exitCode).toBe(1);
+    expect(result.stdout).toBe('');
+    expect(result.stderr).toContain('Add plan (blocked)');
+    expect(result.stderr).toContain('Needs input');
+    expect(result.stderr).toContain('No primitives were selected.');
+  });
+
+  it('keeps blocked init guidance in verbose output', async () => {
+    const result = await run(['init', '--cwd', '/tmp/app', '--dry-run', '--verbose']);
+
+    expect(result.exitCode).toBe(1);
+    expect(result.stdout).toBe('');
+    expect(result.stderr).toContain('Init plan (blocked)');
+    expect(result.stderr).toContain('Needs input');
+    expect(result.stderr).toContain('--project <name>');
+    expect(result.stderr.split('No Angular application project was detected.')).toHaveLength(2);
   });
 
   it('fails clearly for unknown commands', async () => {
@@ -185,5 +225,6 @@ describe('duxkit-ui command shell', () => {
     expect(commandHelp.exitCode).toBe(0);
     expect(commandHelp.stdout).toContain('Usage: duxkit-ui add [options] [primitives...]');
     expect(commandHelp.stdout).toContain('--force');
+    expect(commandHelp.stdout).toContain('--verbose');
   });
 });

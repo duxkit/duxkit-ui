@@ -45,8 +45,11 @@ bundles focused and ensures each Angular primitive has one dependency-injection 
 
 ```bash
 pnpm dlx @duxkit/ui@latest init
+pnpm dlx @duxkit/ui@latest add
 pnpm dlx @duxkit/ui@latest add conversation message prompt-input
 ```
+
+Running `add` without names opens an interactive component picker.
 
 See the [CLI README](projects/cli/README.md) for configuration and command options.
 

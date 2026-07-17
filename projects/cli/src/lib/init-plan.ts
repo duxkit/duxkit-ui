@@ -7,6 +7,7 @@ import {
   type StyleLanguage,
   type WorkspaceInspection,
 } from './workspace-state.js';
+import { createPackageInstallCommands } from './package-install-commands.js';
 
 export type InitMode = 'add' | 'skip' | 'require-existing';
 
@@ -292,8 +293,8 @@ export async function createInitPlan(
     tokens,
     directory,
   );
-  const installCommands = createInstallCommands(packageManager, missingPackages);
-  const nextSteps = createNextSteps(installCommands, plannedChanges.length > 0);
+  const installCommands = createPackageInstallCommands(packageManager, missingPackages);
+  const nextSteps: readonly string[] = [];
 
   return {
     ambiguities,
@@ -862,48 +863,6 @@ async function readPackageNames(workspaceRoot: string): Promise<Set<string>> {
   }
 
   return names;
-}
-
-function createInstallCommands(
-  packageManager: PackageManagerName,
-  packages: readonly InitPackageChange[],
-): readonly string[] {
-  if (packages.length === 0 || packageManager === 'unknown') {
-    return [];
-  }
-
-  const runtime = packages.filter((dependency) => dependency.section === 'dependencies');
-  const dev = packages.filter((dependency) => dependency.section === 'devDependencies');
-  const commands: string[] = [];
-
-  if (runtime.length > 0) {
-    commands.push(
-      `${packageManager} ${packageManager === 'npm' ? 'install' : 'add'} ${runtime.map(formatPackage).join(' ')}`,
-    );
-  }
-
-  if (dev.length > 0) {
-    const install = packageManager === 'npm' ? 'install -D' : 'add -D';
-    commands.push(`${packageManager} ${install} ${dev.map(formatPackage).join(' ')}`);
-  }
-
-  return commands;
-}
-
-function formatPackage(dependency: InitPackageChange): string {
-  return `${dependency.name}@${dependency.version}`;
-}
-
-function createNextSteps(commands: readonly string[], hasChanges: boolean): readonly string[] {
-  const nextSteps = [...commands];
-
-  if (hasChanges) {
-    nextSteps.push(
-      'Rerun without --dry-run to apply the accepted initialization plan once init mutations are available.',
-    );
-  }
-
-  return nextSteps;
 }
 
 async function hasLegacyTailwindConfig(workspaceRoot: string): Promise<boolean> {

@@ -4,6 +4,7 @@ import type { CliIo } from './cli.js';
 import { CliCommandError } from './cli-errors.js';
 import { confirmApply, isInteractive, printJsonPlanForConfirmation } from './cli-interaction.js';
 import { applyInitPlan, InitApplyError } from './init-apply.js';
+import { renderInitFailure, renderInitSummary, renderVerboseInitPlan } from './init-output.js';
 import {
   createInitPlan,
   type InitMode,
@@ -17,10 +18,12 @@ export interface InitCommandOptions extends InitPlannerOptions {
   readonly install?: boolean;
   readonly json?: boolean;
   readonly noInstall?: boolean;
+  readonly verbose?: boolean;
 }
 
 export async function runInitCommand(options: InitCommandOptions, io: CliIo): Promise<void> {
   const cwd = resolve(options.cwd ?? process.cwd());
+  const noInstall = options.noInstall === true || options.install === false;
   let plan = await createInitPlan(options, cwd);
 
   if (plan.status === 'blocked' && isInteractive(io)) {
@@ -32,13 +35,15 @@ export async function runInitCommand(options: InitCommandOptions, io: CliIo): Pr
   }
 
   if (options.dryRun === true || plan.status === 'blocked') {
-    writePlanOutput(plan, options.json === true, io);
+    writePlanOutput(plan, options, noInstall, io);
 
     if (plan.status === 'blocked') {
-      reportBlocked(plan, options.json === true, io);
       throw new CliCommandError(1);
     }
 
+    if (options.json !== true) {
+      io.stdout.write('No files changed.\n');
+    }
     return;
   }
 
@@ -47,13 +52,14 @@ export async function runInitCommand(options: InitCommandOptions, io: CliIo): Pr
       plan,
       'Run init interactively or pass --yes before allowing writes in a non-interactive terminal.',
     );
-    writePlanOutput(blockedPlan, options.json === true, io);
-    reportBlocked(blockedPlan, options.json === true, io);
+    writePlanOutput(blockedPlan, options, noInstall, io);
     throw new CliCommandError(1);
   }
 
   if (options.json !== true) {
-    io.stdout.write(renderHumanInit(plan));
+    io.stdout.write(
+      options.verbose === true ? renderVerboseInitPlan(plan) : renderInitSummary(plan, noInstall),
+    );
   }
 
   if (!options.yes && isInteractive(io) && plan.plannedChanges.length > 0) {
@@ -62,15 +68,14 @@ export async function runInitCommand(options: InitCommandOptions, io: CliIo): Pr
 
     if (!confirmed) {
       const cancelledPlan = withBlockedAmbiguity(plan, 'Initialization cancelled.');
-      writePlanOutput(cancelledPlan, options.json === true, io);
-      reportBlocked(cancelledPlan, options.json === true, io);
+      writePlanOutput(cancelledPlan, options, noInstall, io);
       throw new CliCommandError(1);
     }
   }
 
   try {
     const result = await applyInitPlan(plan, {
-      noInstall: options.noInstall === true || options.install === false,
+      noInstall,
     });
     const appliedPlan = {
       ...plan,
@@ -103,24 +108,26 @@ export async function runInitCommand(options: InitCommandOptions, io: CliIo): Pr
     if (options.json === true) {
       io.stdout.write(`${JSON.stringify(failedPlan, null, 2)}\n`);
     } else {
-      io.stderr.write(`${renderApplyFailure(error)}\n`);
+      io.stderr.write(`${renderInitFailure(error)}\n`);
     }
 
     throw new CliCommandError(1);
   }
 }
 
-function writePlanOutput(plan: InitPlan, json: boolean, io: CliIo): void {
-  if (json) {
+function writePlanOutput(
+  plan: InitPlan,
+  options: InitCommandOptions,
+  noInstall: boolean,
+  io: CliIo,
+): void {
+  if (options.json === true) {
     io.stdout.write(`${JSON.stringify(plan, null, 2)}\n`);
   } else {
-    io.stdout.write(renderHumanInit(plan));
-  }
-}
-
-function reportBlocked(plan: InitPlan, json: boolean, io: CliIo): void {
-  if (!json) {
-    io.stderr.write(`${plan.nextSteps.join('\n')}\n`);
+    const output = plan.status === 'blocked' ? io.stderr : io.stdout;
+    output.write(
+      options.verbose === true ? renderVerboseInitPlan(plan) : renderInitSummary(plan, noInstall),
+    );
   }
 }
 
@@ -133,17 +140,6 @@ function withBlockedAmbiguity(plan: InitPlan, message: string): InitPlan {
     nextSteps: [...plan.nextSteps, `Provide ${ambiguity.flag}: ${ambiguity.message}`],
     status: 'blocked',
   };
-}
-
-function renderApplyFailure(error: InitApplyError): string {
-  const partial = error.partialChanges ? 'Partial changes were made.' : 'Init failed.';
-
-  return [
-    partial,
-    `  completed: ${error.completedSteps.length === 0 ? 'None' : error.completedSteps.join(', ')}`,
-    `  pending: ${error.pendingSteps.length === 0 ? 'None' : error.pendingSteps.join(', ')}`,
-    `  error: ${error.message}`,
-  ].join('\n');
 }
 
 async function promptForInitAmbiguities(
@@ -216,42 +212,6 @@ async function promptForInitAmbiguities(
   }
 
   return changed ? prompted : null;
-}
-
-function renderHumanInit(plan: InitPlan): string {
-  const lines = [
-    `Init plan (${plan.status})`,
-    `  workspace: ${plan.workspace.root}`,
-    `  type: ${plan.workspace.type}`,
-    `  project: ${plan.project?.name ?? 'None'}`,
-    `  stylesheet: ${plan.stylesheet ?? 'None'}`,
-    `  package manager: ${plan.packageManager}`,
-    '',
-    'Planned changes',
-  ];
-
-  if (plan.plannedChanges.length === 0) {
-    lines.push('  None');
-  } else {
-    lines.push(...plan.plannedChanges.map((change) => `  - [${change.category}] ${change.detail}`));
-  }
-
-  lines.push('', 'Package install commands');
-  lines.push(
-    ...(plan.packages.installCommands.length === 0
-      ? ['  None']
-      : plan.packages.installCommands.map((command) => `  ${command}`)),
-  );
-
-  if (plan.warnings.length > 0) {
-    lines.push('', 'Warnings', ...plan.warnings.map((warning) => `  - ${warning}`));
-  }
-
-  if (plan.nextSteps.length > 0) {
-    lines.push('', 'Next steps', ...plan.nextSteps.map((step) => `  - ${step}`));
-  }
-
-  return `${lines.join('\n')}\n`;
 }
 
 export function isInitMode(value: string): value is InitMode {

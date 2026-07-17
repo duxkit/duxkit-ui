@@ -25,6 +25,7 @@
     "lib"
   ],
   "dependencies": {
+    "@inquirer/checkbox": "^5.2.1",
     "commander": "^14.0.3"
   },
   "devDependencies": {

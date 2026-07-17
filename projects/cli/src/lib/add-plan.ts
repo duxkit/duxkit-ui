@@ -23,6 +23,7 @@ import {
   type WorkspaceInspection,
 } from './workspace-state.js';
 import { checksumText } from './text-checksum.js';
+import { createPackageInstallCommands } from './package-install-commands.js';
 
 export interface AddPlannerOptions {
   readonly all?: boolean;
@@ -30,7 +31,6 @@ export interface AddPlannerOptions {
   readonly cwd?: string;
   readonly force?: boolean;
   readonly noInstall?: boolean;
-  readonly install?: boolean;
   readonly packageManager?: Exclude<PackageManagerName, 'unknown'>;
   readonly project?: string;
   readonly yes?: boolean;
@@ -229,7 +229,7 @@ export async function createAddPlan(
     status: installedPackages.has(dependency.name) ? ('unchanged' as const) : ('install' as const),
   }));
   const missingPackages = requiredPackages.filter((dependency) => dependency.status === 'install');
-  const skipInstall = options.noInstall === true || options.install === false;
+  const skipInstall = options.noInstall === true;
 
   if (missingPackages.length > 0 && !skipInstall && packageManager === 'unknown') {
     ambiguities.push(
@@ -270,7 +270,7 @@ export async function createAddPlan(
     componentDestination === null
       ? null
       : await createStylesheetPlan(inspection, project, componentDestination, ambiguities, errors);
-  const installCommands = createInstallCommands(packageManager, missingPackages);
+  const installCommands = createPackageInstallCommands(packageManager, missingPackages);
   const stylesheetChanges = files.filter((file) => isStylesheet(file.file));
   const plannedChanges = createPlannedChanges(
     config,
@@ -782,42 +782,6 @@ function createPlannedChanges(
   }
 
   return changes;
-}
-
-function createInstallCommands(
-  packageManager: PackageManagerName,
-  packages: readonly AddPackagePlan[],
-): readonly string[] {
-  if (packageManager === 'unknown' || packages.length === 0) {
-    return [];
-  }
-
-  const runtime = packages.filter((dependency) => dependency.section === 'dependencies');
-  const dev = packages.filter((dependency) => dependency.section === 'devDependencies');
-  const peer = packages.filter((dependency) => dependency.section === 'peerDependencies');
-  const commands: string[] = [];
-
-  if (runtime.length > 0) {
-    commands.push(
-      `${packageManager} ${packageManager === 'npm' ? 'install' : 'add'} ${runtime.map(formatPackage).join(' ')}`,
-    );
-  }
-  if (dev.length > 0) {
-    commands.push(
-      `${packageManager} ${packageManager === 'npm' ? 'install -D' : 'add -D'} ${dev.map(formatPackage).join(' ')}`,
-    );
-  }
-  if (peer.length > 0) {
-    commands.push(
-      `${packageManager} ${packageManager === 'npm' ? 'install' : 'add'} ${peer.map(formatPackage).join(' ')}`,
-    );
-  }
-
-  return commands;
-}
-
-function formatPackage(dependency: AddPackagePlan): string {
-  return `${dependency.name}@${dependency.version}`;
 }
 
 function createNextSteps(

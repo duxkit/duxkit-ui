@@ -31,8 +31,12 @@ pnpm dlx @duxkit/ui init
 Add primitives:
 
 ```bash
+pnpm dlx @duxkit/ui add
 pnpm dlx @duxkit/ui add message conversation
 ```
+
+Running `add` without component names opens an interactive multi-select. Use the arrow keys to
+move, space to select, and enter to continue.
 
 Check what the CLI detected:
 
@@ -84,6 +88,7 @@ Useful options:
 - `--package-manager <npm|pnpm|yarn|bun>`: set the install command package manager
 - `--dry-run`: print the plan without writing files or installing packages
 - `--json`: print machine-readable JSON to stdout
+- `--verbose`: print every planned package, file, and configuration change
 - `--yes`: accept safe defaults and skip the final apply confirmation
 - `--force`: let explicit init flags replace conflicting values in `duxkit-ai.json`
 - `--no-install`: skip package installation and print the exact install command
@@ -103,6 +108,7 @@ It can:
 Common usage:
 
 ```bash
+duxkit-ui add
 duxkit-ui add message
 duxkit-ui add conversation message prompt-input
 duxkit-ui add --all
@@ -121,6 +127,7 @@ Useful options:
 - `--package-manager <npm|pnpm|yarn|bun>`: set the install command package manager
 - `--dry-run`: print the plan without writing files or installing packages
 - `--json`: print machine-readable JSON to stdout
+- `--verbose`: print every planned package, file, and configuration change
 - `--yes`: accept safe defaults and skip the final apply confirmation
 - `--no-install`: skip package installation and print the exact install command
 - `--force`: overwrite only safe Duxkit-owned generated files under the configured component destination
@@ -133,6 +140,7 @@ Lists available primitives, installed primitives, and dependency groups.
 
 ```bash
 duxkit-ui list
+duxkit-ui list --verbose
 duxkit-ui list --json
 ```
 
@@ -140,6 +148,7 @@ Options:
 
 - `--cwd <path>`: inspect a workspace directory other than the current directory
 - `--json`: print machine-readable JSON to stdout
+- `--verbose`: include aliases, dependencies, and dependency groups
 
 ### `duxkit-ui inspect`
 
@@ -168,7 +177,9 @@ Options:
 
 ## Mutation Safety
 
-`init` and `add` are plan-first mutating commands. They detect workspace state, build a plan, print it, and then apply it only when the operation is safe.
+`init` and `add` are plan-first mutating commands. They detect workspace state, summarize the
+plan, and then apply it only when the operation is safe. Pass `--verbose` to inspect every planned
+package, file, and configuration change.
 
 Interactive terminals get one final apply confirmation unless `--yes` is passed. Non-interactive writes require `--yes`. The `--yes` flag accepts safe defaults, but it does not resolve ambiguity such as multiple app projects or conflicting config values.
 

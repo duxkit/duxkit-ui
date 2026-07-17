@@ -4,25 +4,27 @@ import { CliCommandError } from './cli-errors.js';
 import { runInitCommand, type InitCommandOptions, isInitMode } from './init-command.js';
 import { runInspectCommand, type InspectCommandOptions } from './inspect-command.js';
 import { runListCommand, type ListCommandOptions } from './list-command.js';
+import type { PrimitiveId } from './primitive-registry.js';
 import type { PackageManagerName } from './workspace-state.js';
 
 export interface CliOutput {
   write(chunk: string): void;
 }
 
+export interface CliPrimitiveChoice {
+  readonly description: string;
+  readonly id: PrimitiveId;
+  readonly title: string;
+}
+
 export interface CliIo {
   readonly confirm?: (message: string) => Promise<boolean>;
   readonly interactive?: boolean;
+  readonly selectPrimitives?: (
+    choices: readonly CliPrimitiveChoice[],
+  ) => Promise<readonly PrimitiveId[]>;
   readonly stdout: CliOutput;
   readonly stderr: CliOutput;
-}
-
-function parseTokenMode(value: string): 'add' | 'skip' | 'require-existing' {
-  if (isInitMode(value)) {
-    return value;
-  }
-
-  throw new InvalidArgumentError("expected 'add', 'skip', or 'require-existing'");
 }
 
 function parseInitMode(value: string): 'add' | 'skip' | 'require-existing' {
@@ -69,7 +71,7 @@ export function createCli(io: CliIo): Command {
     .option(
       '--tokens <mode>',
       "Theme token handling: 'add', 'skip', or 'require-existing'.",
-      parseTokenMode,
+      parseInitMode,
     )
     .option(
       '--tailwind <mode>',
@@ -88,6 +90,7 @@ export function createCli(io: CliIo): Command {
     )
     .option('--dry-run', 'Plan changes without writing files or installing packages.')
     .option('--json', 'Print machine-readable JSON output.')
+    .option('--verbose', 'Print every planned package, file, and configuration change.')
     .option('--yes', 'Accept safe defaults and skip final confirmation.')
     .option('--force', 'Allow explicit init flags to replace conflicting config values.')
     .option('--no-install', 'Do not install missing dependencies.')
@@ -107,6 +110,7 @@ export function createCli(io: CliIo): Command {
     )
     .option('--dry-run', 'Plan changes without writing files or installing packages.')
     .option('--json', 'Print machine-readable JSON output.')
+    .option('--verbose', 'Print every planned package, file, and configuration change.')
     .option('--yes', 'Accept safe defaults and skip final confirmation.')
     .option('--no-install', 'Do not install missing dependencies.')
     .option('--force', 'Overwrite Duxkit-owned generated files where safe.')
@@ -118,6 +122,7 @@ export function createCli(io: CliIo): Command {
     .description('List Duxkit AI primitives.')
     .option('--cwd <path>', 'Workspace directory to inspect.')
     .option('--json', 'Print machine-readable JSON output.')
+    .option('--verbose', 'Include aliases, dependencies, and dependency groups.')
     .action((options: ListCommandOptions) => runListCommand(options, io));
 
   configureCommand(program.command('inspect'))
