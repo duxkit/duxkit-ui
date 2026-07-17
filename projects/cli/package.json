@@ -5,7 +5,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/duxkit/duxkit.git",
+    "url": "git+https://github.com/duxkit/duxkit.git",
     "directory": "projects/cli"
   },
   "publishConfig": {
@@ -14,7 +14,7 @@
   },
   "type": "module",
   "bin": {
-    "duxkit-ui": "./index.js"
+    "duxkit-ui": "index.js"
   },
   "exports": {
     ".": "./index.js"
