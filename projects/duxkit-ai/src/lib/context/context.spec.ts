@@ -140,10 +140,11 @@ describe('Context', () => {
     expect(context.clampedUsedPercent()).toBe(0.3125);
   });
 
-  it('keeps the context root sized to its content', () => {
+  it('uses an inline block root so the trigger does not stretch across the row', () => {
     const root = fixture.nativeElement.querySelector('ai-context') as HTMLElement | null;
 
-    expect(root?.classList).toContain('w-fit');
+    expect(root?.classList).toContain('inline-block');
+    expect(root?.classList).not.toContain('inline-flex');
   });
 
   it('renders the default trigger with percentage text, hover-card hooks, and progress icon', () => {
