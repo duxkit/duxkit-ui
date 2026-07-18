@@ -10,7 +10,11 @@ describe('www app routes', () => {
     expect(componentsRoute).toBeDefined();
     expect(appRoutes.find((route) => route.path === 'docs/components')).toBeUndefined();
     expect(docsRoute?.children?.[0]?.path).toBe('');
-    expect(docsRoute?.children?.map((route) => route.path)).toEqual(['', 'installation']);
+    expect(docsRoute?.children?.map((route) => route.path)).toEqual([
+      '',
+      'installation',
+      'changelog',
+    ]);
     expect(componentsRoute?.children?.map((route) => route.path)).toEqual(['', ':slug']);
   });
 });

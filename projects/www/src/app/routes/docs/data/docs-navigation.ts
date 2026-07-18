@@ -15,6 +15,12 @@ export const docsPages = [
     description: 'Use the @duxkit/ui CLI to configure Angular and add editable primitives.',
     href: '/docs/installation',
   },
+  {
+    slug: 'changelog',
+    title: 'Changelog',
+    description: 'Review the main WWW, CLI, and UI changes included in each bundle.',
+    href: '/docs/changelog',
+  },
 ] as const;
 
 export const topLevelSections = [

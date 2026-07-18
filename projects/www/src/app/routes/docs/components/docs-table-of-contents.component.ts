@@ -1,9 +1,23 @@
 import { DOCUMENT, isPlatformBrowser } from '@angular/common';
-import { Component, computed, effect, inject, input, PLATFORM_ID, signal } from '@angular/core';
+import {
+  Component,
+  computed,
+  effect,
+  inject,
+  input,
+  output,
+  PLATFORM_ID,
+  signal,
+} from '@angular/core';
 import {
   flattenDocsTableOfContentsItems,
   type DocsTableOfContentsItem,
 } from '../utils/docs-table-of-contents';
+
+export interface DocsTableOfContentsSelection {
+  readonly event: MouseEvent;
+  readonly id: string;
+}
 
 @Component({
   selector: 'app-docs-table-of-contents',
@@ -25,6 +39,7 @@ import {
               [class.text-muted-foreground]="activeId() !== item.id"
               [class.font-semibold]="activeId() === item.id"
               [attr.aria-current]="activeId() === item.id ? 'location' : null"
+              (click)="selectItem($event, item.id)"
             >
               {{ item.label }}
             </a>
@@ -41,6 +56,7 @@ import {
                       [class.text-muted-foreground]="activeId() !== child.id"
                       [class.font-semibold]="activeId() === child.id"
                       [attr.aria-current]="activeId() === child.id ? 'location' : null"
+                      (click)="selectItem($event, child.id)"
                     >
                       <code class="bg-muted text-inherit">{{ child.label }}</code>
                     </a>
@@ -128,6 +144,7 @@ export class DocsTableOfContents {
   private frame: number | undefined;
 
   readonly items = input.required<readonly DocsTableOfContentsItem[]>();
+  readonly itemSelected = output<DocsTableOfContentsSelection>();
 
   protected readonly activeId = signal('');
   private readonly flatItems = computed(() => flattenDocsTableOfContentsItems(this.items()));
@@ -143,6 +160,10 @@ export class DocsTableOfContents {
     const { pathname, search } = this.document.location;
 
     return `${pathname}${search}#${id}`;
+  }
+
+  protected selectItem(event: MouseEvent, id: string): void {
+    this.itemSelected.emit({ event, id });
   }
 
   protected scheduleActiveUpdate(): void {

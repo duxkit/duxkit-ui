@@ -20,6 +20,10 @@ export const appRoutes: Route[] = [
         loadComponent: () =>
           import('./routes/docs/installation.page').then((m) => m.InstallationPage),
       },
+      {
+        path: 'changelog',
+        loadComponent: () => import('./routes/docs/changelog.page').then((m) => m.ChangelogPage),
+      },
     ],
   },
   {

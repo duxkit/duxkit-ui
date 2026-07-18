@@ -35,6 +35,10 @@ pnpm docs:generate-metadata
 
 Do not hand-edit `projects/www/src/app/routes/docs/data/component-api-metadata.generated.ts`.
 
+10. Add a concise release-facing title under the current bundle's `WWW` group in
+    `projects/www/src/app/routes/docs/data/changelog.ts`. Keep any related primitive or installer
+    titles under `UI` or `CLI`. Do not backfill work from before v0.4.
+
 ## Verification
 
 For docs-only primitive additions, run:
@@ -61,3 +65,4 @@ pnpm build:storybook
 - API tables include selectors, inputs, outputs, defaults, required state, descriptions, exports, and source paths.
 - Search finds the primitive by title, selector, exported symbol, input/output name, and relevant API description.
 - No generated file was edited manually after `pnpm docs:generate-metadata`.
+- The current changelog bundle includes the main WWW, CLI, and UI changes.

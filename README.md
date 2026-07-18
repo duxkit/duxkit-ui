@@ -6,7 +6,8 @@ generated-output interfaces with the AI SDK.
 DuxKit is composable UI infrastructure rather than a chat application, backend framework, or
 provider SDK. It currently targets Angular 22+, `@ai-sdk/angular` 2+, and AI SDK 6+.
 
-Documentation and examples are available at [duxkit.com](https://duxkit.com).
+Documentation and examples are available at [duxkit.com](https://duxkit.com). See the
+[changelog](https://duxkit.com/docs/changelog) for the main changes in each bundled release.
 
 ## Packages
 
@@ -149,6 +150,10 @@ pnpm test:ci
 pnpm build
 pnpm build:storybook
 ```
+
+Add concise release-facing change titles to the current bundle in the
+[changelog](projects/www/src/app/routes/docs/data/changelog.ts). Group entries under WWW, CLI, or
+UI, and do not backfill changes from before v0.4.
 
 ## License
 

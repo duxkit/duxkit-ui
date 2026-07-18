@@ -29,6 +29,7 @@ export const staticSeoRoutes = [
   '/',
   '/docs',
   '/docs/installation',
+  '/docs/changelog',
   '/components',
   ...componentDocs.map((doc) => docsComponentRoutePath(doc.slug)),
 ] as const;
@@ -70,6 +71,20 @@ export function getSeoPage(path: string): SeoPage {
           'Use the @duxkit/ui CLI to configure an Angular app and add editable AI UI primitives.',
           '/docs/installation',
         ),
+      ],
+    });
+  }
+
+  if (path === '/docs/changelog') {
+    return buildSeoPage({
+      canonicalPath: '/docs/changelog',
+      title: 'DuxKit Changelog - WWW, CLI, and UI Updates',
+      description: 'Review the main WWW, CLI, and UI changes included in each DuxKit bundle.',
+      jsonLd: [
+        breadcrumbJsonLd([
+          { name: 'Docs', path: '/docs' },
+          { name: 'Changelog', path: '/docs/changelog' },
+        ]),
       ],
     });
   }

@@ -48,6 +48,10 @@ Keep the CLI registry in sync with the primitive id, title, status, files, depen
 
 If the primitive appears in docs, follow `docs/agent-skills/add-primitive-docs/SKILL.md`.
 
+Add the main release-facing change as a concise title under the current bundle's `UI` group in
+`projects/www/src/app/routes/docs/data/changelog.ts`. Add related CLI or docs changes under `CLI`
+or `WWW`. Do not backfill work from before v0.4.
+
 ## Angular Standards
 
 - Use standalone components/directives, but do not set `standalone: true`.
@@ -192,3 +196,4 @@ Before finishing, confirm:
 - light/dark theme classes use theme tokens,
 - consumer `class` overrides still work,
 - no unrelated user changes were reverted.
+- the current changelog bundle includes the main WWW, CLI, and UI changes.
