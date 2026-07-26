@@ -1,3 +1,4 @@
+import { OverlayModule } from '@angular/cdk/overlay';
 import { Component, computed, contentChild, inject, input } from '@angular/core';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { lucideFileAudio, lucideFileText, lucideFileVideo } from '@ng-icons/lucide';
@@ -41,7 +42,7 @@ export type AttachmentPreviewVariants = VariantProps<typeof attachmentPreviewVar
 
 @Component({
   selector: '[aiAttachmentPreview],ai-attachment-preview',
-  imports: [BrnHoverCard, BrnHoverCardContent, BrnHoverCardTrigger, NgIcon],
+  imports: [OverlayModule, BrnHoverCard, BrnHoverCardContent, BrnHoverCardTrigger, NgIcon],
   providers: [
     { provide: AI_ATTACHMENT_PREVIEW_SLOT, useValue: true },
     provideIcons({

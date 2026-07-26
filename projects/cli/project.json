@@ -7,7 +7,7 @@
     "build": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "tsc -p projects/cli/tsconfig.lib.json && node projects/cli/scripts/prepare-package.mjs",
+        "command": "node projects/cli/scripts/sync-templates.mjs --check && tsc -p projects/cli/tsconfig.lib.json && node projects/cli/scripts/prepare-package.mjs",
         "cwd": "."
       },
       "outputs": [

@@ -23,7 +23,6 @@ export const contextTriggerClasses =
   },
   template: `
     <ng-content>
-      <span>{{ context.renderedPercent() }}</span>
       <ai-context-icon />
     </ng-content>
   `,

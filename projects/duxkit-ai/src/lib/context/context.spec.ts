@@ -15,6 +15,7 @@ import {
   ContextIcon,
   ContextInputUsage,
   ContextOutputUsage,
+  ContextPercentage,
   ContextReasoningUsage,
   ContextTrigger,
 } from './';
@@ -67,8 +68,10 @@ const deprecatedOnlyUsage: LanguageModelUsage = {
     ContextContentBody,
     ContextContentFooter,
     ContextContentHeader,
+    ContextIcon,
     ContextInputUsage,
     ContextOutputUsage,
+    ContextPercentage,
     ContextReasoningUsage,
     ContextTrigger,
   ],
@@ -80,7 +83,10 @@ const deprecatedOnlyUsage: LanguageModelUsage = {
       [usage]="usage()"
       modelId="openai:gpt-4o-mini"
     >
-      <button aiContextTrigger class="custom-trigger"></button>
+      <button aiContextTrigger class="custom-trigger">
+        <ai-context-percentage class="custom-percentage" />
+        <ai-context-icon />
+      </button>
       <ai-context-content class="custom-content" />
       <ai-context-content-header class="custom-header" />
       <ai-context-content-body class="custom-body">
@@ -147,7 +153,7 @@ describe('Context', () => {
     expect(root?.classList).not.toContain('inline-flex');
   });
 
-  it('renders the default trigger with percentage text, hover-card hooks, and progress icon', () => {
+  it('renders an explicitly composed percentage with the progress icon', () => {
     const element = fixture.nativeElement as HTMLElement;
     const trigger = element.querySelector('button[aicontexttrigger]');
     const icon = trigger?.querySelector('ai-context-icon svg');
@@ -155,6 +161,9 @@ describe('Context', () => {
     expect(trigger?.textContent).toContain('31.3%');
     expect(trigger?.classList).toContain('custom-trigger');
     expect(trigger?.hasAttribute('brnHoverCardTrigger')).toBe(true);
+    expect(trigger?.querySelector('ai-context-percentage')?.classList).toContain(
+      'custom-percentage',
+    );
     expect(icon?.getAttribute('aria-label')).toBe('Model context usage');
     expect(icon?.querySelectorAll('circle').length).toBe(2);
   });
@@ -254,6 +263,8 @@ describe('Context', () => {
     expect(trigger?.classList).toContain('group/button');
     expect(trigger?.classList).toContain('text-muted-foreground');
     expect(trigger?.classList).toContain('hover:text-foreground');
+    expect(trigger?.textContent?.trim()).toBe('');
+    expect(trigger?.querySelector('ai-context-icon')).not.toBeNull();
   });
 
   it('throws a clear error when context pieces are used outside the root', async () => {

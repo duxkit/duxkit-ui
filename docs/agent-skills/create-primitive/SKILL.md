@@ -44,7 +44,20 @@ projects/cli/src/lib/primitive-registry.ts
 projects/cli/src/lib/primitive-registry.spec.ts
 ```
 
-Keep the CLI registry in sync with the primitive id, title, status, files, dependencies, peer assumptions, tokens, aliases, primitive dependencies, and relationships.
+Keep the explicit CLI metadata in sync with the primitive id, title, status, dependencies, peer
+assumptions, tokens, aliases, primitive dependencies, and relationships. Do not edit
+`primitive-files.generated.ts` or `.template` files. File inventory and consumer-safe templates are
+derived from canonical primitive source by:
+
+```bash
+pnpm cli:sync-templates
+```
+
+Run that command after adding, removing, renaming, or changing an installable primitive file. It
+fails if a public primitive has no registry metadata, rewrites package entrypoint imports and
+shared stylesheet paths for consumer directories, and updates only generated CLI artifacts.
+Cross-primitive imports in the library must remain package entrypoint imports such as
+`duxkit-ai/markdown` to preserve dependency-injection identity.
 
 If the primitive appears in docs, follow `docs/agent-skills/add-primitive-docs/SKILL.md`.
 
@@ -177,6 +190,7 @@ pnpm build:www
 If the CLI registry changed:
 
 ```bash
+pnpm cli:sync-templates
 pnpm test:cli
 pnpm build:cli
 ```
@@ -190,7 +204,7 @@ pnpm build:storybook
 Before finishing, confirm:
 
 - public exports are present,
-- the CLI registry reflects new installable primitives,
+- the CLI registry reflects new installable primitives and `pnpm cli:check-templates` passes,
 - tests cover the API behavior,
 - docs metadata is regenerated when API changed,
 - light/dark theme classes use theme tokens,

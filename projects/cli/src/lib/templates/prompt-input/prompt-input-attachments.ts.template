@@ -1,7 +1,14 @@
 import { Component, computed, input } from '@angular/core';
 import { NgIcon, provideIcons } from '@ng-icons/core';
-import { lucidePaperclip, lucideX } from '@ng-icons/lucide';
+import { lucidePaperclip } from '@ng-icons/lucide';
 import { twMerge } from 'tailwind-merge';
+import {
+  Attachment,
+  AttachmentName,
+  AttachmentPreview,
+  AttachmentRemove,
+  Attachments,
+} from '../attachment';
 import { promptInputButtonVariants } from './prompt-input-button';
 import { injectPromptInput } from './prompt-input-root';
 import type { PromptInputButtonVariants } from './prompt-input-button';
@@ -45,30 +52,22 @@ export class PromptInputAddAttachment {
 
 @Component({
   selector: '[aiPromptInputAttachments],ai-prompt-input-attachments',
-  imports: [NgIcon],
-  providers: [provideIcons({ lucideX })],
+  imports: [Attachment, AttachmentName, AttachmentPreview, AttachmentRemove, Attachments],
   host: {
     '[class]': 'classes()',
   },
   template: `
     @if (promptInput.files().length > 0) {
-      <div class="flex min-w-0 flex-wrap gap-2">
+      <ai-attachments variant="inline">
         @for (file of promptInput.files(); track file.id) {
-          <div
-            class="inline-flex min-w-0 max-w-full items-center gap-2 rounded-lg border border-border bg-muted/50 px-2 py-1 text-muted-foreground text-xs"
-          >
-            <span class="min-w-0 truncate">{{ file.filename ?? file.url }}</span>
-            <button
-              type="button"
-              class="inline-flex h-5 w-5 shrink-0 cursor-pointer items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
-              [attr.aria-label]="'Remove ' + (file.filename ?? 'attachment')"
-              (click)="promptInput.removeFile(file.id)"
-            >
-              <ng-icon name="lucideX" style="--ng-icon__size: 14px" aria-hidden="true" />
-            </button>
-          </div>
+          <ai-attachment [data]="file" (removed)="promptInput.removeFile(file.id)">
+            <ai-attachment-preview>
+              <ai-attachment-name>{{ file.filename ?? file.url }}</ai-attachment-name>
+              <button aiAttachmentRemove></button>
+            </ai-attachment-preview>
+          </ai-attachment>
         }
-      </div>
+      </ai-attachments>
     }
   `,
 })

@@ -12,6 +12,8 @@
     "build:lib": "nx build duxkit-ai",
     "build:www": "CI=1 nx build www --progress=false",
     "smoke:cli": "node projects/cli/scripts/smoke-package.mjs",
+    "cli:sync-templates": "node projects/cli/scripts/sync-templates.mjs",
+    "cli:check-templates": "node projects/cli/scripts/sync-templates.mjs --check",
     "docs:generate-metadata": "node scripts/generate-docs-api-metadata.mjs",
     "check:package-entrypoints": "node scripts/check-package-entrypoints.mjs",
     "check:release-version": "node scripts/check-release-version.mjs",

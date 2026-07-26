@@ -5,19 +5,26 @@ describe('changelog page', () => {
   it('starts at v0.4 and groups every bundle by product area', () => {
     expect(changelogBundles.map((bundle) => bundle.version)).toEqual(['v0.4']);
     expect(changelogBundles[0]).toMatchObject({
-      date: '18 July 2026',
-      dateTime: '2026-07-18',
+      date: '26 July 2026',
+      dateTime: '2026-07-26',
     });
     expect(changelogBundles[0].groups.map((group) => group.title)).toEqual(['WWW', 'CLI', 'UI']);
   });
 
-  it('records this work without adding earlier changes', () => {
+  it('records the current bundle changes by product area', () => {
     expect(changelogBundles[0].groups[0].changes).toEqual([
       'Changelog page and docs navigation',
       'Bundled changelog workflow',
+      'CLI command reference page',
     ]);
-    expect(changelogBundles[0].groups[1].changes).toEqual([]);
-    expect(changelogBundles[0].groups[2].changes).toEqual([]);
+    expect(changelogBundles[0].groups[1].changes).toEqual([
+      'Deterministic primitive template synchronization',
+    ]);
+    expect(changelogBundles[0].groups[2].changes).toEqual([
+      'Accessible fallback labels for untitled sources',
+      'Opt-in context usage percentage',
+      'Copy confirmation for message actions',
+    ]);
   });
 
   it('builds stable table of contents anchors for each bundle', () => {

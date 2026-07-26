@@ -62,11 +62,12 @@ describe('primitive registry', () => {
       'code-block',
       'prompt-input',
     ]);
-    expect(plan.included.map((primitive) => primitive.id)).toEqual(['markdown']);
+    expect(plan.included.map((primitive) => primitive.id)).toEqual(['markdown', 'attachment']);
     expect(plan.ordered.map((primitive) => primitive.id)).toEqual([
       'markdown',
       'code-block',
       'message',
+      'attachment',
       'prompt-input',
     ]);
     expect(plan.dependencyGroups).toEqual([
@@ -75,6 +76,7 @@ describe('primitive registry', () => {
       'markdown',
       'icons',
       'ai-runtime',
+      'spartan',
     ]);
   });
 

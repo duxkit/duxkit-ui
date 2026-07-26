@@ -10,7 +10,9 @@ import {
   ContextContentFooter,
   ContextContentHeader,
   ContextInputUsage,
+  ContextIcon,
   ContextOutputUsage,
+  ContextPercentage,
   ContextReasoningUsage,
   ContextTrigger,
 } from './';
@@ -42,7 +44,9 @@ const meta: Meta = {
         ContextContentFooter,
         ContextContentHeader,
         ContextInputUsage,
+        ContextIcon,
         ContextOutputUsage,
+        ContextPercentage,
         ContextReasoningUsage,
         ContextTrigger,
         HlmButton,
@@ -65,7 +69,10 @@ const meta: Meta = {
         [usage]="usage"
         [modelId]="modelId"
       >
-        <button aiContextTrigger hlmBtn variant="ghost" size="sm"></button>
+        <button aiContextTrigger hlmBtn variant="ghost" size="sm">
+          <ai-context-percentage />
+          <ai-context-icon />
+        </button>
         <ai-context-content>
           <ai-context-content-header />
           <ai-context-content-body>

@@ -21,6 +21,10 @@ export const appRoutes: Route[] = [
           import('./routes/docs/installation.page').then((m) => m.InstallationPage),
       },
       {
+        path: 'cli',
+        loadComponent: () => import('./routes/docs/cli.page').then((m) => m.CliPage),
+      },
+      {
         path: 'changelog',
         loadComponent: () => import('./routes/docs/changelog.page').then((m) => m.ChangelogPage),
       },

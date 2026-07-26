@@ -274,8 +274,17 @@ Run `duxkit-ui list` for current primitive descriptions, dependencies, and insta
 From this repository:
 
 ```bash
+pnpm cli:sync-templates
+pnpm cli:check-templates
 node_modules/.bin/nx test cli
 node_modules/.bin/nx build cli
 ```
+
+Canonical installable source lives under `projects/duxkit-ai/src/lib`. The sync command derives
+the registry file manifest and the small set of templates that need consumer-local import or
+stylesheet paths. Add descriptive, relationship, and dependency intent for new primitives in
+`projects/cli/src/lib/primitive-registry.ts`, but do not copy source into `.template` files or edit
+`primitive-files.generated.ts`. Package builds run the same generator and fail when synchronized
+artifacts or required registry metadata are stale.
 
 The build output is written to `dist/cli`.

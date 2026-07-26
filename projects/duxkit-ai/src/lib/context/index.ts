@@ -5,5 +5,6 @@ export * from './context-content-body';
 export * from './context-content-footer';
 export * from './context-content-header';
 export * from './context-icon';
+export * from './context-percentage';
 export * from './context-trigger';
 export * from './context-usage';

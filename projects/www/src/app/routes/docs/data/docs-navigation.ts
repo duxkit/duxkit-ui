@@ -16,6 +16,12 @@ export const docsPages = [
     href: '/docs/installation',
   },
   {
+    slug: 'cli',
+    title: 'CLI',
+    description: 'Use init, add, list, and inspect to manage editable Duxkit UI primitives.',
+    href: '/docs/cli',
+  },
+  {
     slug: 'changelog',
     title: 'Changelog',
     description: 'Review the main WWW, CLI, and UI changes included in each bundle.',

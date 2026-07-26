@@ -23,6 +23,7 @@ describe('www SEO configuration', () => {
       '/',
       '/docs',
       '/docs/installation',
+      '/docs/cli',
       '/docs/changelog',
       '/components',
       ...expectedDocsRoutes,
@@ -41,6 +42,10 @@ describe('www SEO configuration', () => {
     expect(getSeoPage('/docs/installation')).toMatchObject({
       title: 'Install Duxkit UI - Angular CLI Setup Guide',
       canonicalPath: '/docs/installation',
+    });
+    expect(getSeoPage('/docs/cli')).toMatchObject({
+      title: 'Duxkit UI CLI - Angular Primitive Commands',
+      canonicalPath: '/docs/cli',
     });
     expect(getSeoPage('/docs/changelog')).toMatchObject({
       title: 'DuxKit Changelog - WWW, CLI, and UI Updates',

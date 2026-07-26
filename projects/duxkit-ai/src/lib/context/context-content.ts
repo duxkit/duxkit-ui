@@ -1,3 +1,4 @@
+import { OverlayModule } from '@angular/cdk/overlay';
 import { Component, computed, input, viewChild } from '@angular/core';
 import { BrnHoverCardContent } from '@spartan-ng/brain/hover-card';
 import { twMerge } from 'tailwind-merge';
@@ -7,7 +8,7 @@ export const contextContentClasses =
 
 @Component({
   selector: 'ai-context-content,[aiContextContent]',
-  imports: [BrnHoverCardContent],
+  imports: [OverlayModule, BrnHoverCardContent],
   host: {
     '[class]': 'hostClasses()',
   },

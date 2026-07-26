@@ -13,6 +13,7 @@ describe('www app routes', () => {
     expect(docsRoute?.children?.map((route) => route.path)).toEqual([
       '',
       'installation',
+      'cli',
       'changelog',
     ]);
     expect(componentsRoute?.children?.map((route) => route.path)).toEqual(['', ':slug']);

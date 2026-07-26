@@ -29,6 +29,7 @@ export const staticSeoRoutes = [
   '/',
   '/docs',
   '/docs/installation',
+  '/docs/cli',
   '/docs/changelog',
   '/components',
   ...componentDocs.map((doc) => docsComponentRoutePath(doc.slug)),
@@ -70,6 +71,26 @@ export function getSeoPage(path: string): SeoPage {
           'Install Duxkit UI',
           'Use the @duxkit/ui CLI to configure an Angular app and add editable AI UI primitives.',
           '/docs/installation',
+        ),
+      ],
+    });
+  }
+
+  if (path === '/docs/cli') {
+    return buildSeoPage({
+      canonicalPath: '/docs/cli',
+      title: 'Duxkit UI CLI - Angular Primitive Commands',
+      description:
+        'Use the @duxkit/ui CLI to initialize Angular, add primitives, inspect setup, and plan safe changes.',
+      jsonLd: [
+        breadcrumbJsonLd([
+          { name: 'Docs', path: '/docs' },
+          { name: 'CLI', path: '/docs/cli' },
+        ]),
+        techArticleJsonLd(
+          'Duxkit UI CLI',
+          'Use the @duxkit/ui CLI to initialize Angular, add primitives, inspect setup, and plan safe changes.',
+          '/docs/cli',
         ),
       ],
     });

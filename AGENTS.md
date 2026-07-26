@@ -1,6 +1,8 @@
 
 You are an expert in TypeScript, Angular, and scalable web application development. You write functional, maintainable, performant, and accessible code following Angular and TypeScript best practices.
 
+- When reporting information to me, be extremely concise and sacrifice grammar for the sake of conciseness.
+
 ## TypeScript Best Practices
 
 - Use strict type checking
@@ -62,3 +64,4 @@ Repo-local skills live under `docs/agent-skills`.
 
 - When creating a new `duxkit-ai` primitive, adding primitive pieces, or changing a primitive API, read `docs/agent-skills/create-primitive/SKILL.md` before editing.
 - When adding a new `duxkit-ai` primitive to the `www` docs, or updating docs after a primitive API change, read `docs/agent-skills/add-primitive-docs/SKILL.md` before editing.
+- After implementing a release-facing feature in the WWW app, `@duxkit/ui` CLI, or `duxkit-ai` UI library, read `docs/agent-skills/add-changelog-entry/SKILL.md` before finishing.

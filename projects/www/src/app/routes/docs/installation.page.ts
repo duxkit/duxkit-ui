@@ -129,7 +129,6 @@ const troubleshooting = [
       aria-labelledby="installation-title"
     >
       <header class="installation-hero border-b border-border">
-        <p class="installation-kicker text-muted-foreground">Getting Started</p>
         <h1 id="installation-title" class="text-foreground">Installation</h1>
         <p class="installation-lead text-muted-foreground">
           Add editable Duxkit UI primitives to an Angular app with the

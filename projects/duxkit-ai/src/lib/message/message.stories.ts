@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from '@storybook/angular';
 import { moduleMetadata } from '@storybook/angular';
 import { HlmButton } from '@duxkit-private/ui/helm/button';
 import { NgIcon, provideIcons } from '@ng-icons/core';
-import { lucideCopy, lucideThumbsDown, lucideThumbsUp } from '@ng-icons/lucide';
+import { lucideThumbsDown, lucideThumbsUp } from '@ng-icons/lucide';
 import {
   MessageActions,
   MessageContent,
@@ -26,7 +26,7 @@ const meta: Meta = {
         MessageThumbsUp,
         NgIcon,
       ],
-      providers: [provideIcons({ lucideCopy, lucideThumbsDown, lucideThumbsUp })],
+      providers: [provideIcons({ lucideThumbsDown, lucideThumbsUp })],
     }),
   ],
   tags: ['autodocs'],
@@ -48,9 +48,7 @@ const meta: Meta = {
         <ai-message [from]="from">
           <ai-message-content [markdown]="markdown" />
           <ai-message-actions>
-            <button aiMessageCopy hlmBtn size="icon-sm" variant="ghost" aria-label="Copy message">
-              <ng-icon name="lucideCopy" />
-            </button>
+            <button aiMessageCopy hlmBtn size="icon-sm" variant="ghost" aria-label="Copy message"></button>
             <button aiMessageThumbsUp hlmBtn size="icon-sm" variant="ghost" aria-label="Good response">
               <ng-icon name="lucideThumbsUp" />
             </button>

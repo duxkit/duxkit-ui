@@ -27,6 +27,7 @@ pnpm install
 ```bash
 pnpm build:lib
 pnpm build:cli
+pnpm cli:sync-templates
 pnpm test:cli
 pnpm test:ci
 pnpm build:www
@@ -40,8 +41,10 @@ Small, focused PRs are preferred. Include tests or docs when the change affects 
 
 Good first contributions are usually documentation, examples, or small accessibility fixes. Primitive internals are more sensitive because they define the public API and should include regression tests.
 
-If a primitive should be available through the CLI, update the bundled registry in
-`projects/cli/src/lib/primitive-registry.ts` and run the CLI checks.
+If a primitive should be available through the CLI, add its descriptive and dependency metadata
+to `projects/cli/src/lib/primitive-registry.ts`, then run `pnpm cli:sync-templates`. The command
+derives the file inventory and consumer-safe templates from `projects/duxkit-ai/src/lib`; do not
+hand-edit `primitive-files.generated.ts` or files under `projects/cli/src/lib/templates`.
 
 ## Scope
 

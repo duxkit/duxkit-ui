@@ -1,3 +1,4 @@
+import { OverlayModule } from '@angular/cdk/overlay';
 import { Component, computed, contentChild, input } from '@angular/core';
 import { BrnDialogContent, BrnDialogDescription, BrnDialogTitle } from '@spartan-ng/brain/dialog';
 import { BrnCommand, provideBrnCommandConfig } from '@spartan-ng/brain/command';
@@ -13,7 +14,7 @@ export const modelSelectorCommandClasses = 'flex size-full flex-col overflow-hid
 
 @Component({
   selector: 'ai-model-selector-content,[aiModelSelectorContent]',
-  imports: [BrnDialogContent, BrnDialogDescription, BrnDialogTitle],
+  imports: [OverlayModule, BrnDialogContent, BrnDialogDescription, BrnDialogTitle],
   hostDirectives: [
     {
       directive: BrnCommand,

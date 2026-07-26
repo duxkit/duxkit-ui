@@ -1,4 +1,5 @@
 import { Component, computed, input } from '@angular/core';
+import { ReactiveFormsModule } from '@angular/forms';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { lucideSearch } from '@ng-icons/lucide';
 import { BrnCommandInput, injectBrnCommand } from '@spartan-ng/brain/command';
@@ -9,7 +10,7 @@ export const modelSelectorInputClasses =
 
 @Component({
   selector: 'ai-model-selector-input',
-  imports: [BrnCommandInput, NgIcon],
+  imports: [ReactiveFormsModule, BrnCommandInput, NgIcon],
   providers: [provideIcons({ lucideSearch })],
   host: {
     'data-slot': 'model-selector-input-wrapper',

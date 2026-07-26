@@ -46,8 +46,8 @@ try {
   const generatedFiles = await collectFiles(generatedRoot);
   const generatedTypeScriptFiles = generatedFiles.filter((file) => file.endsWith('.ts'));
 
-  if (generatedFiles.length !== 142) {
-    throw new Error(`Expected 142 generated templates, found ${generatedFiles.length}.`);
+  if (generatedFiles.length !== 143) {
+    throw new Error(`Expected 143 generated templates, found ${generatedFiles.length}.`);
   }
 
   for (const file of generatedTypeScriptFiles) {

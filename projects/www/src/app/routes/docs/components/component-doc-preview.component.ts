@@ -45,8 +45,10 @@ import {
   ContextContentBody,
   ContextContentFooter,
   ContextContentHeader,
+  ContextIcon,
   ContextInputUsage,
   ContextOutputUsage,
+  ContextPercentage,
   ContextReasoningUsage,
   ContextTrigger,
 } from 'duxkit-ai/context';
@@ -134,7 +136,7 @@ export const componentPreviewSnippets: Record<ComponentDocSlug, string> = {
   <ai-message from="assistant">
     <ai-message-content [markdown]="messageMarkdown" />
     <ai-message-actions>
-      <button aiMessageCopy aria-label="Copy message">Copy</button>
+      <button aiMessageCopy aria-label="Copy message"></button>
     </ai-message-actions>
   </ai-message>
 </div>`,
@@ -156,7 +158,10 @@ export const componentPreviewSnippets: Record<ComponentDocSlug, string> = {
   [usage]="contextUsage"
   modelId="openai:gpt-4o-mini"
 >
-  <button aiContextTrigger hlmBtn variant="ghost" size="sm"></button>
+  <button aiContextTrigger hlmBtn variant="ghost" size="sm">
+    <ai-context-percentage />
+    <ai-context-icon />
+  </button>
   <ai-context-content>
     <ai-context-content-header />
     <ai-context-content-body>
@@ -479,8 +484,10 @@ export const attachmentPreviewSnippets: Record<AttachmentsVariant, string> = {
     ContextContentBody,
     ContextContentFooter,
     ContextContentHeader,
+    ContextIcon,
     ContextInputUsage,
     ContextOutputUsage,
+    ContextPercentage,
     ContextReasoningUsage,
     ContextTrigger,
     HlmButton,
@@ -574,7 +581,7 @@ export const attachmentPreviewSnippets: Record<AttachmentsVariant, string> = {
           <ai-message from="assistant">
             <ai-message-content [markdown]="messageMarkdown" />
             <ai-message-actions>
-              <button aiMessageCopy aria-label="Copy message">Copy</button>
+              <button aiMessageCopy aria-label="Copy message"></button>
             </ai-message-actions>
           </ai-message>
         </div>
@@ -602,7 +609,10 @@ export const attachmentPreviewSnippets: Record<AttachmentsVariant, string> = {
           [usage]="contextUsage"
           modelId="openai:gpt-4o-mini"
         >
-          <button aiContextTrigger hlmBtn variant="ghost" size="sm"></button>
+          <button aiContextTrigger hlmBtn variant="ghost" size="sm">
+            <ai-context-percentage />
+            <ai-context-icon />
+          </button>
           <ai-context-content>
             <ai-context-content-header />
             <ai-context-content-body>

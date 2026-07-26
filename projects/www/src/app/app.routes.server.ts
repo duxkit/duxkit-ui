@@ -15,6 +15,10 @@ export const appServerRoutes: ServerRoute[] = [
     renderMode: RenderMode.Prerender,
   },
   {
+    path: 'docs/cli',
+    renderMode: RenderMode.Prerender,
+  },
+  {
     path: 'docs/changelog',
     renderMode: RenderMode.Prerender,
   },

@@ -119,7 +119,7 @@ export const componentApiMetadata = {
       'MessageThumbsDown',
       'MessageThumbsUp',
     ],
-    inputs: ['from', 'class', 'markdown', 'text', 'active'],
+    inputs: ['from', 'class', 'markdown', 'text', 'aria-label', 'active'],
     outputs: ['copiedChange', 'thumbsDown', 'thumbsUp'],
     sourcePaths: [
       'projects/duxkit-ai/src/lib/message/message.ts',
@@ -200,6 +200,13 @@ export const componentApiMetadata = {
             required: false,
             description:
               'Text copied by the action; falls back to registered message content when omitted.',
+          },
+          {
+            name: 'aria-label',
+            type: 'string',
+            defaultValue: "'Copy message'",
+            required: false,
+            description: 'Accessible label shown before the message is copied.',
           },
           {
             name: 'class',
@@ -376,6 +383,8 @@ export const componentApiMetadata = {
       '[aiContextContentHeader]',
       'ai-context-icon',
       '[aiContextIcon]',
+      'ai-context-percentage',
+      '[aiContextPercentage]',
       'ai-context-input-usage',
       '[aiContextInputUsage]',
       'ai-context-output-usage',
@@ -393,6 +402,7 @@ export const componentApiMetadata = {
       'ContextContentFooter',
       'ContextContentHeader',
       'ContextIcon',
+      'ContextPercentage',
       'ContextInputUsage',
       'ContextOutputUsage',
       'ContextReasoningUsage',
@@ -408,6 +418,7 @@ export const componentApiMetadata = {
       'projects/duxkit-ai/src/lib/context/context-content-footer.ts',
       'projects/duxkit-ai/src/lib/context/context-content-header.ts',
       'projects/duxkit-ai/src/lib/context/context-icon.ts',
+      'projects/duxkit-ai/src/lib/context/context-percentage.ts',
       'projects/duxkit-ai/src/lib/context/context-usage.ts',
     ],
     symbols: [
@@ -544,6 +555,21 @@ export const componentApiMetadata = {
         ],
         outputs: [],
         sourcePath: 'projects/duxkit-ai/src/lib/context/context-icon.ts',
+      },
+      {
+        name: 'ContextPercentage',
+        selectors: ['ai-context-percentage', '[aiContextPercentage]'],
+        inputs: [
+          {
+            name: 'class',
+            type: 'string | undefined',
+            defaultValue: 'undefined',
+            required: false,
+            description: 'Additional classes merged onto the context percentage.',
+          },
+        ],
+        outputs: [],
+        sourcePath: 'projects/duxkit-ai/src/lib/context/context-percentage.ts',
       },
       {
         name: 'ContextInputUsage',

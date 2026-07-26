@@ -1,6 +1,10 @@
 import { chmod, copyFile, mkdir, readFile, rm, symlink, writeFile } from 'node:fs/promises';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import {
+  discoverPrimitiveCatalog,
+  renderPrimitiveCatalog,
+} from './lib/primitive-template-generator.mjs';
 
 const projectRoot = dirname(fileURLToPath(import.meta.url));
 const packageRoot = dirname(projectRoot);
@@ -38,25 +42,30 @@ await symlink('../../../projects/cli/node_modules/commander', join(dependencyRoo
 await chmod(join(outputRoot, 'index.js'), 0o755);
 
 async function assembleTemplates() {
-  const [{ listPrimitives }, { isPrimitiveTemplateOverride, primitiveSourcePath }] =
-    await Promise.all([
-      import('../../../dist/cli/lib/primitive-registry.js'),
-      import('../../../dist/cli/lib/primitive-templates.js'),
-    ]);
+  const { listPrimitives } = await import('../../../dist/cli/lib/primitive-registry.js');
   const templateRoot = join(outputRoot, 'lib/templates');
+  const catalog = await discoverPrimitiveCatalog(workspaceRoot);
+  const renderedByKey = new Map(
+    renderPrimitiveCatalog(catalog).map((template) => [
+      `${template.primitiveId}/${template.file}`,
+      template.content,
+    ]),
+  );
 
   await rm(templateRoot, { force: true, recursive: true });
 
   for (const primitive of listPrimitives().filter((entry) => entry.status === 'available')) {
     for (const file of primitive.files) {
-      const template = { file, primitiveId: primitive.id };
-      const source = isPrimitiveTemplateOverride(template)
-        ? join(packageRoot, 'src/lib/templates', primitive.id, `${file}.template`)
-        : join(workspaceRoot, 'projects/duxkit-ai/src/lib', primitiveSourcePath(template));
+      const content = renderedByKey.get(`${primitive.id}/${file}`);
+
+      if (content === undefined) {
+        throw new Error(`Canonical source for ${primitive.id}/${file} is missing.`);
+      }
+
       const target = join(templateRoot, primitive.id, `${file}.template`);
 
       await mkdir(dirname(target), { recursive: true });
-      await copyFile(source, target);
+      await writeFile(target, content);
     }
   }
 }

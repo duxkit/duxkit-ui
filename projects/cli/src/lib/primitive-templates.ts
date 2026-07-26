@@ -1,25 +1,6 @@
 import { readFile } from 'node:fs/promises';
 import { listPrimitives, type PrimitiveId } from './primitive-registry.js';
 
-export const primitiveTemplateOverrides = [
-  'attachment/attachment-preview.ts',
-  'attachment/attachment-remove.ts',
-  'attachment/attachment.ts',
-  'chain-of-thought/chain-of-thought-trigger.ts',
-  'code-block/code-block.ts',
-  'context/context-content.ts',
-  'markdown/index.ts',
-  'message/message-content.ts',
-  'model-selector/model-selector-content.ts',
-  'model-selector/model-selector-empty.ts',
-  'model-selector/model-selector-input.ts',
-  'prompt-input/prompt-input-attachments.ts',
-  'reasoning/reasoning-content.ts',
-  'sources/source.ts',
-] as const;
-
-const overrideKeys = new Set<string>(primitiveTemplateOverrides);
-
 export interface PrimitiveTemplateFile {
   readonly primitiveId: PrimitiveId;
   readonly file: string;
@@ -82,12 +63,6 @@ export function primitiveSourcePath(
   return template.primitiveId === 'markdown'
     ? template.file
     : `${template.primitiveId}/${template.file}`;
-}
-
-export function isPrimitiveTemplateOverride(
-  template: Pick<PrimitiveTemplateFile, 'file' | 'primitiveId'>,
-): boolean {
-  return overrideKeys.has(`${template.primitiveId}/${template.file}`);
 }
 
 function isMissingFileError(error: unknown): boolean {

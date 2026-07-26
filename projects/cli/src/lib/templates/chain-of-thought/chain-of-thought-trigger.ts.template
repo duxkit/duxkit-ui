@@ -3,8 +3,8 @@ import { BrnCollapsible, BrnCollapsibleTrigger } from '@spartan-ng/brain/collaps
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { lucideBrain, lucideChevronDown } from '@ng-icons/lucide';
 import { twMerge } from 'tailwind-merge';
-import { ChainOfThought } from './chain-of-thought';
 import { Shimmer } from '../shimmer';
+import { ChainOfThought } from './chain-of-thought';
 
 @Component({
   selector: 'button[aiChainOfThoughtTrigger]',

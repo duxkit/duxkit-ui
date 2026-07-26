@@ -115,11 +115,18 @@ projects/cli/src/lib/primitive-registry.ts
 projects/cli/src/lib/primitive-registry.spec.ts
 ```
 
-Keep the primitive id, title, status, files, dependencies, peer assumptions, tokens, aliases, primitive dependencies, and relationships aligned with the component source.
+Keep the primitive id, title, status, dependencies, peer assumptions, tokens, aliases, primitive
+dependencies, and relationships aligned with the component source. File lists and templates are
+generated; synchronize them instead of editing them:
+
+```bash
+pnpm cli:sync-templates
+```
 
 Verify the CLI package:
 
 ```bash
+pnpm cli:check-templates
 pnpm test:cli
 pnpm build:cli
 ```

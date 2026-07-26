@@ -19,7 +19,7 @@ import { MessageContent } from './message-content';
       <ai-message-content [markdown]="firstText()" />
       <ai-message-content [markdown]="secondText()" />
       <ai-message-actions class="custom-actions">
-        <button aiMessageCopy aria-label="Copy message">Copy</button>
+        <button aiMessageCopy aria-label="Copy message"></button>
         <button
           aiMessageThumbsUp
           aria-label="Thumbs up"
@@ -99,7 +99,7 @@ describe('MessageActions', () => {
     expect(actions?.getAttribute('role')).toBe('group');
     expect(actions?.classList).toContain('mr-auto');
     expect(actions?.classList).toContain('custom-actions');
-    expect(copy?.textContent).toContain('Copy');
+    expect(copy?.querySelector('ng-icon[data-icon="copy"]')).not.toBeNull();
     expect(customAction?.textContent).toContain('Custom action');
   });
 
@@ -108,11 +108,15 @@ describe('MessageActions', () => {
     const copy = element.querySelector<HTMLButtonElement>('button[aria-label="Copy message"]');
 
     copy?.click();
+    await Promise.resolve();
+    fixture.detectChanges();
     await fixture.whenStable();
 
     expect(writeText).toHaveBeenCalledWith(
       ['**Assistant** response', '', '```ts', 'const value = 1;', '```'].join('\n'),
     );
+    expect(element.querySelector('button[aria-label="Copied message"]')).not.toBeNull();
+    expect(copy?.querySelector('ng-icon[data-icon="check"]')).not.toBeNull();
   });
 
   it('updates copied text when message content changes', async () => {

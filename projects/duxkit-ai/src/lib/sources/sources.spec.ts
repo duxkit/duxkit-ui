@@ -37,6 +37,12 @@ class Host {
 })
 class CustomTriggerHost {}
 
+@Component({
+  imports: [Source],
+  template: `<a aiSource href="https://angular.dev"></a>`,
+})
+class UntitledSourceHost {}
+
 describe('Sources', () => {
   let fixture: ComponentFixture<Host>;
 
@@ -74,6 +80,16 @@ describe('Sources', () => {
 
     expect(trigger?.textContent).toContain('Custom sources');
     expect(trigger?.textContent).not.toContain('Used 3 sources');
+  });
+
+  it('uses the URL as the visible label when a source title is omitted', async () => {
+    const untitledFixture = TestBed.createComponent(UntitledSourceHost);
+    untitledFixture.detectChanges();
+    await untitledFixture.whenStable();
+
+    expect((untitledFixture.nativeElement as HTMLElement).textContent).toContain(
+      'https://angular.dev',
+    );
   });
 
   it('wires collapsible state through Brain directives', () => {

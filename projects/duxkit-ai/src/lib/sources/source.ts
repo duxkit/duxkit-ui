@@ -17,7 +17,7 @@ import { twMerge } from 'tailwind-merge';
   template: `
     <ng-content>
       <ng-icon name="lucideBook" aria-hidden="true" style="--ng-icon__size: 16px" />
-      <span class="block font-medium">{{ title() }}</span>
+      <span class="block font-medium">{{ title() || href() || 'Source' }}</span>
     </ng-content>
   `,
 })

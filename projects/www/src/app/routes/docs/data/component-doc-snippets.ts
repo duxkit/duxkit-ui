@@ -8,7 +8,7 @@ export const componentImports: Record<ComponentDocSlug, string> = {
   checkpoint:
     "import { Checkpoint, CheckpointIcon, CheckpointTrigger } from './components/ai/checkpoint';",
   context:
-    "import { Context, ContextContent, ContextContentBody, ContextContentFooter, ContextContentHeader, ContextInputUsage, ContextOutputUsage, ContextTrigger } from './components/ai/context';",
+    "import { Context, ContextContent, ContextContentBody, ContextContentFooter, ContextContentHeader, ContextIcon, ContextInputUsage, ContextOutputUsage, ContextPercentage, ContextTrigger } from './components/ai/context';",
   'model-selector':
     "import { ModelSelector, ModelSelectorContent, ModelSelectorDescription, ModelSelectorEmpty, ModelSelectorGroup, ModelSelectorGroupHeading, ModelSelectorInput, ModelSelectorItem, ModelSelectorList, ModelSelectorLogo, ModelSelectorName, ModelSelectorShortcut, ModelSelectorTitle, ModelSelectorTrigger } from './components/ai/model-selector';",
   'prompt-input':
@@ -44,13 +44,19 @@ export const anatomySnippets: Record<ComponentDocSlug, string> = {
 </ai-conversation>`,
   message: `<ai-message from="assistant">
   <ai-message-content markdown="Message content supports markdown." />
+  <ai-message-actions>
+    <button aiMessageCopy aria-label="Copy message"></button>
+  </ai-message-actions>
 </ai-message>`,
   checkpoint: `<ai-checkpoint>
   <ai-checkpoint-icon />
   <button aiCheckpointTrigger>Restore checkpoint</button>
 </ai-checkpoint>`,
   context: `<ai-context [usedTokens]="40000" [maxTokens]="128000" [usage]="usage" modelId="openai:gpt-4o-mini">
-  <button aiContextTrigger></button>
+  <button aiContextTrigger>
+    <ai-context-percentage />
+    <ai-context-icon />
+  </button>
   <ai-context-content>
     <ai-context-content-header />
     <ai-context-content-body>
