@@ -3,7 +3,7 @@ import { Component, computed, inject, PLATFORM_ID, signal } from '@angular/core'
 import { toSignal } from '@angular/core/rxjs-interop';
 import { NavigationEnd, Router, RouterLink } from '@angular/router';
 import { NgIcon, provideIcons } from '@ng-icons/core';
-import { lucideMenu, lucideMoon, lucideSun, lucideX } from '@ng-icons/lucide';
+import { lucideGithub, lucideMenu, lucideX } from '@ng-icons/lucide';
 import { type BrnDialogState } from '@spartan-ng/brain/dialog';
 import { HlmCommandImports } from '@duxkit-private/ui/helm/command';
 import { HlmDrawerImports } from '@duxkit-private/ui/helm/drawer';
@@ -25,10 +25,6 @@ import {
   searchComponentDocs,
 } from '../../routes/docs/search/docs-search';
 
-type ThemeMode = 'light' | 'dark';
-
-const themeStorageKey = 'duxkit-ui-theme';
-
 @Component({
   selector: 'app-header',
   imports: [
@@ -40,7 +36,7 @@ const themeStorageKey = 'duxkit-ui-theme';
     NgOptimizedImage,
     RouterLink,
   ],
-  providers: [provideIcons({ lucideMenu, lucideMoon, lucideSun, lucideX })],
+  providers: [provideIcons({ lucideGithub, lucideMenu, lucideX })],
   host: {
     '(document:keydown)': 'handleDocumentKeydown($event)',
   },
@@ -88,7 +84,7 @@ const themeStorageKey = 'duxkit-ui-theme';
           </nav>
         </div>
 
-        <div class="nav-actions" aria-label="Account actions">
+        <div class="nav-actions" aria-label="Site actions">
           @if (isBrowser) {
             <hlm-drawer direction="left" class="mobile-only">
               <button
@@ -162,7 +158,9 @@ const themeStorageKey = 'duxkit-ui-theme';
                         @for (item of componentSidebarGroup.items; track item.slug) {
                           <a
                             class="mobile-nav-link"
-                            [class.mobile-nav-link-active]="currentUrl() === componentHref(item.slug)"
+                            [class.mobile-nav-link-active]="
+                              currentUrl() === componentHref(item.slug)
+                            "
                             [routerLink]="componentHref(item.slug)"
                             [attr.aria-current]="
                               currentUrl() === componentHref(item.slug) ? 'page' : null
@@ -175,7 +173,6 @@ const themeStorageKey = 'duxkit-ui-theme';
                     </nav>
                   }
                 </div>
-
               </hlm-drawer-content>
             </hlm-drawer>
           }
@@ -192,15 +189,16 @@ const themeStorageKey = 'duxkit-ui-theme';
             <kbd>⌘K</kbd>
           </button>
 
-          <button
+          <a
             class="theme-trigger"
-            type="button"
-            [attr.aria-label]="themeToggleLabel()"
-            [title]="themeToggleLabel()"
-            (click)="toggleTheme()"
+            href="https://github.com/duxkit/duxkit-ui"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="View DuxKit UI on GitHub"
+            title="View DuxKit UI on GitHub"
           >
-            <ng-icon hlmIcon size="sm" [name]="themeIcon()" aria-hidden="true" />
-          </button>
+            <ng-icon hlmIcon size="sm" name="lucideGithub" aria-hidden="true" />
+          </a>
         </div>
       </div>
     </header>
@@ -265,29 +263,16 @@ export class HeaderComponent {
 
   protected readonly searchState = signal<BrnDialogState>('closed');
   protected readonly searchQuery = signal('');
-  protected readonly theme = signal<ThemeMode>(this.readInitialTheme());
   protected readonly currentUrl = computed(() => this.routerUrl());
   protected readonly activeSection = computed<SiteSection | undefined>(() =>
     getSectionForPath(this.currentUrl()),
   );
   protected readonly searchOpen = computed(() => this.searchState() === 'open');
-  protected readonly themeIcon = computed(() =>
-    this.theme() === 'dark' ? 'lucideSun' : 'lucideMoon',
-  );
-  protected readonly themeToggleLabel = computed(() =>
-    this.theme() === 'dark' ? 'Switch to light theme' : 'Switch to dark theme',
-  );
   protected readonly filteredDocs = computed(() =>
     searchComponentDocs(this.searchQuery()).slice(0, componentDocsSearchIndex.length),
   );
   protected readonly commandSearchFilter = (value: string, search: string): boolean =>
     matchesDocsSearchText(value, search);
-
-  constructor() {
-    if (this.isBrowser) {
-      this.applyTheme(this.theme());
-    }
-  }
 
   protected openSearch(): void {
     this.searchState.set('open');
@@ -318,14 +303,6 @@ export class HeaderComponent {
     return item.api.selectors[0] ?? item.slug;
   }
 
-  protected toggleTheme(): void {
-    const nextTheme = this.theme() === 'dark' ? 'light' : 'dark';
-
-    this.theme.set(nextTheme);
-    this.applyTheme(nextTheme);
-    this.storeTheme(nextTheme);
-  }
-
   protected handleDocumentKeydown(event: KeyboardEvent): void {
     if (event.key.toLowerCase() !== 'k' || (!event.metaKey && !event.ctrlKey)) {
       return;
@@ -333,47 +310,6 @@ export class HeaderComponent {
 
     event.preventDefault();
     this.openSearch();
-  }
-
-  private readInitialTheme(): ThemeMode {
-    if (!this.isBrowser) {
-      return 'light';
-    }
-
-    const storedTheme = this.readStoredTheme();
-
-    if (storedTheme) {
-      return storedTheme;
-    }
-
-    return globalThis.matchMedia?.('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-  }
-
-  private readStoredTheme(): ThemeMode | undefined {
-    try {
-      const storedTheme = globalThis.localStorage?.getItem(themeStorageKey);
-
-      return storedTheme === 'dark' || storedTheme === 'light' ? storedTheme : undefined;
-    } catch {
-      return undefined;
-    }
-  }
-
-  private storeTheme(theme: ThemeMode): void {
-    try {
-      globalThis.localStorage?.setItem(themeStorageKey, theme);
-    } catch {
-      // Storage can be unavailable in private browsing or restricted embeds.
-    }
-  }
-
-  private applyTheme(theme: ThemeMode): void {
-    if (!this.isBrowser) {
-      return;
-    }
-
-    this.document.documentElement.dataset['theme'] = theme;
-    this.document.documentElement.style.colorScheme = theme;
   }
 
   protected readonly componentSidebarGroup = componentSidebarGroup;

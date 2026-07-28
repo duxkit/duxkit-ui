@@ -1,10 +1,19 @@
-import { Component } from '@angular/core';
+import { isPlatformBrowser, DOCUMENT } from '@angular/common';
+import { Component, computed, inject, PLATFORM_ID, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
+import { NgIcon, provideIcons } from '@ng-icons/core';
+import { lucideMoon, lucideSun } from '@ng-icons/lucide';
 import { HlmButton } from '@duxkit-private/ui/helm/button';
+import { HlmIcon } from '@duxkit-private/ui/helm/icon';
 import { footerLinkGroups } from './footer-link-groups';
 
+type ThemeMode = 'light' | 'dark';
+
+const themeStorageKey = 'duxkit-ui-theme';
+
 @Component({
-  imports: [HlmButton, RouterLink],
+  imports: [HlmButton, HlmIcon, NgIcon, RouterLink],
+  providers: [provideIcons({ lucideMoon, lucideSun })],
   selector: 'app-footer',
   template: `
     <footer class="site-footer">
@@ -38,6 +47,16 @@ import { footerLinkGroups } from './footer-link-groups';
 
         <div class="site-footer-legal">
           <p>&copy; {{ currentYear }} Duxkit UI. All rights reserved.</p>
+
+          <button
+            class="theme-trigger"
+            type="button"
+            [attr.aria-label]="themeToggleLabel()"
+            [title]="themeToggleLabel()"
+            (click)="toggleTheme()"
+          >
+            <ng-icon hlmIcon size="sm" [name]="themeIcon()" aria-hidden="true" />
+          </button>
         </div>
       </div>
     </footer>
@@ -150,6 +169,10 @@ import { footerLinkGroups } from './footer-link-groups';
     }
 
     .site-footer-legal {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 24px;
       border-top: 1px solid var(--border);
       padding: 20px 0 24px;
     }
@@ -189,6 +212,70 @@ import { footerLinkGroups } from './footer-link-groups';
   `,
 })
 export class FooterComponent {
+  private readonly document = inject(DOCUMENT);
+  private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
   protected readonly footerLinkGroups = footerLinkGroups;
   protected readonly currentYear = new Date().getFullYear();
+  protected readonly theme = signal<ThemeMode>(this.readInitialTheme());
+  protected readonly themeIcon = computed(() =>
+    this.theme() === 'dark' ? 'lucideSun' : 'lucideMoon',
+  );
+  protected readonly themeToggleLabel = computed(() =>
+    this.theme() === 'dark' ? 'Switch to light theme' : 'Switch to dark theme',
+  );
+
+  constructor() {
+    if (this.isBrowser) {
+      this.applyTheme(this.theme());
+    }
+  }
+
+  protected toggleTheme(): void {
+    const nextTheme = this.theme() === 'dark' ? 'light' : 'dark';
+
+    this.theme.set(nextTheme);
+    this.applyTheme(nextTheme);
+    this.storeTheme(nextTheme);
+  }
+
+  private readInitialTheme(): ThemeMode {
+    if (!this.isBrowser) {
+      return 'light';
+    }
+
+    const storedTheme = this.readStoredTheme();
+
+    if (storedTheme) {
+      return storedTheme;
+    }
+
+    return globalThis.matchMedia?.('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+  }
+
+  private readStoredTheme(): ThemeMode | undefined {
+    try {
+      const storedTheme = globalThis.localStorage?.getItem(themeStorageKey);
+
+      return storedTheme === 'dark' || storedTheme === 'light' ? storedTheme : undefined;
+    } catch {
+      return undefined;
+    }
+  }
+
+  private storeTheme(theme: ThemeMode): void {
+    try {
+      globalThis.localStorage?.setItem(themeStorageKey, theme);
+    } catch {
+      // Storage can be unavailable in private browsing or restricted embeds.
+    }
+  }
+
+  private applyTheme(theme: ThemeMode): void {
+    if (!this.isBrowser) {
+      return;
+    }
+
+    this.document.documentElement.dataset['theme'] = theme;
+    this.document.documentElement.style.colorScheme = theme;
+  }
 }

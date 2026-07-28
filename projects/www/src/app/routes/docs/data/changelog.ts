@@ -1,5 +1,16 @@
 export const changelogBundles = [
   {
+    version: 'v0.4.1',
+    date: '28 July 2026',
+    dateTime: '2026-07-28',
+    groups: [
+      {
+        title: 'WWW',
+        changes: ['GitHub repository link and footer theme control'],
+      },
+    ],
+  },
+  {
     version: 'v0.4',
     date: '26 July 2026',
     dateTime: '2026-07-26',

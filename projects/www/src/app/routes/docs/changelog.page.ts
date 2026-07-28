@@ -41,26 +41,22 @@ import { changelogBundleId, changelogBundles, changelogTableOfContents } from '.
               <hlm-accordion-content>
                 <div class="changelog-groups">
                   @for (group of bundle.groups; track group.title) {
-                    <section
-                      class="changelog-group"
-                      [attr.aria-labelledby]="bundle.version + group.title"
-                    >
-                      <h4 [id]="bundle.version + group.title" class="text-foreground">
-                        {{ group.title }}
-                      </h4>
+                    @if (group.changes.length > 0) {
+                      <section
+                        class="changelog-group"
+                        [attr.aria-labelledby]="bundle.version + group.title"
+                      >
+                        <h4 [id]="bundle.version + group.title" class="text-foreground">
+                          {{ group.title }}
+                        </h4>
 
-                      @if (group.changes.length > 0) {
                         <ul class="text-muted-foreground">
                           @for (change of group.changes; track change) {
                             <li>{{ change }}</li>
                           }
                         </ul>
-                      } @else {
-                        <p class="changelog-empty text-muted-foreground">
-                          No changes in this bundle.
-                        </p>
-                      }
-                    </section>
+                      </section>
+                    }
                   }
                 </div>
               </hlm-accordion-content>
@@ -167,11 +163,6 @@ import { changelogBundleId, changelogBundles, changelogTableOfContents } from '.
       display: grid;
       gap: 8px;
       padding-left: 18px;
-      font-size: 15px;
-      line-height: 1.6;
-    }
-
-    .changelog-empty {
       font-size: 15px;
       line-height: 1.6;
     }
