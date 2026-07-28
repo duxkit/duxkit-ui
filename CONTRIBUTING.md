@@ -5,13 +5,15 @@ Thanks for taking the time to improve DuxKit AI. This project is early, pre-1.0,
 ## Project Layout
 
 ```text
-projects/duxkit-ai/   publishable Angular library
-projects/cli/         Duxkit UI CLI package published as @duxkit/ui
+projects/duxkit-ai/   canonical primitive source and workspace library
+projects/cli/         published @duxkit/ui source installer
 projects/www/         docs and marketing site
 projects/ui/          private Spartan Helm workspace primitives
 ```
 
-The public library API is exported from `projects/duxkit-ai/src/public-api.ts`. Private workspace UI imports under `@duxkit-private/ui/*` are not part of the published package.
+`projects/duxkit-ai` is not published to npm. The consumer-facing primitive source is derived from
+that project, packaged by `@duxkit/ui`, and written into consumer applications. Private workspace
+UI imports under `@duxkit-private/ui/*` must not appear in generated source.
 
 ## Setup
 
@@ -61,7 +63,7 @@ Out of scope:
 - broad rewrites without prior discussion
 - support requests without enough reproduction details
 - provider-specific backend integrations that belong in an application server
-- changes that make the library depend on private workspace UI entrypoints
+- changes that make generated primitives depend on private workspace UI entrypoints
 
 ## Support Expectations
 
