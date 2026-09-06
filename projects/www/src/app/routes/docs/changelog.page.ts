@@ -1,5 +1,6 @@
 import { DOCUMENT, isPlatformBrowser } from '@angular/common';
 import { Component, inject, PLATFORM_ID, signal } from '@angular/core';
+import { RouterLink } from '@angular/router';
 import { HlmAccordionImports } from '@duxkit-private/ui/helm/accordion';
 import { SeoService } from '../../shared/seo/seo.service';
 import {
@@ -7,9 +8,10 @@ import {
   type DocsTableOfContentsSelection,
 } from './components/docs-table-of-contents.component';
 import { changelogBundleId, changelogBundles, changelogTableOfContents } from './data/changelog';
+import { migrationForRelease, migrationHref } from './data/migrations';
 
 @Component({
-  imports: [DocsTableOfContents, HlmAccordionImports],
+  imports: [DocsTableOfContents, HlmAccordionImports, RouterLink],
   template: `
     <div class="changelog-layout">
       <section class="changelog-page" aria-labelledby="changelog-title">
@@ -39,6 +41,17 @@ import { changelogBundleId, changelogBundles, changelogTableOfContents } from '.
               </hlm-accordion-trigger>
 
               <hlm-accordion-content>
+                @if (migrationForRelease(bundle.version); as guide) {
+                  <p class="mb-6 text-muted-foreground">
+                    This release includes breaking changes.
+                    <a
+                      class="text-foreground underline underline-offset-4"
+                      [routerLink]="migrationHref(guide)"
+                    >
+                      Follow the {{ guide.fromRelease }} to {{ guide.toRelease }} migration guide.
+                    </a>
+                  </p>
+                }
                 <div class="changelog-groups">
                   @for (group of bundle.groups; track group.title) {
                     @if (group.changes.length > 0) {
@@ -195,6 +208,8 @@ export class ChangelogPage {
   protected readonly changelogTableOfContents = changelogTableOfContents;
   protected readonly openBundle = signal<string>(changelogBundles[0]?.version ?? '');
   protected readonly bundleId = changelogBundleId;
+  protected readonly migrationForRelease = migrationForRelease;
+  protected readonly migrationHref = migrationHref;
 
   constructor() {
     this.seo.setPath('/docs/changelog');

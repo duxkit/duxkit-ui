@@ -1,4 +1,5 @@
 import { Component, ViewEncapsulation, computed, inject, input, signal } from '@angular/core';
+import { _IdGenerator } from '@angular/cdk/a11y';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { lucideCheck, lucideCopy } from '@ng-icons/lucide';
 import { AI_MARKDOWN_OPTIONS, renderHighlightedCode } from 'duxkit-ai/markdown';
@@ -248,6 +249,7 @@ export interface DocsCodeTab {
   `,
 })
 export class DocsCodeTabs {
+  private readonly idPrefix = inject(_IdGenerator).getId('docs-code-');
   protected readonly previewTabId = 'preview';
 
   public readonly tabs = input.required<readonly DocsCodeTab[]>();
@@ -339,11 +341,11 @@ export class DocsCodeTabs {
   }
 
   protected tabId(id: string): string {
-    return `docs-code-tab-${id}`;
+    return `${this.idPrefix}-tab-${id}`;
   }
 
   protected panelId(id: string): string {
-    return `docs-code-panel-${id}`;
+    return `${this.idPrefix}-panel-${id}`;
   }
 
   private focusTab(currentTarget: EventTarget | null, id: string): void {

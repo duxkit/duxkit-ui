@@ -29,6 +29,8 @@ const slugs = readComponentDocSlugs(docsRegistryFile);
 const sourceFiles = slugs.flatMap((slug) => readComponentSourceFiles(slug));
 const program = ts.createProgram(sourceFiles, {
   experimentalDecorators: true,
+  moduleResolution: ts.ModuleResolutionKind.Bundler,
+  paths: { 'duxkit-ai/*': [join(sourceRoot, '*.entrypoint.ts')] },
   module: ts.ModuleKind.Preserve,
   target: ts.ScriptTarget.ES2022,
 });
@@ -170,8 +172,8 @@ function readAngularSymbols(sourceFile) {
           name: node.name.text,
           selectors: splitSelectors(decoratorMetadata.selector),
           ...(decoratorMetadata.exportAs ? { exportAs: decoratorMetadata.exportAs } : {}),
-          inputs: node.members.flatMap(readInputMetadata),
-          outputs: node.members.flatMap(readOutputMetadata),
+          inputs: readClassMembers(node).flatMap(readInputMetadata),
+          outputs: readClassMembers(node).flatMap(readOutputMetadata),
           sourcePath: relative(repoRoot, sourceFile.fileName),
         });
       }
@@ -179,6 +181,13 @@ function readAngularSymbols(sourceFile) {
 
     ts.forEachChild(node, visit);
   }
+}
+
+function readClassMembers(node) {
+  return checker
+    .getTypeAtLocation(node)
+    .getProperties()
+    .flatMap((symbol) => (symbol.valueDeclaration ? [symbol.valueDeclaration] : []));
 }
 
 function readAngularDecoratorMetadata(node) {

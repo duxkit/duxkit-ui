@@ -153,9 +153,10 @@ pnpm smoke:cli
 pnpm build:storybook
 ```
 
-Add concise release-facing change titles to the current bundle in the
-[changelog](projects/www/src/app/routes/docs/data/changelog.ts). Group entries under WWW, CLI, or
-UI, and do not backfill changes from before v0.4.
+Follow the [changelog workflow](docs/agent-skills/add-changelog-entry/SKILL.md) to select the
+release bundle before adding entries to the [changelog](projects/www/src/app/routes/docs/data/changelog.ts).
+New releases get a new bundle; preserve previous releases. Group entries under WWW, CLI, or UI,
+and do not backfill changes from before v0.4.
 
 ## Stability
 

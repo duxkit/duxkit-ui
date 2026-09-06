@@ -1,11 +1,10 @@
-import { Component, computed, inject, input } from '@angular/core';
+import { Directive, computed, inject, input } from '@angular/core';
 import { twMerge } from 'tailwind-merge';
 import { Attachment } from './attachment';
 
-@Component({
+@Directive({
   selector: '[aiAttachmentThumbnail],ai-attachment-thumbnail',
   host: { '[class]': 'classes()' },
-  template: '<ng-content />',
 })
 export class AttachmentThumbnail {
   protected readonly attachment = inject(Attachment);

@@ -1,14 +1,13 @@
-import { Component, computed, input } from '@angular/core';
+import { Directive, computed, input } from '@angular/core';
 import { BrnCollapsibleContent } from '@spartan-ng/brain/collapsible';
 import { twMerge } from 'tailwind-merge';
 
-@Component({
+@Directive({
   selector: '[aiQueueSectionContent],ai-queue-section-content',
   hostDirectives: [{ directive: BrnCollapsibleContent, inputs: ['id'] }],
   host: {
     '[class]': 'classes()',
   },
-  template: '<ng-content />',
 })
 export class QueueSectionContent {
   /** Additional classes merged onto the queue section content region. */

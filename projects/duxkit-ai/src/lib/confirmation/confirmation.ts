@@ -1,8 +1,8 @@
-import { Component, computed, input } from '@angular/core';
+import { Directive, computed, input } from '@angular/core';
 import { twMerge } from 'tailwind-merge';
 import type { ConfirmationToolPart } from './confirmation.types';
 
-@Component({
+@Directive({
   selector: '[aiConfirmation],ai-confirmation',
   host: {
     '[class]': 'classes()',
@@ -10,7 +10,6 @@ import type { ConfirmationToolPart } from './confirmation.types';
     '[attr.data-state]': 'state()',
     '[attr.data-approved]': 'approval()?.approved',
   },
-  template: '<ng-content />',
 })
 export class Confirmation {
   /** AI SDK tool part containing approval state and confirmation metadata. */

@@ -1,15 +1,14 @@
-import { Component, computed, input } from '@angular/core';
+import { Directive, computed, input } from '@angular/core';
 import { twMerge } from 'tailwind-merge';
 
 export type QueueItemActionType = 'button' | 'submit' | 'reset';
 
-@Component({
+@Directive({
   selector: 'button[aiQueueItemAction],button[ai-queue-item-action]',
   host: {
     '[class]': 'classes()',
     '[attr.type]': 'type()',
   },
-  template: '<ng-content />',
 })
 export class QueueItemAction {
   /** Native button type for the queue item action. */

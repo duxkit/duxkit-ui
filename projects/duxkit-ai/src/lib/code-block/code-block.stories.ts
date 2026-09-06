@@ -1,8 +1,11 @@
 import type { Meta, StoryObj } from '@storybook/angular';
+import { moduleMetadata } from '@storybook/angular';
 import { CodeBlock } from './code-block';
+import { CodeBlockContent, CodeBlockCopy } from './code-block-parts';
 
 const meta: Meta<CodeBlock> = {
   title: 'Components/Code Block',
+  decorators: [moduleMetadata({ imports: [CodeBlock, CodeBlockContent, CodeBlockCopy] })],
   component: CodeBlock,
   tags: ['autodocs'],
   argTypes: {
@@ -42,4 +45,15 @@ export const Json: Story = {
   }
 }`,
   },
+};
+
+export const Composed: Story = {
+  render: (args) => ({
+    props: args,
+    template: `<ai-code-block [code]="code" [language]="language">
+      <button aiCodeBlockCopy>Copy code</button>
+      <ai-code-block-content />
+      <p class="text-muted-foreground text-xs">Consumer-owned footer</p>
+    </ai-code-block>`,
+  }),
 };

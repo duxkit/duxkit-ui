@@ -12,7 +12,7 @@ import {
 } from '@angular/core';
 import { BrnSliderImports } from '@spartan-ng/brain/slider';
 import { twMerge } from 'tailwind-merge';
-import { injectReasoningEffort } from './reasoning-effort-root';
+import { ReasoningEffortSliderState } from './reasoning-effort-slider-state';
 
 export const reasoningEffortSliderClasses =
   'relative flex w-full touch-none items-center select-none data-disabled:pointer-events-none data-disabled:opacity-50';
@@ -23,13 +23,14 @@ export const reasoningEffortSliderThumbClasses =
   'absolute block size-4 rounded-full border-2 border-primary bg-background shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background data-disabled:pointer-events-none data-disabled:opacity-50';
 
 @Component({
+  exportAs: 'aiReasoningEffortSlider',
   selector: 'ai-reasoning-effort-slider,[aiReasoningEffortSlider]',
   imports: [BrnSliderImports],
   host: {
     'data-slot': 'reasoning-effort-slider-root',
     '[class]': 'classes()',
   },
-  template: `
+  template: `<ng-content>
     @if (hasSelectedLevel()) {
       <div
         brnSlider
@@ -40,6 +41,7 @@ export const reasoningEffortSliderThumbClasses =
         [max]="maxIndex()"
         [min]="0"
         [step]="1"
+        [orientation]="orientation()"
         [value]="sliderValue()"
         (valueChange)="selectSliderValue($event)"
       >
@@ -59,13 +61,17 @@ export const reasoningEffortSliderThumbClasses =
           aria-hidden="true"
           data-slot="reasoning-effort-slider-labels"
           [class]="computedLabelsClass()"
-          [style.padding-inline.px]="labelsInset()"
+          [style.padding-inline.px]="orientation() === 'horizontal' ? labelsInset() : 0"
+          [style.padding-block.px]="orientation() === 'vertical' ? labelsInset() : 0"
         >
           @for (level of reasoningEffort.levels(); track level.value) {
             <span
               data-slot="reasoning-effort-slider-label-stop"
-              class="flex w-0 shrink-0 justify-center"
-              style="width: 0"
+              [class]="
+                orientation() === 'horizontal'
+                  ? 'flex w-0 shrink-0 justify-center'
+                  : 'flex h-0 shrink-0 items-center'
+              "
             >
               <span
                 [class]="computedLevelLabelClass()"
@@ -80,10 +86,9 @@ export const reasoningEffortSliderThumbClasses =
         </div>
       }
     }
-  `,
+  </ng-content>`,
 })
-export class ReasoningEffortSlider {
-  protected readonly reasoningEffort = injectReasoningEffort();
+export class ReasoningEffortSlider extends ReasoningEffortSliderState {
   private readonly destroyRef = inject(DestroyRef);
   private readonly thumbElement = viewChild<ElementRef<HTMLElement>>('thumb');
   private readonly thumbWidth = signal(16);
@@ -93,10 +98,10 @@ export class ReasoningEffortSlider {
       ? undefined
       : new ResizeObserver(() => this.measureThumb());
 
+  /** Direction of the default slider. */
+  public readonly orientation = input<'horizontal' | 'vertical'>('horizontal');
   /** Accessible label for the slider. Defaults to the root label. */
   public readonly ariaLabel = input<string | undefined>(undefined);
-  /** Whether this slider alone is disabled. */
-  public readonly disabled = input(false, { transform: booleanAttribute });
   /** Whether labels for every configured level are rendered below the track. */
   public readonly showLabels = input(true, { transform: booleanAttribute });
   /** Additional classes merged onto the slider component host. */
@@ -114,43 +119,44 @@ export class ReasoningEffortSlider {
   /** Additional classes applied to each level label. */
   public readonly levelLabelClass = input<string | undefined>(undefined);
 
-  protected readonly maxIndex = computed(() =>
-    Math.max(0, this.reasoningEffort.levels().length - 1),
-  );
-  protected readonly selectedIndex = computed(() => {
-    const selectedIndex = this.reasoningEffort
-      .levels()
-      .findIndex((level) => level.value === this.reasoningEffort.value());
-
-    return selectedIndex === -1 ? undefined : selectedIndex;
-  });
-  protected readonly hasSelectedLevel = computed(() => this.selectedIndex() !== undefined);
-  protected readonly sliderValue = computed(() => {
-    const selectedIndex = this.selectedIndex();
-
-    return selectedIndex === undefined ? [] : [selectedIndex];
-  });
   protected readonly labelsInset = computed(() => this.thumbWidth() / 2);
-  protected readonly isDisabled = computed(
-    () => this.disabled() || this.reasoningEffort.isDisabled(),
-  );
   protected readonly classes = computed(() =>
-    twMerge('flex w-full flex-col gap-3', this.userClass()),
+    twMerge(
+      'flex w-full flex-col gap-3',
+      this.orientation() === 'vertical' && 'h-48 w-fit flex-row',
+      this.userClass(),
+    ),
   );
   protected readonly computedSliderClass = computed(() =>
-    twMerge(reasoningEffortSliderClasses, this.sliderClass()),
+    twMerge(
+      reasoningEffortSliderClasses,
+      this.orientation() === 'vertical' && 'h-48 w-5 flex-col',
+      this.sliderClass(),
+    ),
   );
   protected readonly computedTrackClass = computed(() =>
-    twMerge(reasoningEffortSliderTrackClasses, this.trackClass()),
+    twMerge(
+      reasoningEffortSliderTrackClasses,
+      this.orientation() === 'vertical' && 'h-full w-1.5',
+      this.trackClass(),
+    ),
   );
   protected readonly computedRangeClass = computed(() =>
-    twMerge(reasoningEffortSliderRangeClasses, this.rangeClass()),
+    twMerge(
+      reasoningEffortSliderRangeClasses,
+      this.orientation() === 'vertical' && 'w-full h-auto',
+      this.rangeClass(),
+    ),
   );
   protected readonly computedThumbClass = computed(() =>
     twMerge(reasoningEffortSliderThumbClasses, this.thumbClass()),
   );
   protected readonly computedLabelsClass = computed(() =>
-    twMerge('flex items-start justify-between', this.labelsClass()),
+    twMerge(
+      'flex items-start justify-between',
+      this.orientation() === 'vertical' && 'h-full flex-col-reverse',
+      this.labelsClass(),
+    ),
   );
   protected readonly computedLevelLabelClass = computed(() =>
     twMerge(
@@ -160,6 +166,7 @@ export class ReasoningEffortSlider {
   );
 
   public constructor() {
+    super();
     afterRenderEffect(() => {
       const thumb = this.thumbElement()?.nativeElement;
 
@@ -180,15 +187,6 @@ export class ReasoningEffortSlider {
     });
 
     this.destroyRef.onDestroy(() => this.resizeObserver?.disconnect());
-  }
-
-  protected selectSliderValue(values: readonly number[]): void {
-    const index = Math.round(values[0] ?? 0);
-    const level = this.reasoningEffort.levels()[index];
-
-    if (!this.disabled() && level) {
-      this.reasoningEffort.select(level.value);
-    }
   }
 
   private measureThumb(): void {

@@ -1,7 +1,7 @@
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 
-const headerSource = readFileSync('projects/www/src/app/header.component.ts', 'utf8');
+const headerSource = readFileSync('projects/www/src/app/layout/header/header.component.ts', 'utf8');
 const stylesSource = readFileSync('projects/www/src/styles.scss', 'utf8');
 
 function mobileBreakpointBlock(): string {
@@ -33,8 +33,12 @@ function mobileBreakpointBlock(): string {
 describe('HeaderComponent mobile navigation', () => {
   it('projects drawer content through the Spartan drawer portal', () => {
     expect(headerSource).toContain('<hlm-drawer direction="left" class="mobile-only">');
-    expect(headerSource).toContain('<hlm-drawer-content *hlmDrawerPortal class="mobile-nav-drawer">');
-    expect(headerSource).not.toContain('direction="left"\n                aria-label="Open navigation menu"');
+    expect(headerSource).toContain(
+      '<hlm-drawer-content *hlmDrawerPortal class="mobile-nav-drawer">',
+    );
+    expect(headerSource).not.toContain(
+      'direction="left"\n                aria-label="Open navigation menu"',
+    );
   });
 
   it('uses branded drawer chrome instead of generic instructional copy', () => {
@@ -51,7 +55,9 @@ describe('HeaderComponent mobile navigation', () => {
     expect(mobileStyles).toMatch(
       /\.site-section-nav\[hlmNavigationMenu\]\.desktop-only\s*{[^}]*display:\s*none;/s,
     );
-    expect(mobileStyles).toMatch(/\.mobile-only,\s*\.mobile-nav-trigger\s*{[^}]*display:\s*inline-flex;/s);
+    expect(mobileStyles).toMatch(
+      /\.mobile-only,\s*\.mobile-nav-trigger\s*{[^}]*display:\s*inline-flex;/s,
+    );
     expect(mobileStyles).toMatch(/\.search-trigger\s*{[^}]*display:\s*none;/s);
   });
 
@@ -59,6 +65,8 @@ describe('HeaderComponent mobile navigation', () => {
     expect(stylesSource).toMatch(/\.mobile-nav-link\s*{[^}]*border:\s*0;/s);
     expect(stylesSource).toMatch(/\.mobile-nav-link\s*{[^}]*border-radius:\s*0;/s);
     expect(stylesSource).toMatch(/\.mobile-nav-link\s*{[^}]*background:\s*transparent;/s);
-    expect(stylesSource).toMatch(/\.mobile-nav-link-active\s*{[^}]*box-shadow:\s*inset 3px 0 0 #09090b;/s);
+    expect(stylesSource).toMatch(
+      /\.mobile-nav-link-active\s*{[^}]*box-shadow:\s*inset 3px 0 0 #09090b;/s,
+    );
   });
 });

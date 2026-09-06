@@ -1,16 +1,9 @@
 import { HlmButton } from '@duxkit-private/ui/helm/button';
+import { HlmIconImports } from '@duxkit-private/ui/helm/icon';
+import { provideIcons } from '@ng-icons/core';
+import { lucidePlus } from '@ng-icons/lucide';
 import type { Meta, StoryObj } from '@storybook/angular';
 import { moduleMetadata } from '@storybook/angular';
-import {
-  PromptInput,
-  PromptInputAddAttachment,
-  PromptInputAttachments,
-  PromptInputButton,
-  PromptInputSubmit,
-  PromptInputTextarea,
-  PromptInputToolbar,
-  PromptInputTools,
-} from './';
 import {
   createModelSelectorSearchValue,
   groupModelSelectorModels,
@@ -29,9 +22,16 @@ import {
   ModelSelectorTrigger,
   type ModelSelectorModel,
 } from '../model-selector';
-import { provideIcons } from '@ng-icons/core';
-import { lucidePlus } from '@ng-icons/lucide';
-import { HlmIcon, HlmIconImports } from '@duxkit-private/ui/helm/icon';
+import {
+  PromptInput,
+  PromptInputAddAttachment,
+  PromptInputAttachments,
+  PromptInputButton,
+  PromptInputSubmit,
+  PromptInputTextarea,
+  PromptInputToolbar,
+  PromptInputTools,
+} from './';
 
 const models = [
   {
@@ -130,11 +130,11 @@ const meta: Meta = {
               </ai-model-selector-content>
             </ai-model-selector>
             <button aiPromptInputAddAttachment hlmBtn variant="ghost" size="icon-sm"></button>
-            <button aiPromptInputButton hlmBtn variant="ghost" size="icon-sm">
+            <button aiPromptInputButton hlmBtn variant="ghost" size="icon-sm" aria-label="Search the web">
               <ng-icon hlm size="sm" name="lucidePlus" />
             </button>
           </ai-prompt-input-tools>
-          <button aiPromptInputSubmit hlmBtn size="icon-sm" [status]="status"></button>
+          <button aiPromptInputSubmit hlmBtn size="icon-sm"></button>
         </ai-prompt-input-toolbar>
       </form>
     `,
@@ -188,7 +188,7 @@ export const Streaming: Story = {
             </ai-model-selector>
             <button aiPromptInputAddAttachment hlmBtn variant="ghost" size="icon-sm"></button>
           </ai-prompt-input-tools>
-          <button aiPromptInputSubmit hlmBtn size="icon-sm" [status]="status"></button>
+          <button aiPromptInputSubmit hlmBtn size="icon-sm"></button>
         </ai-prompt-input-toolbar>
       </form>
     `,

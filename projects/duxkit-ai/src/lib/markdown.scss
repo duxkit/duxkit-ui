@@ -1329,7 +1329,9 @@ ai-message-content .ai-markdown.markdown-body,
   --ai-markdown-code-radius: 0.75rem;
   --ai-markdown-code-string: var(--color-prettylights-syntax-string, #0a3069);
   --ai-markdown-code-surface: var(--background, var(--bgColor-default, #ffffff));
+}
 
+.ai-markdown.markdown-body {
   min-width: 0;
   max-width: 100%;
   overflow: hidden;
@@ -1341,97 +1343,100 @@ ai-message-content .ai-markdown.markdown-body,
   margin-bottom: 0;
 }
 
-.ai-code-block,
-.ai-markdown.markdown-body :where(.ai-code-block) {
-  margin: var(--base-size-16, 1rem) 0;
-  display: flex;
-  width: 100%;
-  min-width: 0;
-  max-width: 100%;
-  flex-direction: column;
-  gap: var(--base-size-8, 0.5rem);
-  border: 1px solid var(--ai-markdown-code-border);
-  border-radius: var(--ai-markdown-code-radius);
-  background: var(--ai-markdown-code-bg);
-  padding: var(--base-size-8, 0.5rem);
-}
+/* Defaults belong below consumer utility classes in the cascade. */
+@layer components {
+  .ai-code-block,
+  .ai-markdown.markdown-body :where(.ai-code-block) {
+    margin: var(--base-size-16, 1rem) 0;
+    display: flex;
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
+    flex-direction: column;
+    gap: var(--base-size-8, 0.5rem);
+    border: 1px solid var(--ai-markdown-code-border);
+    border-radius: var(--ai-markdown-code-radius);
+    background: var(--ai-markdown-code-bg);
+    padding: var(--base-size-8, 0.5rem);
+  }
 
-.ai-code-block-header,
-.ai-markdown.markdown-body :where(.ai-code-block-header) {
-  display: flex;
-  height: 2rem;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--base-size-8, 0.5rem);
-  color: var(--ai-markdown-code-label);
-  font-size: 0.75rem;
-}
+  .ai-code-block-header,
+  .ai-markdown.markdown-body :where(.ai-code-block-header) {
+    display: flex;
+    height: 2rem;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--base-size-8, 0.5rem);
+    color: var(--ai-markdown-code-label);
+    font-size: 0.75rem;
+  }
 
-.ai-code-block-language,
-.ai-markdown.markdown-body :where(.ai-code-block-language) {
-  margin-left: var(--base-size-4, 0.25rem);
-  font-family: var(
-    --fontStack-monospace,
-    ui-monospace,
-    SFMono-Regular,
-    Menlo,
-    Monaco,
-    Consolas,
-    'Liberation Mono',
-    'Courier New',
-    monospace
-  );
-  text-transform: lowercase;
-}
+  .ai-code-block-language,
+  .ai-markdown.markdown-body :where(.ai-code-block-language) {
+    margin-left: var(--base-size-4, 0.25rem);
+    font-family: var(
+      --fontStack-monospace,
+      ui-monospace,
+      SFMono-Regular,
+      Menlo,
+      Monaco,
+      Consolas,
+      'Liberation Mono',
+      'Courier New',
+      monospace
+    );
+    text-transform: lowercase;
+  }
 
-.ai-code-block-actions,
-.ai-markdown.markdown-body :where(.ai-code-block-actions) {
-  display: inline-flex;
-  align-items: center;
-  flex-shrink: 0;
-  gap: 0.125rem;
-}
+  .ai-code-block-actions,
+  .ai-markdown.markdown-body :where(.ai-code-block-actions) {
+    display: inline-flex;
+    align-items: center;
+    flex-shrink: 0;
+    gap: 0.125rem;
+  }
 
-.ai-code-block-action,
-.ai-markdown.markdown-body :where(.ai-code-block-action) {
-  display: inline-flex;
-  width: 1.5rem;
-  height: 1.5rem;
-  cursor: pointer;
-  align-items: center;
-  justify-content: center;
-  border: 0;
-  border-radius: 0.375rem;
-  background: transparent;
-  color: var(--ai-markdown-code-label);
-  padding: 0;
-  transition:
-    background-color 150ms ease,
-    color 150ms ease,
-    transform 150ms ease;
-}
+  .ai-code-block-action,
+  .ai-markdown.markdown-body :where(.ai-code-block-action) {
+    display: inline-flex;
+    width: 1.5rem;
+    height: 1.5rem;
+    cursor: pointer;
+    align-items: center;
+    justify-content: center;
+    border: 0;
+    border-radius: 0.375rem;
+    background: transparent;
+    color: var(--ai-markdown-code-label);
+    padding: 0;
+    transition:
+      background-color 150ms ease,
+      color 150ms ease,
+      transform 150ms ease;
+  }
 
-.ai-code-block-action:hover,
-.ai-markdown.markdown-body :where(.ai-code-block-action:hover) {
-  background: var(--bgColor-neutral-muted, var(--muted, #818b981f));
-  color: var(--ai-markdown-code-color);
-}
+  .ai-code-block-action:hover,
+  .ai-markdown.markdown-body :where(.ai-code-block-action:hover) {
+    background: var(--bgColor-neutral-muted, var(--muted, #818b981f));
+    color: var(--ai-markdown-code-color);
+  }
 
-.ai-code-block-action:active,
-.ai-markdown.markdown-body :where(.ai-code-block-action:active) {
-  transform: translateY(1px);
-}
+  .ai-code-block-action:active,
+  .ai-markdown.markdown-body :where(.ai-code-block-action:active) {
+    transform: translateY(1px);
+  }
 
-.ai-code-block-body,
-.ai-markdown.markdown-body :where(.ai-code-block-body) {
-  min-width: 0;
-  max-width: 100%;
-  overflow: hidden;
-  border: 1px solid var(--ai-markdown-code-border);
-  border-radius: 0.5rem;
-  background: var(--ai-markdown-code-surface);
-  padding: var(--base-size-16, 1rem);
-  font-size: 0.875rem;
+  .ai-code-block-body,
+  .ai-markdown.markdown-body :where(.ai-code-block-body) {
+    min-width: 0;
+    max-width: 100%;
+    overflow: hidden;
+    border: 1px solid var(--ai-markdown-code-border);
+    border-radius: 0.5rem;
+    background: var(--ai-markdown-code-surface);
+    padding: var(--base-size-16, 1rem);
+    font-size: 0.875rem;
+  }
 }
 
 .ai-code-block-body pre,

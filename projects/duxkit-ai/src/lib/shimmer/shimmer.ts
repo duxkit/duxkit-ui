@@ -1,8 +1,9 @@
 import {
+  afterRenderEffect,
   AfterViewInit,
-  Component,
   computed,
   DestroyRef,
+  Directive,
   ElementRef,
   inject,
   input,
@@ -11,60 +12,44 @@ import {
 } from '@angular/core';
 import { twMerge } from 'tailwind-merge';
 
-@Component({
+@Directive({
   selector: '[aiShimmer],ai-shimmer',
   host: {
     '[class]': 'classes()',
     '[style.--ai-shimmer-duration]': 'durationStyle()',
     '[style.--ai-shimmer-spread]': 'spreadStyle()',
+    '[style.background-image]': 'reducedMotion() ? null : backgroundImage',
+    '[style.background-size]': 'reducedMotion() ? null : "250% 100%, auto"',
+    '[style.-webkit-text-fill-color]': 'reducedMotion() ? "currentColor" : "transparent"',
   },
-  template: '<ng-content />',
-  styles: `
-    :host(.ai-shimmer) {
-      animation: ai-shimmer-sweep var(--ai-shimmer-duration) linear infinite;
-      background-image:
-        linear-gradient(
-          90deg,
-          transparent calc(50% - var(--ai-shimmer-spread)),
-          var(--background, Canvas),
-          transparent calc(50% + var(--ai-shimmer-spread))
-        ),
-        linear-gradient(
-          var(--muted-foreground, currentColor),
-          var(--muted-foreground, currentColor)
-        );
-      background-repeat: no-repeat, no-repeat;
-      background-size:
-        250% 100%,
-        auto;
-      background-clip: text;
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-    }
-
-    @keyframes ai-shimmer-sweep {
-      from {
-        background-position: 100% center;
-      }
-
-      to {
-        background-position: 0% center;
-      }
-    }
-
-    @media (prefers-reduced-motion: reduce) {
-      :host(.ai-shimmer) {
-        animation: none;
-        background-image: none;
-        color: var(--muted-foreground, currentColor);
-        -webkit-text-fill-color: currentColor;
-      }
-    }
-  `,
 })
 export class Shimmer implements AfterViewInit {
   private readonly elementRef = inject<ElementRef<HTMLElement>>(ElementRef);
   private readonly destroyRef = inject(DestroyRef);
+  protected readonly reducedMotion = signal(false);
+  protected readonly backgroundImage =
+    'linear-gradient(90deg, transparent calc(50% - var(--ai-shimmer-spread)), var(--background, Canvas), transparent calc(50% + var(--ai-shimmer-spread))), linear-gradient(var(--muted-foreground, currentColor), var(--muted-foreground, currentColor))';
+  private animation: Animation | undefined;
+  public constructor() {
+    const media = globalThis.matchMedia?.('(prefers-reduced-motion: reduce)');
+    const update = () => this.reducedMotion.set(media?.matches ?? false);
+    update();
+    media?.addEventListener('change', update);
+    afterRenderEffect(() => {
+      const duration = this.validNumber(this.duration(), 2);
+      const reduced = this.reducedMotion();
+      this.animation?.cancel();
+      if (!reduced)
+        this.animation = this.elementRef.nativeElement.animate?.(
+          [{ backgroundPosition: '100% center' }, { backgroundPosition: '0% center' }],
+          { duration: Math.max(0.01, duration) * 1000, iterations: Infinity },
+        );
+    });
+    this.destroyRef.onDestroy(() => {
+      this.animation?.cancel();
+      media?.removeEventListener('change', update);
+    });
+  }
   private readonly textLength = signal(0);
 
   /** Animation duration in seconds. */
@@ -75,7 +60,10 @@ export class Shimmer implements AfterViewInit {
   public readonly userClass = input<string | undefined>(undefined, { alias: 'class' });
 
   protected readonly classes = computed(() =>
-    twMerge('ai-shimmer relative inline-block text-transparent bg-clip-text', this.userClass()),
+    twMerge(
+      'ai-shimmer relative inline-block text-muted-foreground bg-clip-text',
+      this.userClass(),
+    ),
   );
 
   protected readonly durationStyle = computed(() => `${this.validNumber(this.duration(), 2)}s`);

@@ -1,10 +1,9 @@
-import { Component, computed, input } from '@angular/core';
+import { Directive, computed, input } from '@angular/core';
 import { twMerge } from 'tailwind-merge';
 
-@Component({
+@Directive({
   selector: '[aiQueueSectionCount],ai-queue-section-count',
   host: { '[class]': 'classes()' },
-  template: '<ng-content />',
 })
 export class QueueSectionCount {
   /** Additional classes merged onto the queue section count. */

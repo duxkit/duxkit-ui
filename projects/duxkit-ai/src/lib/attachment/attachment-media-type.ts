@@ -1,11 +1,10 @@
-import { Component, computed, inject, input } from '@angular/core';
+import { Directive, computed, inject, input } from '@angular/core';
 import { twMerge } from 'tailwind-merge';
 import { Attachment } from './attachment';
 
-@Component({
+@Directive({
   selector: '[aiAttachmentMediaType],ai-attachment-media-type',
   host: { '[class]': 'classes()' },
-  template: '<ng-content />',
 })
 export class AttachmentMediaType {
   protected readonly attachment = inject(Attachment);

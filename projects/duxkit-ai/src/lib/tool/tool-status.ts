@@ -29,13 +29,13 @@ export type ToolStatusVariant = 'badge' | 'icon';
     '[attr.data-variant]': 'variant()',
     '[attr.data-tool-state]': 'tool.state()',
   },
-  template: `
+  template: `<ng-content>
     @if (variant() === 'icon') {
       <ng-icon [name]="iconName()" style="--ng-icon__size: 16px" />
     } @else {
       {{ tool.statusLabel() }}
     }
-  `,
+  </ng-content>`,
 })
 export class ToolStatus {
   protected readonly tool = inject(Tool);

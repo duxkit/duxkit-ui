@@ -222,8 +222,8 @@ The CLI stores workspace configuration in `duxkit-ai.json`:
     "components": "@/app/components"
   },
   "primitives": {
-    "message": "0.0.1",
-    "conversation": "0.0.1"
+    "message": "0.2.0",
+    "conversation": "0.2.0"
   }
 }
 ```
@@ -243,6 +243,29 @@ Each primitive gets its own directory, such as `libs/dux-ui/message`. Choose ano
 during `init`, or pass `--library-path`. Generated files are intended to be edited by the
 consuming app. Re-run with `--dry-run` before using `--force` so you can see exactly which files
 would be overwritten.
+
+## Updating Existing Compositions
+
+Version 0.2.0 adds composable pieces within existing installable primitive families.
+Regenerate the affected families to receive their new exports and transitive dependencies. Preview
+the changes with `pnpm dlx @duxkit/ui@latest add --all --dry-run` before applying `--force`, which
+replaces Duxkit-owned generated files. Preserve your local customizations before regenerating.
+
+Migration changes:
+
+- Move the submit button's `status` binding to `form[aiPromptInput]`; keep submission-wide
+  `disabled` on that root. Bind controlled `text` and `files` there too.
+- An empty `AttachmentPreview` retains its preset. Include `AttachmentDefaultPreview` explicitly
+  when projecting other content alongside the preset. Removal controls default to normal flow;
+  choose `placement="grid"`, `"list"` or `"inline-preview"` for positioned controls.
+- Use `ChainOfThoughtImageFrame` to retain the previous image frame. Style `TaskContent` on its
+  host, and apply confirmation/footer styling explicitly inside tools.
+
+Follow the [v0.4.1 → v0.4.2 migration guide](https://duxkit.com/docs/migrations/v0-4-1-to-v0-4-2)
+for CLI 0.1.0 → 0.2.0, with commands, before-and-after code and checks for your app.
+[All migration guides](https://duxkit.com/docs/migrations) are organised by release.
+Component documentation also includes a **Composition** section with relevant migration notes,
+imports and examples: [component docs](https://duxkit.com/components).
 
 ## Available Primitives
 

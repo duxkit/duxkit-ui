@@ -7,12 +7,12 @@
   "author": "Liam Langstaff",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/duxkit/duxkit.git",
+    "url": "git+https://github.com/duxkit/duxkit-ui.git",
     "directory": "projects/duxkit-ai"
   },
   "homepage": "https://duxkit.com",
   "bugs": {
-    "url": "https://github.com/duxkit/duxkit/issues"
+    "url": "https://github.com/duxkit/duxkit-ui/issues"
   },
   "keywords": [
     "angular",

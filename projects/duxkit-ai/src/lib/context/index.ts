@@ -1,10 +1,12 @@
 export * from './context';
-export * from './context-cost';
 export * from './context-content';
 export * from './context-content-body';
 export * from './context-content-footer';
 export * from './context-content-header';
+export * from './context-cost';
 export * from './context-icon';
 export * from './context-percentage';
 export * from './context-trigger';
 export * from './context-usage';
+
+export { ContextData } from './context-data';

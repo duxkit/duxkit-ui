@@ -6,3 +6,5 @@ export * from './attachment-remove';
 export * from './attachment-thumbnail';
 export * from './attachment.types';
 export * from './attachments';
+
+export * from './attachment-default-preview';

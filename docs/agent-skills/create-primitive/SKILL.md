@@ -61,9 +61,10 @@ Cross-primitive imports in the library must remain package entrypoint imports su
 
 If the primitive appears in docs, follow `docs/agent-skills/add-primitive-docs/SKILL.md`.
 
-Add the main release-facing change as a concise title under the current bundle's `UI` group in
-`projects/www/src/app/routes/docs/data/changelog.ts`. Add related CLI or docs changes under `CLI`
-or `WWW`. Do not backfill work from before v0.4.
+Follow [add-changelog-entry](../add-changelog-entry/SKILL.md) to select the release bundle first.
+Add the main change under `UI` and related installer or docs changes under `CLI` or `WWW`.
+A new release needs a new bundle; do not assume the newest recorded bundle is still in progress.
+Do not backfill work from before v0.4.
 
 ## Angular Standards
 
@@ -210,4 +211,4 @@ Before finishing, confirm:
 - light/dark theme classes use theme tokens,
 - consumer `class` overrides still work,
 - no unrelated user changes were reverted.
-- the current changelog bundle includes the main WWW, CLI, and UI changes.
+- the correctly selected release bundle includes the main WWW, CLI, and UI changes, with previous bundles preserved.

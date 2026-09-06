@@ -11,14 +11,18 @@ export const checkpointClasses =
   },
   template: `
     <ng-content />
-    <span
-      data-ai-checkpoint-separator
-      aria-hidden="true"
-      class="ml-2 min-w-4 flex-1 border-0 border-t border-solid border-border bg-border"
-    ></span>
+    @if (showSeparator()) {
+      <span
+        data-ai-checkpoint-separator
+        aria-hidden="true"
+        class="ml-2 min-w-4 flex-1 border-0 border-t border-solid border-border bg-border"
+      ></span>
+    }
   `,
 })
 export class Checkpoint {
+  /** Render the preset separator. */
+  public readonly showSeparator = input(true);
   /** Additional classes merged onto the checkpoint row. */
   public readonly userClass = input<string | undefined>(undefined, { alias: 'class' });
 

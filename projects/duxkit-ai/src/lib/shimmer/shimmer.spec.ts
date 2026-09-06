@@ -55,11 +55,11 @@ describe('Shimmer', () => {
   });
 
   it('uses the repo theme variables so transparent text still has a valid background', () => {
-    const styles = document.head.textContent ?? '';
+    const styles =
+      (fixture.nativeElement.querySelector('p') as HTMLElement).getAttribute('style') ?? '';
 
     expect(styles).toContain('var(--background');
     expect(styles).toContain('var(--muted-foreground');
-    expect(styles).toContain('_nghost');
     expect(styles).not.toContain('.ai-shimmer[_ngcontent');
     expect(styles).not.toContain('var(--color-background');
     expect(styles).not.toContain('var(--color-muted-foreground');

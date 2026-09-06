@@ -1,11 +1,10 @@
-import { Component, computed, input, output } from '@angular/core';
+import { booleanAttribute, Component, computed, input, output } from '@angular/core';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { lucideCornerDownLeft, lucideLoaderCircle, lucideSquare, lucideX } from '@ng-icons/lucide';
 import { twMerge } from 'tailwind-merge';
 import type { PromptInputButtonVariants } from './prompt-input-button';
 import { promptInputButtonVariants } from './prompt-input-button';
 import { injectPromptInput } from './prompt-input-root';
-import type { PromptInputStatus } from './prompt-input.types';
 
 @Component({
   selector: 'button[aiPromptInputSubmit],button[ai-prompt-input-submit]',
@@ -13,6 +12,8 @@ import type { PromptInputStatus } from './prompt-input.types';
   providers: [provideIcons({ lucideCornerDownLeft, lucideLoaderCircle, lucideSquare, lucideX })],
   host: {
     '[class]': 'classes()',
+    '[disabled]':
+      'disabled() || promptInput.disabled() || (!isGenerating() && !promptInput.canSubmit())',
     '[attr.type]': 'buttonType()',
     '[attr.aria-label]': 'label()',
     '(click)': 'handleClick($event)',
@@ -29,10 +30,10 @@ import type { PromptInputStatus } from './prompt-input.types';
   `,
 })
 export class PromptInputSubmit {
-  private readonly promptInput = injectPromptInput();
+  protected readonly promptInput = injectPromptInput();
 
-  /** Chat status used to switch between submit, loading, stop, and error states. */
-  public readonly status = input<PromptInputStatus | undefined>(undefined);
+  /** Disable this control. Root disabled state applies to all submission paths. */
+  public readonly disabled = input(false, { transform: booleanAttribute });
   /** Visual size for the prompt input submit button. */
   public readonly size = input<PromptInputButtonVariants['size']>('icon-sm');
   /** Additional classes merged onto the prompt input submit button. */
@@ -40,7 +41,7 @@ export class PromptInputSubmit {
   /** Emits when the stop button is pressed while a response is in flight. */
   public readonly stop = output<void>();
 
-  protected readonly effectiveStatus = computed(() => this.status() ?? this.promptInput.status());
+  protected readonly effectiveStatus = computed(() => this.promptInput.status());
   protected readonly isGenerating = computed(
     () => this.effectiveStatus() === 'submitted' || this.effectiveStatus() === 'streaming',
   );

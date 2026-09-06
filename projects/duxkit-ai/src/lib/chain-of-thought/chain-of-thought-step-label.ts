@@ -1,10 +1,9 @@
-import { Component, computed, input } from '@angular/core';
+import { Directive, computed, input } from '@angular/core';
 import { twMerge } from 'tailwind-merge';
 
-@Component({
+@Directive({
   selector: '[aiChainOfThoughtStepLabel],ai-chain-of-thought-step-label',
   host: { '[class]': 'classes()' },
-  template: '<ng-content />',
 })
 export class ChainOfThoughtStepLabel {
   /** Additional classes merged onto the step label. */

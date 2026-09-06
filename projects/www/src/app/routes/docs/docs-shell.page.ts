@@ -25,7 +25,7 @@ import { docsPages } from './data/docs-navigation';
                   [class.text-muted-foreground]="!routeActive.isActive"
                   [active]="routeActive.isActive"
                   [routerLink]="item.href"
-                  [routerLinkActiveOptions]="{ exact: true }"
+                  [routerLinkActiveOptions]="{ exact: item.slug !== 'migrations' }"
                 >
                   {{ item.title }}
                 </a>

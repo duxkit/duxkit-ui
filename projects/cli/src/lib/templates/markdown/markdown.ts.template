@@ -4,6 +4,7 @@ import {
   makeEnvironmentProviders,
   type EnvironmentProviders,
 } from '@angular/core';
+import type { LanguageFn } from 'highlight.js';
 import hljs from 'highlight.js/lib/core';
 import bash from 'highlight.js/lib/languages/bash';
 import css from 'highlight.js/lib/languages/css';
@@ -13,7 +14,6 @@ import markdown from 'highlight.js/lib/languages/markdown';
 import typescript from 'highlight.js/lib/languages/typescript';
 import xml from 'highlight.js/lib/languages/xml';
 import { Marked, type Tokens } from 'marked';
-import type { LanguageFn } from 'highlight.js';
 
 export const markdownContentClasses = 'ai-markdown markdown-body';
 
@@ -319,4 +319,9 @@ function safeMarkdownUrl(value: string): string | undefined {
 
   const scheme = /^([a-z][a-z\d+.-]*):/i.exec(url)?.[1]?.toLowerCase();
   return !scheme || ['http', 'https', 'mailto', 'tel'].includes(scheme) ? url : undefined;
+}
+
+/** Context passed to custom Angular code-fence templates. */
+export interface MarkdownCodeContext {
+  readonly $implicit: { readonly code: string; readonly language: string };
 }

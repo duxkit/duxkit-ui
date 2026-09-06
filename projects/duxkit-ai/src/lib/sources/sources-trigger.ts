@@ -1,7 +1,7 @@
 import { Component, computed, inject, input } from '@angular/core';
-import { BrnCollapsible, BrnCollapsibleTrigger } from '@spartan-ng/brain/collapsible';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { lucideChevronDown } from '@ng-icons/lucide';
+import { BrnCollapsible, BrnCollapsibleTrigger } from '@spartan-ng/brain/collapsible';
 import { twMerge } from 'tailwind-merge';
 
 @Component({
@@ -27,7 +27,7 @@ import { twMerge } from 'tailwind-merge';
 })
 export class SourcesTrigger {
   /** Number of sources referenced by the response. */
-  public readonly count = input.required<number>();
+  public readonly count = input<number>(0);
   /** Additional classes merged onto the sources trigger button. */
   public readonly userClass = input<string | undefined>(undefined, { alias: 'class' });
 

@@ -1,13 +1,12 @@
-import { Component, computed, input } from '@angular/core';
+import { Directive, computed, input } from '@angular/core';
 import { twMerge } from 'tailwind-merge';
 
-@Component({
+@Directive({
   selector: '[aiQueueList],ai-queue-list',
   host: {
     '[class]': 'classes()',
     '[attr.role]': 'role()',
   },
-  template: '<ng-content />',
 })
 export class QueueList {
   /** ARIA role applied to non-list queue containers. */

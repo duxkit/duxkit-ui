@@ -1,5 +1,5 @@
 import { Component, computed, effect, inject, input } from '@angular/core';
-import { BrnHoverCardTrigger } from '@spartan-ng/brain/hover-card';
+import { BrnHoverCardContent, BrnHoverCardTrigger } from '@spartan-ng/brain/hover-card';
 import { twMerge } from 'tailwind-merge';
 import { ContextIcon } from './context-icon';
 import { injectContext } from './context-root';
@@ -31,6 +31,8 @@ export class ContextTrigger {
   protected readonly context = injectContext();
   private readonly hoverCardTrigger = inject(BrnHoverCardTrigger);
 
+  /** Explicit hover content target, including content exposed by a wrapper component. */
+  public readonly contentTarget = input<BrnHoverCardContent>();
   /** Additional classes merged onto the context trigger. */
   public readonly userClass = input<string | undefined>(undefined, { alias: 'class' });
 
@@ -38,7 +40,7 @@ export class ContextTrigger {
 
   public constructor() {
     effect(() => {
-      const hoverCardContent = this.context.content()?.hoverCardContent();
+      const hoverCardContent = this.contentTarget() ?? this.context.content()?.hoverCardContent();
 
       if (hoverCardContent) {
         this.hoverCardTrigger.mutableBrnHoverCardTriggerFor().set(hoverCardContent);

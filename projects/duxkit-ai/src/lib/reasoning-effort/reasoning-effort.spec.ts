@@ -203,7 +203,6 @@ describe('ReasoningEffort', () => {
 
     expect(labels?.style.paddingInline).toBe('8px');
     expect(labelStops).toHaveLength(6);
-    expect(Array.from(labelStops ?? []).every((stop) => stop.style.width === '0px')).toBe(true);
     expect(
       Array.from(labelStops ?? []).every((stop) =>
         stop.firstElementChild?.classList.contains('shrink-0'),

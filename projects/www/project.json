@@ -5,16 +5,18 @@
   "prefix": "app",
   "sourceRoot": "projects/www/src",
   "tags": [],
-  "implicitDependencies": [
-    "duxkit-ai",
-    "ui"
-  ],
+  "implicitDependencies": ["duxkit-ai", "ui"],
   "targets": {
+    "test": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "vitest run projects/www/src --environment jsdom",
+        "cwd": "."
+      }
+    },
     "build": {
       "executor": "@angular/build:application",
-      "outputs": [
-        "{options.outputPath}"
-      ],
+      "outputs": ["{options.outputPath}"],
       "defaultConfiguration": "production",
       "options": {
         "outputPath": "dist/www",
@@ -29,9 +31,7 @@
             "input": "projects/www/public"
           }
         ],
-        "styles": [
-          "projects/www/src/styles.scss"
-        ]
+        "styles": ["projects/www/src/styles.scss"]
       },
       "configurations": {
         "production": {

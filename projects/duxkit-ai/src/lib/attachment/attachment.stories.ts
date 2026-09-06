@@ -3,6 +3,7 @@ import { moduleMetadata } from '@storybook/angular';
 import type { FileUIPart, SourceDocumentUIPart } from 'ai';
 import {
   Attachment,
+  AttachmentDefaultPreview,
   AttachmentPreview,
   AttachmentRemove,
   Attachments,
@@ -48,7 +49,13 @@ const meta: Meta = {
   title: 'Components/Attachment',
   decorators: [
     moduleMetadata({
-      imports: [Attachment, AttachmentPreview, AttachmentRemove, Attachments],
+      imports: [
+        Attachment,
+        AttachmentDefaultPreview,
+        AttachmentPreview,
+        AttachmentRemove,
+        Attachments,
+      ],
     }),
   ],
   tags: ['autodocs'],
@@ -70,11 +77,12 @@ const meta: Meta = {
           <ai-attachment [data]="attachment">
             @if (variant === 'inline') {
               <ai-attachment-preview>
+                <ai-attachment-default-preview />
                 <button aiAttachmentRemove></button>
               </ai-attachment-preview>
             } @else {
               <ai-attachment-preview />
-              <button aiAttachmentRemove></button>
+              <button aiAttachmentRemove placement="grid"></button>
             }
           </ai-attachment>
         }

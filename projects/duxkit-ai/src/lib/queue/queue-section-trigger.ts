@@ -1,14 +1,13 @@
-import { Component, computed, input } from '@angular/core';
+import { Directive, computed, input } from '@angular/core';
 import { BrnCollapsibleTrigger } from '@spartan-ng/brain/collapsible';
 import { twMerge } from 'tailwind-merge';
 
-@Component({
+@Directive({
   selector: 'button[aiQueueSectionTrigger]',
   hostDirectives: [{ directive: BrnCollapsibleTrigger, inputs: ['type'] }],
   host: {
     '[class]': 'classes()',
   },
-  template: '<ng-content />',
 })
 export class QueueSectionTrigger {
   /** Additional classes merged onto the queue section trigger button. */

@@ -1,4 +1,4 @@
-import { computed, Directive, effect, ElementRef, inject, input, signal } from '@angular/core';
+import { computed, Directive, ElementRef, inject, input, signal } from '@angular/core';
 import { twMerge } from 'tailwind-merge';
 import { injectPromptInput } from './prompt-input-root';
 
@@ -9,6 +9,7 @@ export const promptInputTextareaClasses =
   selector: 'textarea[aiPromptInputTextarea],textarea[ai-prompt-input-textarea]',
   host: {
     '[class]': 'classes()',
+    '[value]': 'promptInput.text()',
     '[attr.name]': 'name()',
     '(input)': 'handleInput($event)',
     '(keydown)': 'handleKeydown($event)',
@@ -18,7 +19,7 @@ export const promptInputTextareaClasses =
   },
 })
 export class PromptInputTextarea {
-  private readonly promptInput = injectPromptInput();
+  protected readonly promptInput = injectPromptInput();
   private readonly elementRef = inject<ElementRef<HTMLTextAreaElement>>(ElementRef);
 
   /** Form field name used for the prompt textarea. */
@@ -30,17 +31,6 @@ export class PromptInputTextarea {
   protected readonly classes = computed(() =>
     twMerge(promptInputTextareaClasses, this.userClass()),
   );
-
-  public constructor() {
-    effect(() => {
-      const text = this.promptInput.text();
-      const textarea = this.elementRef.nativeElement;
-
-      if (textarea.value !== text) {
-        textarea.value = text;
-      }
-    });
-  }
 
   protected handleInput(event: Event): void {
     this.promptInput.setText((event.target as HTMLTextAreaElement).value);
@@ -61,13 +51,6 @@ export class PromptInputTextarea {
     }
 
     event.preventDefault();
-
-    const submitButton =
-      this.elementRef.nativeElement.form?.querySelector<HTMLButtonElement>('button[type="submit"]');
-
-    if (submitButton?.disabled) {
-      return;
-    }
 
     void this.promptInput.submit();
   }

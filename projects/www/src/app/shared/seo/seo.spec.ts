@@ -24,6 +24,8 @@ describe('www SEO configuration', () => {
       '/docs',
       '/docs/installation',
       '/docs/cli',
+      '/docs/migrations',
+      '/docs/migrations/v0-4-1-to-v0-4-2',
       '/docs/changelog',
       '/components',
       ...expectedDocsRoutes,
@@ -50,6 +52,14 @@ describe('www SEO configuration', () => {
     expect(getSeoPage('/docs/changelog')).toMatchObject({
       title: 'DuxKit Changelog - WWW, CLI, and UI Updates',
       canonicalPath: '/docs/changelog',
+    });
+    expect(getSeoPage('/docs/migrations')).toMatchObject({
+      title: 'Duxkit UI Migrations - Update Your App',
+      canonicalPath: '/docs/migrations',
+    });
+    expect(getSeoPage('/docs/migrations/v0-4-1-to-v0-4-2')).toMatchObject({
+      title: 'Migrate v0.4.1 to v0.4.2 - Duxkit UI',
+      canonicalPath: '/docs/migrations/v0-4-1-to-v0-4-2',
     });
     expect(getSeoPage('/components')).toMatchObject({
       title: 'Angular AI Components - Duxkit UI',

@@ -1,17 +1,17 @@
-import { Component, computed, input } from '@angular/core';
+import { Directive, computed, input } from '@angular/core';
 import { injectBrnCommand } from '@spartan-ng/brain/command';
 import { twMerge } from 'tailwind-merge';
 
-export const modelSelectorEmptyClasses = 'block px-4 py-6 text-center text-muted-foreground text-sm';
+export const modelSelectorEmptyClasses =
+  'block px-4 py-6 text-center text-muted-foreground text-sm';
 
-@Component({
+@Directive({
   selector: 'ai-model-selector-empty,[aiModelSelectorEmpty]',
   host: {
     'data-slot': 'model-selector-empty',
     '[class]': 'classes()',
     '[hidden]': '!visible()',
   },
-  template: '<ng-content />',
 })
 export class ModelSelectorEmpty {
   private readonly command = injectBrnCommand();

@@ -1,18 +1,20 @@
 import {
   afterRenderEffect,
-  contentChild,
   computed,
+  contentChild,
   DestroyRef,
   Directive,
   ElementRef,
   inject,
   input,
+  signal,
 } from '@angular/core';
 import { twMerge } from 'tailwind-merge';
-import { ConversationScrollAnchor } from './conversation-scroll-anchor';
 import { Conversation } from './conversation';
+import { ConversationScrollAnchor } from './conversation-scroll-anchor';
 
 @Directive({
+  exportAs: 'aiConversationContent',
   selector: '[aiConversationContent], ai-conversation-content',
   host: {
     '(scroll)': 'onUserScroll()',
@@ -21,6 +23,9 @@ import { Conversation } from './conversation';
 })
 export class ConversationContent {
   autoScroll = true;
+  /** Observe conventional message markup automatically. Disable for virtualized renderers. */
+  public readonly observeMessages = input(true);
+  public readonly atBottom = signal(true);
 
   readonly anchor = contentChild(ConversationScrollAnchor);
   /** Additional classes merged onto the scrollable conversation content element. */
@@ -33,6 +38,7 @@ export class ConversationContent {
   private readonly destroyRef = inject(DestroyRef);
   private readonly conversation = inject(Conversation);
   private readonly stickToBottom = this.conversation.stickToBottom;
+  private animationFrame: number | undefined;
   private previousMessageElementCount = 0;
   private readonly resizeObserver =
     typeof ResizeObserver === 'undefined'
@@ -58,6 +64,7 @@ export class ConversationContent {
     });
 
     this.destroyRef.onDestroy(() => {
+      if (this.animationFrame !== undefined) cancelAnimationFrame(this.animationFrame);
       this.resizeObserver?.disconnect();
       this.mutationObserver?.disconnect();
     });
@@ -70,6 +77,7 @@ export class ConversationContent {
   }
 
   private onContentMutated(): void {
+    if (!this.observeMessages()) return;
     const messageElements = Array.from(
       this.elementRef.nativeElement.querySelectorAll<HTMLElement>('[data-ai-message-role]'),
     );
@@ -79,43 +87,51 @@ export class ConversationContent {
     this.previousMessageElementCount = messageElements.length;
 
     if (didAddMessage && lastMessageRole === 'user') {
-      this.autoScroll = true;
-      this.scrollToBottom();
+      this.notifyMessageAdded('user');
       return;
     }
 
     this.scrollToBottomIfNeeded();
   }
 
+  /** Notify after a custom renderer adds a message. Automatic scrolling respects root policy. */
+  public notifyMessageAdded(role?: string): void {
+    if (role === 'user' && this.stickToBottom() !== false) this.autoScroll = true;
+    this.scrollToBottomIfNeeded();
+  }
+
   private scrollToBottomIfNeeded(): void {
-    const anchor = this.anchor();
     const stickToBottom = this.stickToBottom();
     const shouldScroll = stickToBottom === true || (stickToBottom === 'auto' && this.autoScroll);
 
-    if (!shouldScroll || !anchor) {
+    if (!shouldScroll) {
       return;
     }
 
-    this.scheduleScrollToBottom('smooth');
+    this.scheduleScrollToBottom('smooth', true);
   }
 
-  private scrollToBottom(): void {
-    const anchor = this.anchor();
-
-    if (!anchor) {
-      return;
-    }
-
-    this.scheduleScrollToBottom('smooth');
+  /** Explicit user action; allowed even when automatic scrolling is disabled. */
+  public scrollToBottom(behavior: ScrollBehavior = 'smooth'): void {
+    this.autoScroll = true;
+    this.scheduleScrollToBottom(behavior);
   }
 
-  private scheduleScrollToBottom(behavior: ScrollBehavior): void {
+  private scheduleScrollToBottom(behavior: ScrollBehavior, automatic = false): void {
     if (typeof requestAnimationFrame === 'undefined') {
       return;
     }
 
-    requestAnimationFrame(() => {
+    if (this.animationFrame !== undefined) cancelAnimationFrame(this.animationFrame);
+    this.animationFrame = requestAnimationFrame(() => {
+      this.animationFrame = undefined;
+      if (
+        automatic &&
+        (this.stickToBottom() === false || (this.stickToBottom() === 'auto' && !this.autoScroll))
+      )
+        return;
       this.scrollContainerToBottom(behavior);
+      this.atBottom.set(this.isAtBottom());
     });
   }
 
@@ -143,6 +159,7 @@ export class ConversationContent {
   }
 
   onUserScroll(): void {
+    this.atBottom.set(this.isAtBottom());
     if (this.stickToBottom() !== 'auto') {
       return;
     }

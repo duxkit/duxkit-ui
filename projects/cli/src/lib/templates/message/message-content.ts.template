@@ -1,3 +1,4 @@
+import { NgTemplateOutlet } from '@angular/common';
 import {
   Component,
   computed,
@@ -5,17 +6,19 @@ import {
   effect,
   inject,
   input,
+  TemplateRef,
   ViewEncapsulation,
 } from '@angular/core';
 import { cva, type VariantProps } from 'class-variance-authority';
 import { clsx } from 'clsx';
-import { twMerge } from 'tailwind-merge';
 import { CodeBlock } from '../code-block';
+import type { MarkdownCodeContext } from '../markdown';
 import {
   AI_MARKDOWN_OPTIONS,
   markdownContentClasses,
   parseMarkdownBlocks,
 } from '../markdown';
+import { twMerge } from 'tailwind-merge';
 import { Message } from './message';
 
 export const messageContentVariants = cva(
@@ -38,7 +41,7 @@ export type MessageContentVariants = VariantProps<typeof messageContentVariants>
 
 @Component({
   selector: 'ai-message-content,[aiMessageContent]',
-  imports: [CodeBlock],
+  imports: [CodeBlock, NgTemplateOutlet],
   encapsulation: ViewEncapsulation.None,
   host: {
     '[class]': '_classes()',
@@ -51,7 +54,14 @@ export type MessageContentVariants = VariantProps<typeof messageContentVariants>
           @if (block.type === 'html') {
             <div [innerHTML]="block.html"></div>
           } @else {
-            <ai-code-block [code]="block.code" [language]="block.language" />
+            @if (codeTemplate(); as renderer) {
+              <ng-container
+                [ngTemplateOutlet]="renderer"
+                [ngTemplateOutletContext]="{ $implicit: block }"
+              />
+            } @else {
+              <ai-code-block [code]="block.code" [language]="block.language" />
+            }
           }
         }
       </div>
@@ -61,7 +71,9 @@ export type MessageContentVariants = VariantProps<typeof messageContentVariants>
   `,
 })
 export class MessageContent {
-  /** Markdown source rendered as rich message content. */
+  /** Replace code fences while retaining markdown parsing. Template receives the block as $implicit. */
+  public readonly codeTemplate = input<TemplateRef<MarkdownCodeContext>>();
+  /** Markdown source rendered with the configured code-fence template. */
   public readonly markdown = input<string | undefined>();
   /** Additional classes merged onto the message content element. */
   public readonly userClass = input<string | undefined>(undefined, {
