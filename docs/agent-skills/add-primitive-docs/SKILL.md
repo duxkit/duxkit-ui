@@ -35,9 +35,13 @@ pnpm docs:generate-metadata
 
 Do not hand-edit `projects/www/src/app/routes/docs/data/component-api-metadata.generated.ts`.
 
-10. Add a concise release-facing title under the current bundle's `WWW` group in
-    `projects/www/src/app/routes/docs/data/changelog.ts`. Keep any related primitive or installer
-    titles under `UI` or `CLI`. Do not backfill work from before v0.4.
+10. Follow [add-changelog-entry](../add-changelog-entry/SKILL.md) to select the release bundle
+    first, creating a new bundle for a new release. Add the docs title under `WWW` and related
+    primitive or installer titles under `UI` or `CLI`. Preserve previous releases and do not
+    backfill work from before v0.4.
+11. For breaking API, default, markup or behaviour changes, follow the migration-guide requirement
+    in [add-changelog-entry](../add-changelog-entry/SKILL.md). Add before-and-after examples and
+    link affected component pages to their release-specific migration steps before publishing.
 
 ## Verification
 
@@ -65,4 +69,4 @@ pnpm build:storybook
 - API tables include selectors, inputs, outputs, defaults, required state, descriptions, exports, and source paths.
 - Search finds the primitive by title, selector, exported symbol, input/output name, and relevant API description.
 - No generated file was edited manually after `pnpm docs:generate-metadata`.
-- The current changelog bundle includes the main WWW, CLI, and UI changes.
+- The correctly selected release bundle includes the main WWW, CLI, and UI changes, with previous bundles preserved.

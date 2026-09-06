@@ -57,7 +57,9 @@ describe('CodeBlock', () => {
     fixture.detectChanges();
     await fixture.whenStable();
 
-    const copiedButton = element.querySelector<HTMLButtonElement>('button[aria-label="Copied code"]');
+    const copiedButton = element.querySelector<HTMLButtonElement>(
+      'button[aria-label="Copied code"]',
+    );
 
     expect(writeText).toHaveBeenCalledWith('const value = signal("hello");');
     expect(copiedButton).not.toBeNull();

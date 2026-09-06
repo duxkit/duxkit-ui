@@ -11,8 +11,7 @@ export const attachmentRemoveVariants = cva(
   {
     variants: {
       slotVariant: {
-        grid:
-          'absolute top-2 right-2 size-7 rounded-md border border-border bg-background/85 shadow-sm backdrop-blur hover:bg-background focus-visible:ring-offset-2 focus-visible:ring-offset-background',
+        grid: 'absolute top-2 right-2 size-7 rounded-md border border-border bg-background/85 shadow-sm backdrop-blur hover:bg-background focus-visible:ring-offset-2 focus-visible:ring-offset-background',
         inline: '',
         'inline-preview':
           'absolute inset-y-0 left-0 my-auto !size-5 aspect-square overflow-hidden rounded bg-background focus-visible:ring-offset-1 focus-visible:ring-offset-background [&_ng-icon]:!size-3',
@@ -37,9 +36,6 @@ export type AttachmentRemoveVariants = VariantProps<typeof attachmentRemoveVaria
     '[attr.role]': 'customRole()',
     '[attr.tabindex]': 'customTabIndex()',
     '[attr.data-slot-variant]': 'slotVariant()',
-    '[attr.hidden]': 'hidden() ? "" : null',
-    '[class.opacity-0]': 'gridConcealed()',
-    '[class.opacity-100]': 'gridVisible()',
     '[attr.aria-label]': 'label()',
     '[attr.title]': 'label()',
     '(click)': 'remove($event)',
@@ -70,24 +66,12 @@ export class AttachmentRemove {
   protected readonly customRole = computed(() => (this.isNativeButton() ? null : 'button'));
   protected readonly customTabIndex = computed(() => (this.isNativeButton() ? null : '0'));
   protected readonly label = computed(() => this.ariaLabel() ?? this.attachment.removeLabel());
+  /** Position the control independently of its nesting. */
+  public readonly placement = input<'flow' | 'grid' | 'list' | 'inline-preview'>('flow');
   protected readonly slotVariant = computed(() => {
-    if (this.attachment.variant() === 'inline' && this.isInPreviewSlot) {
-      return 'inline-preview';
-    }
-
-    return this.attachment.variant();
+    const placement = this.placement();
+    return placement === 'flow' ? 'inline' : placement;
   });
-  protected readonly hidden = computed(
-    () =>
-      this.slotVariant() === 'inline' ||
-      (this.slotVariant() === 'inline-preview' && !this.attachment.hovered()),
-  );
-  protected readonly gridConcealed = computed(
-    () => this.slotVariant() === 'grid' && !this.attachment.hovered(),
-  );
-  protected readonly gridVisible = computed(
-    () => this.slotVariant() === 'grid' && this.attachment.hovered(),
-  );
   protected readonly classes = computed(() =>
     twMerge(attachmentRemoveVariants({ slotVariant: this.slotVariant() }), this.userClass()),
   );

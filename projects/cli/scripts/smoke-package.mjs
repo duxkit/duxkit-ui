@@ -1,4 +1,5 @@
 import { execFile } from 'node:child_process';
+import { deepStrictEqual } from 'node:assert/strict';
 import { cp, mkdtemp, readFile, readdir, realpath, rm, symlink, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
@@ -7,6 +8,7 @@ import { promisify } from 'node:util';
 const execFileAsync = promisify(execFile);
 const workspaceRoot = resolve(import.meta.dirname, '../../..');
 const cliPath = join(workspaceRoot, 'dist/cli/index.js');
+const { listPrimitives } = await import('../../../dist/cli/lib/primitive-registry.js');
 const fixtureRoot = join(workspaceRoot, 'projects/cli/src/testing/fixtures/angular-cli-app');
 const tempRoot = await mkdtemp(join(tmpdir(), 'duxkit-ui-package-'));
 const testWorkspace = join(tempRoot, 'workspace');
@@ -46,9 +48,14 @@ try {
   const generatedFiles = await collectFiles(generatedRoot);
   const generatedTypeScriptFiles = generatedFiles.filter((file) => file.endsWith('.ts'));
 
-  if (generatedFiles.length !== 143) {
-    throw new Error(`Expected 143 generated templates, found ${generatedFiles.length}.`);
-  }
+  const expectedFiles = listPrimitives()
+    .filter((primitive) => primitive.status === 'available')
+    .flatMap((primitive) => primitive.files.map((file) => join(generatedRoot, primitive.id, file)));
+  deepStrictEqual(
+    generatedFiles.toSorted(),
+    expectedFiles.toSorted(),
+    'Packaged CLI must generate every registered file, with no missing or unexpected files.',
+  );
 
   for (const file of generatedTypeScriptFiles) {
     const source = await readFile(file, 'utf8');

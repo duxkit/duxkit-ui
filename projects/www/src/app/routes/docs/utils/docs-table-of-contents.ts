@@ -10,6 +10,7 @@ export const docsPageSections = [
   { id: 'install', label: 'Install' },
   { id: 'anatomy', label: 'Anatomy' },
   { id: 'preview', label: 'Preview' },
+  { id: 'composition', label: 'Composition' },
   { id: 'api', label: 'API' },
   { id: 'related-components', label: 'Related components' },
 ] as const satisfies readonly DocsTableOfContentsItem[];

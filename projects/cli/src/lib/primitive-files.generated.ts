@@ -2,6 +2,7 @@
 export const primitiveFiles = {
   'attachment': [
     'attachment.ts',
+    'attachment-default-preview.ts',
     'attachment-media-type.ts',
     'attachment-name.ts',
     'attachment-preview-slot.ts',
@@ -16,6 +17,7 @@ export const primitiveFiles = {
     'chain-of-thought.ts',
     'chain-of-thought-content.ts',
     'chain-of-thought-image-caption.ts',
+    'chain-of-thought-image-frame.ts',
     'chain-of-thought-image.ts',
     'chain-of-thought-search-result.ts',
     'chain-of-thought-search-results.ts',
@@ -34,6 +36,8 @@ export const primitiveFiles = {
   ],
   'code-block': [
     'code-block.ts',
+    'code-block-parts.ts',
+    'code-block-root.ts',
     'index.ts',
   ],
   'confirmation': [
@@ -54,6 +58,7 @@ export const primitiveFiles = {
     'context-content-header.ts',
     'context-content.ts',
     'context-cost.ts',
+    'context-data.ts',
     'context-icon.ts',
     'context-percentage.ts',
     'context-root.ts',
@@ -84,6 +89,7 @@ export const primitiveFiles = {
   ],
   'model-selector': [
     'model-selector.ts',
+    'model-selector-command.ts',
     'model-selector-content.ts',
     'model-selector-description.ts',
     'model-selector-empty.ts',
@@ -140,6 +146,7 @@ export const primitiveFiles = {
     'reasoning-effort-label.ts',
     'reasoning-effort-list.ts',
     'reasoning-effort-root.ts',
+    'reasoning-effort-slider-state.ts',
     'reasoning-effort-slider.ts',
     'reasoning-effort-trigger.ts',
     'reasoning-effort-value.ts',
@@ -149,6 +156,7 @@ export const primitiveFiles = {
   ],
   'reasoning': [
     'reasoning.ts',
+    'content-clamp.ts',
     'reasoning-content.ts',
     'reasoning-trigger.ts',
     'index.ts',

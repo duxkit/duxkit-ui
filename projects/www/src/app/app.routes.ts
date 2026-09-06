@@ -25,6 +25,14 @@ export const appRoutes: Route[] = [
         loadComponent: () => import('./routes/docs/cli.page').then((m) => m.CliPage),
       },
       {
+        path: 'migrations',
+        loadComponent: () => import('./routes/docs/migrations.page').then((m) => m.MigrationsPage),
+      },
+      {
+        path: 'migrations/:slug',
+        loadComponent: () => import('./routes/docs/migrations.page').then((m) => m.MigrationsPage),
+      },
+      {
         path: 'changelog',
         loadComponent: () => import('./routes/docs/changelog.page').then((m) => m.ChangelogPage),
       },

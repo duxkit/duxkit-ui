@@ -1,10 +1,10 @@
-import { booleanAttribute, Component, computed, input, output } from '@angular/core';
+import { booleanAttribute, computed, Directive, input, output } from '@angular/core';
 import { twMerge } from 'tailwind-merge';
 
 export const checkpointTriggerClasses =
   'inline-flex min-w-0 shrink-0 items-center justify-center rounded-md border-0 bg-transparent px-2 py-1 text-sm font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 aria-disabled:pointer-events-none aria-disabled:opacity-50';
 
-@Component({
+@Directive({
   selector: 'button[aiCheckpointTrigger]',
   host: {
     '[class]': 'classes()',
@@ -13,7 +13,6 @@ export const checkpointTriggerClasses =
     '[disabled]': 'disabled()',
     '(click)': 'restore($event)',
   },
-  template: '<ng-content />',
 })
 export class CheckpointTrigger {
   /** Accessible label for the restore trigger when visible text is not enough. */

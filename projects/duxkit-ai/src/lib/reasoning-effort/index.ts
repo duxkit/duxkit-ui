@@ -6,6 +6,8 @@ export * from './reasoning-effort-list';
 export * from './reasoning-effort-root';
 export * from './reasoning-effort-slider';
 export * from './reasoning-effort-trigger';
-export * from './reasoning-effort.types';
 export * from './reasoning-effort-value';
 export * from './reasoning-effort.imports';
+export * from './reasoning-effort.types';
+
+export * from './reasoning-effort-slider-state';

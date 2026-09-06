@@ -163,7 +163,7 @@ describe('Tool', () => {
     expect(content?.classList).toContain('custom-content');
   });
 
-  it('renders confirmation as a connected tool footer', async () => {
+  it('preserves independently styled confirmation content', async () => {
     const confirmationFixture = TestBed.createComponent(ToolConfirmationHost);
     confirmationFixture.detectChanges();
     await confirmationFixture.whenStable();
@@ -175,8 +175,8 @@ describe('Tool', () => {
     expect(confirmation?.hasAttribute('hidden')).toBe(false);
     expect(confirmation?.classList).toContain('rounded-lg');
     expect(confirmation?.classList).toContain('border');
-    expect(tool?.classList).toContain('[&_ai-confirmation]:border-t');
-    expect(tool?.classList).toContain('[&_ai-confirmation]:rounded-b-lg');
-    expect(tool?.classList).toContain('[&_ai-confirmation]:rounded-t-none');
+    expect(tool?.classList).not.toContain('[&_ai-confirmation]:border-t');
+    expect(tool?.classList).not.toContain('[&_ai-confirmation]:rounded-b-lg');
+    expect(tool?.classList).not.toContain('[&_ai-confirmation]:rounded-t-none');
   });
 });

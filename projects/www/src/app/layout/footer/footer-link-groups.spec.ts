@@ -20,6 +20,7 @@ describe('footer link groups', () => {
       'confirmation',
       'checkpoint',
       'reasoning',
+      'reasoning-effort',
       'chain-of-thought',
       'context',
       'model-selector',

@@ -9,3 +9,5 @@ export * from './chain-of-thought-step-description';
 export * from './chain-of-thought-step-icon';
 export * from './chain-of-thought-step-label';
 export * from './chain-of-thought-trigger';
+
+export * from './chain-of-thought-image-frame';

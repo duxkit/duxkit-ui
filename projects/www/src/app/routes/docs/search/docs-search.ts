@@ -2,8 +2,13 @@ import {
   componentApiMetadata,
   type ComponentApiMetadata,
 } from '../data/component-api-metadata.generated';
-import { type ComponentDoc, type ComponentDocSlug, componentDocs } from '../data/component-docs.registry';
+import {
+  type ComponentDoc,
+  type ComponentDocSlug,
+  componentDocs,
+} from '../data/component-docs.registry';
 import { componentHref } from '../data/docs-navigation';
+import { componentComposition } from '../data/component-composition';
 
 export type ComponentDocsSearchItem = ComponentDoc & {
   readonly href: string;
@@ -14,10 +19,13 @@ export type ComponentDocsSearchItem = ComponentDoc & {
 export const componentDocsSearchIndex: readonly ComponentDocsSearchItem[] = componentDocs.map(
   (doc) => {
     const api = componentApiMetadata[doc.slug];
+    const composition = componentComposition[doc.slug];
     const searchableValues = [
       doc.title,
       doc.slug,
       doc.description,
+      ...composition.notes,
+      composition.migration ?? '',
       ...api.selectors,
       ...api.exports,
       ...api.inputs,

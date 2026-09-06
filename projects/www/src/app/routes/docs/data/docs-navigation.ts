@@ -22,6 +22,12 @@ export const docsPages = [
     href: '/docs/cli',
   },
   {
+    slug: 'migrations',
+    title: 'Migrations',
+    description: 'Update existing apps with migration steps and before-and-after examples.',
+    href: '/docs/migrations',
+  },
+  {
     slug: 'changelog',
     title: 'Changelog',
     description: 'Review the main WWW, CLI, and UI changes included in each bundle.',

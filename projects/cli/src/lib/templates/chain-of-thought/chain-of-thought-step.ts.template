@@ -1,0 +1,138 @@
+import { NgTemplateOutlet } from '@angular/common';
+import { Component, computed, contentChild, input, TemplateRef } from '@angular/core';
+import { NgIcon, provideIcons } from '@ng-icons/core';
+import {
+  lucideCircleCheck,
+  lucideCircleDashed,
+  lucideGlobe,
+  lucideImage,
+  lucideLoaderCircle,
+  lucideSearch,
+} from '@ng-icons/lucide';
+import { ContentClamp } from '../reasoning';
+import { twMerge } from 'tailwind-merge';
+import { ChainOfThoughtStepIcon } from './chain-of-thought-step-icon';
+
+export type ChainOfThoughtStepStatus = 'complete' | 'active' | 'pending';
+
+const statusClasses: Record<ChainOfThoughtStepStatus, string> = {
+  active: 'text-foreground',
+  complete: 'text-muted-foreground',
+  pending: 'text-muted-foreground/50',
+};
+
+const statusIcons: Record<ChainOfThoughtStepStatus, string> = {
+  active: 'lucideLoaderCircle',
+  complete: 'lucideCircleCheck',
+  pending: 'lucideCircleDashed',
+};
+
+@Component({
+  exportAs: 'aiChainOfThoughtStep',
+  selector: '[aiChainOfThoughtStep],ai-chain-of-thought-step',
+  imports: [NgIcon, NgTemplateOutlet],
+  providers: [
+    provideIcons({
+      lucideCircleCheck,
+      lucideCircleDashed,
+      lucideGlobe,
+      lucideImage,
+      lucideLoaderCircle,
+      lucideSearch,
+    }),
+  ],
+  host: {
+    '[class]': 'classes()',
+    '[attr.data-status]': 'status()',
+  },
+  template: `
+    @if (layout(); as customLayout) {
+      <ng-container
+        [ngTemplateOutlet]="customLayout"
+        [ngTemplateOutletContext]="{ $implicit: this }"
+      />
+    } @else {
+      <div class="relative mt-0.5 shrink-0">
+        <ng-content select="[aiChainOfThoughtStepIcon],ai-chain-of-thought-step-icon" />
+        @if (stepIcon() === undefined) {
+          <ng-icon
+            [name]="defaultIcon()"
+            style="--ng-icon__size: 16px"
+            [class.animate-spin]="spinning()"
+          />
+        }
+        <div class="absolute top-7 bottom-0 left-1/2 -mx-px w-px bg-border"></div>
+      </div>
+
+      <div class="min-w-0 flex-1 overflow-hidden">
+        <div class="grid min-w-0 gap-2">
+          <ng-content select="[aiChainOfThoughtStepLabel],ai-chain-of-thought-step-label" />
+          <ng-content
+            select="[aiChainOfThoughtStepDescription],ai-chain-of-thought-step-description"
+          />
+
+          <div class="relative min-w-0">
+            <div
+              #clampedContent
+              class="min-w-0"
+              [class.overflow-hidden]="isClamped()"
+              [style.max-height]="contentMaxHeight()"
+              [style.mask-image]="contentMaskImage()"
+              [style.-webkit-mask-image]="contentMaskImage()"
+            >
+              <ng-content />
+            </div>
+
+            @if (showControls() && showClampOverlay()) {
+              <div
+                class="pointer-events-none absolute inset-x-0 bottom-0 flex justify-center pt-12 pb-1"
+              >
+                <button
+                  type="button"
+                  class="pointer-events-auto rounded-md border border-border bg-background/90 px-2.5 py-1 font-medium text-muted-foreground text-xs shadow-sm transition-colors hover:text-foreground"
+                  (click)="expandContent()"
+                >
+                  {{ showMoreLabel() }}
+                </button>
+              </div>
+            }
+          </div>
+        </div>
+
+        @if (showControls() && showCollapseControl()) {
+          <div class="mt-2 flex justify-center">
+            <button
+              type="button"
+              class="rounded-md border border-border bg-background/90 px-2.5 py-1 font-medium text-muted-foreground text-xs shadow-sm transition-colors hover:text-foreground"
+              (click)="collapseContent()"
+            >
+              {{ showLessLabel() }}
+            </button>
+          </div>
+        }
+      </div>
+    }
+  `,
+})
+export class ChainOfThoughtStep extends ContentClamp {
+  /** Replace the complete step layout. Template receives the step state as $implicit. */
+  public readonly layout = input<TemplateRef<{ $implicit: ChainOfThoughtStep }>>();
+  /** Visual status used to style the step marker. */
+  public readonly status = input<ChainOfThoughtStepStatus>('complete');
+  /** Accessible label for the control that expands clipped step content. */
+  public readonly showMoreLabel = input('Show more');
+  /** Accessible label for the control that collapses clipped step content. */
+  public readonly showLessLabel = input('Show less');
+  /** Additional classes merged onto the step root element. */
+  public readonly userClass = input<string | undefined>(undefined, { alias: 'class' });
+  protected readonly stepIcon = contentChild(ChainOfThoughtStepIcon);
+  public readonly defaultIcon = computed(() => statusIcons[this.status()]);
+  public readonly spinning = computed(() => this.defaultIcon() === 'lucideLoaderCircle');
+  protected readonly classes = computed(() =>
+    twMerge(
+      'flex gap-2 text-sm motion-safe:animate-in motion-safe:fade-in-0 motion-safe:slide-in-from-top-2',
+      statusClasses[this.status()],
+      this.userClass(),
+    ),
+  );
+}

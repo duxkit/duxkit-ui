@@ -1,28 +1,20 @@
-import {
-  AfterViewInit,
-  Component,
-  computed,
-  effect,
-  ElementRef,
-  inject,
-  input,
-  OnDestroy,
-  signal,
-  viewChild,
-  ViewEncapsulation,
-} from '@angular/core';
+import { NgTemplateOutlet } from '@angular/common';
+import { Component, computed, inject, input, TemplateRef, ViewEncapsulation } from '@angular/core';
 import { BrnCollapsibleContent } from '@spartan-ng/brain/collapsible';
-import { twMerge } from 'tailwind-merge';
+import { CodeBlock } from '../code-block';
+import type { MarkdownCodeContext } from '../markdown';
 import {
   AI_MARKDOWN_OPTIONS,
   parseMarkdownBlocks,
   reasoningMarkdownContentClasses,
 } from '../markdown';
-import { CodeBlock } from '../code-block';
+import { twMerge } from 'tailwind-merge';
+import { ContentClamp } from './content-clamp';
 
 @Component({
+  exportAs: 'aiReasoningContent',
   selector: '[aiReasoningContent],ai-reasoning-content',
-  imports: [CodeBlock],
+  imports: [CodeBlock, NgTemplateOutlet],
   encapsulation: ViewEncapsulation.None,
   hostDirectives: [{ directive: BrnCollapsibleContent, inputs: ['id'] }],
   host: {
@@ -45,7 +37,14 @@ import { CodeBlock } from '../code-block';
               @if (block.type === 'html') {
                 <div [innerHTML]="block.html"></div>
               } @else {
-                <ai-code-block [code]="block.code" [language]="block.language" />
+                @if (codeTemplate(); as renderer) {
+                  <ng-container
+                    [ngTemplateOutlet]="renderer"
+                    [ngTemplateOutletContext]="{ $implicit: block }"
+                  />
+                } @else {
+                  <ai-code-block [code]="block.code" [language]="block.language" />
+                }
               }
             }
           </div>
@@ -54,7 +53,7 @@ import { CodeBlock } from '../code-block';
         }
       </div>
 
-      @if (showClampOverlay()) {
+      @if (showControls() && showClampOverlay()) {
         <div class="pointer-events-none absolute inset-x-0 bottom-0 flex justify-center pt-12 pb-1">
           <button
             type="button"
@@ -66,7 +65,7 @@ import { CodeBlock } from '../code-block';
         </div>
       }
 
-      @if (showCollapseControl()) {
+      @if (showControls() && showCollapseControl()) {
         <div class="mt-2 flex justify-center">
           <button
             type="button"
@@ -80,13 +79,11 @@ import { CodeBlock } from '../code-block';
     </div>
   `,
 })
-export class ReasoningContent implements AfterViewInit, OnDestroy {
-  /** Markdown source rendered inside the reasoning panel. */
+export class ReasoningContent extends ContentClamp {
+  /** Replace code fences while retaining markdown parsing. Template receives the block as $implicit. */
+  public readonly codeTemplate = input<TemplateRef<MarkdownCodeContext>>();
+  /** Markdown source rendered with the configured code-fence template. */
   public readonly markdown = input<string | undefined>();
-  /** Maximum collapsed content height before the show more control appears. */
-  public readonly collapsedMaxHeight = input<number | string | undefined>();
-  /** Keeps the reasoning content scrolled to the bottom when new content is appended. */
-  public readonly pinToBottom = input(false);
   /** Accessible label for the control that expands clipped reasoning content. */
   public readonly showMoreLabel = input('Show more');
   /** Accessible label for the control that collapses clipped reasoning content. */
@@ -95,112 +92,6 @@ export class ReasoningContent implements AfterViewInit, OnDestroy {
   public readonly userClass = input<string | undefined>(undefined, { alias: 'class' });
   protected readonly markdownClasses = reasoningMarkdownContentClasses;
   private readonly markdownOptions = inject(AI_MARKDOWN_OPTIONS);
-  private readonly clampedContent = viewChild<ElementRef<HTMLElement>>('clampedContent');
-  private resizeObserver: ResizeObserver | undefined;
-  private mutationObserver: MutationObserver | undefined;
-
-  protected readonly expanded = signal(false);
-  protected readonly hasOverflow = signal(false);
-  protected readonly isClamped = computed(
-    () => this.collapsedMaxHeight() !== undefined && !this.expanded(),
-  );
-  protected readonly showClampOverlay = computed(() => this.isClamped() && this.hasOverflow());
-  protected readonly showCollapseControl = computed(
-    () => this.collapsedMaxHeight() !== undefined && this.expanded() && this.hasOverflow(),
-  );
-  protected readonly contentMaxHeight = computed(() => {
-    if (!this.isClamped()) {
-      return null;
-    }
-
-    return this.formatMaxHeight(this.collapsedMaxHeight());
-  });
-  protected readonly contentMaskImage = computed(() => {
-    if (!this.showClampOverlay()) {
-      return null;
-    }
-
-    return 'linear-gradient(to bottom, black 0%, black 70%, transparent 100%)';
-  });
-
-  constructor() {
-    effect(() => {
-      this.collapsedMaxHeight();
-      this.expanded();
-      this.pinToBottom();
-      this.markdownBlocks();
-
-      queueMicrotask(() => this.syncClampState());
-    });
-  }
-
-  ngAfterViewInit(): void {
-    const content = this.clampedContent()?.nativeElement;
-
-    if (content === undefined) {
-      return;
-    }
-
-    if (typeof ResizeObserver !== 'undefined') {
-      this.resizeObserver = new ResizeObserver(() => this.syncClampState());
-      this.resizeObserver.observe(content);
-    }
-
-    if (typeof MutationObserver !== 'undefined') {
-      this.mutationObserver = new MutationObserver(() => this.syncClampState());
-      this.mutationObserver.observe(content, {
-        childList: true,
-        characterData: true,
-        subtree: true,
-      });
-    }
-
-    queueMicrotask(() => this.syncClampState());
-  }
-
-  ngOnDestroy(): void {
-    this.resizeObserver?.disconnect();
-    this.mutationObserver?.disconnect();
-  }
-
-  protected expandContent(): void {
-    this.expanded.set(true);
-  }
-
-  protected collapseContent(): void {
-    this.expanded.set(false);
-  }
-
-  private syncClampState(): void {
-    const content = this.clampedContent()?.nativeElement;
-
-    if (content === undefined || this.collapsedMaxHeight() === undefined) {
-      this.hasOverflow.set(false);
-      return;
-    }
-
-    const maxHeight = Number.parseFloat(this.formatMaxHeight(this.collapsedMaxHeight()) ?? '0');
-
-    if (this.expanded()) {
-      this.hasOverflow.set(content.scrollHeight > maxHeight + 1);
-      return;
-    }
-
-    this.hasOverflow.set(content.scrollHeight > content.clientHeight + 1);
-
-    if (this.pinToBottom() && this.isClamped()) {
-      content.scrollTop = content.scrollHeight;
-    }
-  }
-
-  private formatMaxHeight(value: number | string | undefined): string | null {
-    if (value === undefined) {
-      return null;
-    }
-
-    return typeof value === 'number' ? `${value}px` : value;
-  }
-
   protected readonly markdownBlocks = computed(() => {
     const markdown = this.markdown();
 

@@ -16,3 +16,5 @@ export * from './model-selector-shortcut';
 export * from './model-selector-title';
 export * from './model-selector-trigger';
 export * from './model-selector.types';
+
+export * from './model-selector-command';

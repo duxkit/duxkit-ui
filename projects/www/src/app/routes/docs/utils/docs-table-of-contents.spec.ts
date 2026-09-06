@@ -12,6 +12,7 @@ describe('docs table of contents', () => {
       { id: 'install', label: 'Install' },
       { id: 'anatomy', label: 'Anatomy' },
       { id: 'preview', label: 'Preview' },
+      { id: 'composition', label: 'Composition' },
       { id: 'api', label: 'API' },
       { id: 'related-components', label: 'Related components' },
     ]);
@@ -26,6 +27,7 @@ describe('docs table of contents', () => {
       'ChainOfThoughtContent',
       'ChainOfThoughtTrigger',
       'ChainOfThoughtImageCaption',
+      'ChainOfThoughtImageFrame',
       'ChainOfThoughtImage',
       'ChainOfThoughtSearchResult',
       'ChainOfThoughtSearchResults',
@@ -39,6 +41,7 @@ describe('docs table of contents', () => {
       'api-chain-of-thought-content',
       'api-chain-of-thought-trigger',
       'api-chain-of-thought-image-caption',
+      'api-chain-of-thought-image-frame',
       'api-chain-of-thought-image',
       'api-chain-of-thought-search-result',
       'api-chain-of-thought-search-results',

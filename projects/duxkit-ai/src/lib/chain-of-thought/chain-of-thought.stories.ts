@@ -1,8 +1,8 @@
-import type { Meta, StoryObj } from '@storybook/angular';
-import { moduleMetadata } from '@storybook/angular';
 import { HlmButton } from '@duxkit-private/ui/helm/button';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { lucideCircleCheck, lucideCircleDashed, lucideLoaderCircle } from '@ng-icons/lucide';
+import type { Meta, StoryObj } from '@storybook/angular';
+import { moduleMetadata } from '@storybook/angular';
 import {
   Confirmation,
   ConfirmationAction,
@@ -16,6 +16,7 @@ import {
   ChainOfThoughtContent,
   ChainOfThoughtImage,
   ChainOfThoughtImageCaption,
+  ChainOfThoughtImageFrame,
   ChainOfThoughtSearchResult,
   ChainOfThoughtSearchResults,
   ChainOfThoughtStep,
@@ -54,6 +55,7 @@ const meta: Meta = {
         ChainOfThought,
         ChainOfThoughtContent,
         ChainOfThoughtImage,
+        ChainOfThoughtImageFrame,
         ChainOfThoughtImageCaption,
         ChainOfThoughtSearchResult,
         ChainOfThoughtSearchResults,
@@ -158,9 +160,9 @@ const meta: Meta = {
           </ai-chain-of-thought-step>
 
           <ai-chain-of-thought-image>
-            <div class="flex h-32 w-full items-center justify-center rounded-md border border-border bg-background text-muted-foreground text-sm">
+            <div aiChainOfThoughtImageFrame><div class="flex h-32 w-full items-center justify-center rounded-md border border-border bg-background text-muted-foreground text-sm">
               Preview
-            </div>
+            </div></div>
             <ai-chain-of-thought-image-caption>
               Optional media preview attached to a thought step.
             </ai-chain-of-thought-image-caption>

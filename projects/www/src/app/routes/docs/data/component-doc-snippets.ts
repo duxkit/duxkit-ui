@@ -18,7 +18,7 @@ export const componentImports: Record<ComponentDocSlug, string> = {
   attachment:
     "import { Attachment, AttachmentPreview, AttachmentRemove, Attachments } from './components/ai/attachment';",
   'chain-of-thought':
-    "import { ChainOfThought, ChainOfThoughtContent, ChainOfThoughtImage, ChainOfThoughtImageCaption, ChainOfThoughtStep, ChainOfThoughtStepDescription, ChainOfThoughtStepIcon, ChainOfThoughtStepLabel, ChainOfThoughtTrigger } from './components/ai/chain-of-thought';",
+    "import { ChainOfThought, ChainOfThoughtContent, ChainOfThoughtImage, ChainOfThoughtImageFrame, ChainOfThoughtImageCaption, ChainOfThoughtStep, ChainOfThoughtStepDescription, ChainOfThoughtStepIcon, ChainOfThoughtStepLabel, ChainOfThoughtTrigger } from './components/ai/chain-of-thought';",
   task: "import { Task, TaskContent, TaskItem, TaskItemFile, TaskTrigger } from './components/ai/task';",
   tool: "import { Tool, ToolContent, ToolTrigger } from './components/ai/tool';",
   reasoning:
@@ -29,7 +29,8 @@ export const componentImports: Record<ComponentDocSlug, string> = {
     "import { Source, Sources, SourcesContent, SourcesTrigger } from './components/ai/sources';",
   confirmation:
     "import { Confirmation, ConfirmationAction, ConfirmationActions, ConfirmationRequest, ConfirmationTitle } from './components/ai/confirmation';",
-  'code-block': "import { CodeBlock } from './components/ai/code-block';",
+  'code-block':
+    "import { CodeBlock, CodeBlockRoot, CodeBlockHeader, CodeBlockLanguage, CodeBlockContent, CodeBlockCopy, CodeBlockDownload } from './components/ai/code-block';",
   shimmer: "import { Shimmer } from './components/ai/shimmer';",
 };
 
@@ -151,7 +152,7 @@ export const anatomySnippets: Record<ComponentDocSlug, string> = {
   @for (attachment of attachments; track attachmentKey(attachment)) {
     <ai-attachment [data]="attachment" (removed)="removeAttachment(attachment)">
       <ai-attachment-preview />
-      <button aiAttachmentRemove hlmBtn variant="ghost" size="icon-sm"></button>
+      <button aiAttachmentRemove placement="grid" hlmBtn variant="ghost" size="icon-sm"></button>
     </ai-attachment>
   }
 </ai-attachments>`,

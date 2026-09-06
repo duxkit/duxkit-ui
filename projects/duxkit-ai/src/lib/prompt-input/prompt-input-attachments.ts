@@ -1,7 +1,6 @@
 import { Component, computed, input } from '@angular/core';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { lucidePaperclip } from '@ng-icons/lucide';
-import { twMerge } from 'tailwind-merge';
 import {
   Attachment,
   AttachmentName,
@@ -9,9 +8,10 @@ import {
   AttachmentRemove,
   Attachments,
 } from 'duxkit-ai/attachment';
+import { twMerge } from 'tailwind-merge';
+import type { PromptInputButtonVariants } from './prompt-input-button';
 import { promptInputButtonVariants } from './prompt-input-button';
 import { injectPromptInput } from './prompt-input-root';
-import type { PromptInputButtonVariants } from './prompt-input-button';
 
 @Component({
   selector: 'button[aiPromptInputAddAttachment],button[ai-prompt-input-add-attachment]',
@@ -57,22 +57,24 @@ export class PromptInputAddAttachment {
     '[class]': 'classes()',
   },
   template: `
-    @if (promptInput.files().length > 0) {
-      <ai-attachments variant="inline">
-        @for (file of promptInput.files(); track file.id) {
-          <ai-attachment [data]="file" (removed)="promptInput.removeFile(file.id)">
-            <ai-attachment-preview>
-              <ai-attachment-name>{{ file.filename ?? file.url }}</ai-attachment-name>
-              <button aiAttachmentRemove></button>
-            </ai-attachment-preview>
-          </ai-attachment>
-        }
-      </ai-attachments>
-    }
+    <ng-content>
+      @if (promptInput.files().length > 0) {
+        <ai-attachments variant="inline">
+          @for (file of promptInput.files(); track file.id) {
+            <ai-attachment [data]="file" (removed)="promptInput.removeFile(file.id)">
+              <ai-attachment-preview>
+                <ai-attachment-name>{{ file.filename ?? file.url }}</ai-attachment-name>
+                <button aiAttachmentRemove></button>
+              </ai-attachment-preview>
+            </ai-attachment>
+          }
+        </ai-attachments>
+      }
+    </ng-content>
   `,
 })
 export class PromptInputAttachments {
-  protected readonly promptInput = injectPromptInput();
+  public readonly promptInput = injectPromptInput();
 
   /** Additional classes merged onto the prompt input attachment list. */
   public readonly userClass = input<string | undefined>(undefined, { alias: 'class' });

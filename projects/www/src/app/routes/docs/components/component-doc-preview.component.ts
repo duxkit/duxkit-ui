@@ -2,8 +2,9 @@ import { Component, input, signal } from '@angular/core';
 import { HlmButton } from '@duxkit-private/ui/helm/button';
 import type { LanguageModelUsage } from 'ai';
 import {
-  Attachment,
   type AiAttachmentPart,
+  Attachment,
+  AttachmentDefaultPreview,
   AttachmentPreview,
   AttachmentRemove,
   Attachments,
@@ -14,6 +15,7 @@ import {
   ChainOfThoughtContent,
   ChainOfThoughtImage,
   ChainOfThoughtImageCaption,
+  ChainOfThoughtImageFrame,
   ChainOfThoughtSearchResult,
   ChainOfThoughtSearchResults,
   ChainOfThoughtStep,
@@ -26,18 +28,13 @@ import { Checkpoint, CheckpointIcon, CheckpointTrigger } from 'duxkit-ai/checkpo
 import { CodeBlock } from 'duxkit-ai/code-block';
 import {
   Confirmation,
+  ConfirmationAccepted,
   ConfirmationAction,
   ConfirmationActions,
-  ConfirmationAccepted,
   ConfirmationRejected,
   ConfirmationRequest,
   ConfirmationTitle,
 } from 'duxkit-ai/confirmation';
-import {
-  Conversation,
-  ConversationContent,
-  ConversationScrollAnchor,
-} from 'duxkit-ai/conversation';
 import {
   Context,
   ContextCacheUsage,
@@ -52,8 +49,15 @@ import {
   ContextReasoningUsage,
   ContextTrigger,
 } from 'duxkit-ai/context';
+import {
+  Conversation,
+  ConversationContent,
+  ConversationScrollAnchor,
+} from 'duxkit-ai/conversation';
 import { Message, MessageActions, MessageContent, MessageCopy } from 'duxkit-ai/message';
 import {
+  createModelSelectorSearchValue,
+  groupModelSelectorModels,
   ModelSelector,
   ModelSelectorContent,
   ModelSelectorDescription,
@@ -64,13 +68,11 @@ import {
   ModelSelectorItem,
   ModelSelectorList,
   ModelSelectorLogo,
+  type ModelSelectorModel,
   ModelSelectorName,
   ModelSelectorShortcut,
   ModelSelectorTitle,
   ModelSelectorTrigger,
-  createModelSelectorSearchValue,
-  groupModelSelectorModels,
-  type ModelSelectorModel,
 } from 'duxkit-ai/model-selector';
 import {
   type AiPromptSubmit,
@@ -286,7 +288,7 @@ export const componentPreviewSnippets: Record<ComponentDocSlug, string> = {
   @for (attachment of attachmentParts; track attachmentKey(attachment)) {
     <ai-attachment [data]="attachment">
       <ai-attachment-preview />
-      <button aiAttachmentRemove hlmBtn variant="ghost" size="icon-sm"></button>
+      <button aiAttachmentRemove placement="grid" hlmBtn variant="ghost" size="icon-sm"></button>
     </ai-attachment>
   }
 </ai-attachments>`,
@@ -341,7 +343,7 @@ export const componentPreviewSnippets: Record<ComponentDocSlug, string> = {
     </ai-chain-of-thought-step>
 
     <ai-chain-of-thought-image>
-      <div class="flex h-32 w-full items-center justify-center rounded-md border border-border bg-background text-muted-foreground text-sm">Preview</div>
+      <div aiChainOfThoughtImageFrame><div class="flex h-32 w-full items-center justify-center rounded-md border border-border bg-background text-muted-foreground text-sm">Preview</div></div>
       <ai-chain-of-thought-image-caption>
         Optional media preview attached to a thought step.
       </ai-chain-of-thought-image-caption>
@@ -431,7 +433,8 @@ export const attachmentPreviewSnippets: Record<AttachmentsVariant, string> = {
   @for (attachment of attachmentParts; track attachmentKey(attachment)) {
     <ai-attachment [data]="attachment">
       <ai-attachment-preview>
-        <button aiAttachmentRemove hlmBtn variant="ghost" size="icon-xs"></button>
+        <ai-attachment-default-preview />
+                <button aiAttachmentRemove hlmBtn variant="ghost" size="icon-xs"></button>
       </ai-attachment-preview>
     </ai-attachment>
   }
@@ -440,7 +443,7 @@ export const attachmentPreviewSnippets: Record<AttachmentsVariant, string> = {
   @for (attachment of attachmentParts; track attachmentKey(attachment)) {
     <ai-attachment [data]="attachment">
       <ai-attachment-preview />
-      <button aiAttachmentRemove hlmBtn variant="ghost" size="icon-sm"></button>
+      <button aiAttachmentRemove placement="grid" hlmBtn variant="ghost" size="icon-sm"></button>
     </ai-attachment>
   }
 </ai-attachments>`,
@@ -451,11 +454,13 @@ export const attachmentPreviewSnippets: Record<AttachmentsVariant, string> = {
   imports: [
     Attachment,
     AttachmentPreview,
+    AttachmentDefaultPreview,
     AttachmentRemove,
     Attachments,
     ChainOfThought,
     ChainOfThoughtContent,
     ChainOfThoughtImage,
+    ChainOfThoughtImageFrame,
     ChainOfThoughtImageCaption,
     ChainOfThoughtSearchResult,
     ChainOfThoughtSearchResults,
@@ -665,11 +670,18 @@ export const attachmentPreviewSnippets: Record<AttachmentsVariant, string> = {
             <ai-attachment [data]="attachment">
               @if (attachmentVariant() === 'inline') {
                 <ai-attachment-preview>
+                  <ai-attachment-default-preview />
                   <button aiAttachmentRemove hlmBtn variant="ghost" size="icon-xs"></button>
                 </ai-attachment-preview>
               } @else {
                 <ai-attachment-preview />
-                <button aiAttachmentRemove hlmBtn variant="ghost" size="icon-sm"></button>
+                <button
+                  aiAttachmentRemove
+                  placement="grid"
+                  hlmBtn
+                  variant="ghost"
+                  size="icon-sm"
+                ></button>
               }
             </ai-attachment>
           }
@@ -784,10 +796,12 @@ export const attachmentPreviewSnippets: Record<AttachmentsVariant, string> = {
             </ai-chain-of-thought-step>
 
             <ai-chain-of-thought-image>
-              <div
-                class="flex h-32 w-full items-center justify-center rounded-md border border-border bg-background text-muted-foreground text-sm"
-              >
-                Preview
+              <div aiChainOfThoughtImageFrame>
+                <div
+                  class="flex h-32 w-full items-center justify-center rounded-md border border-border bg-background text-muted-foreground text-sm"
+                >
+                  Preview
+                </div>
               </div>
               <ai-chain-of-thought-image-caption>
                 Optional media preview attached to a thought step.

@@ -43,7 +43,7 @@ export const componentApiMetadata = {
       '[aiConversationScrollAnchor]',
     ],
     exports: ['Conversation', 'ConversationContent', 'ConversationScrollAnchor'],
-    inputs: ['stickToBottom', 'class'],
+    inputs: ['stickToBottom', 'class', 'observeMessages'],
     outputs: [],
     sourcePaths: [
       'projects/duxkit-ai/src/lib/conversation/conversation.ts',
@@ -76,7 +76,16 @@ export const componentApiMetadata = {
       {
         name: 'ConversationContent',
         selectors: ['[aiConversationContent]', 'ai-conversation-content'],
+        exportAs: 'aiConversationContent',
         inputs: [
+          {
+            name: 'observeMessages',
+            type: 'boolean',
+            defaultValue: 'true',
+            required: false,
+            description:
+              'Observe conventional message markup automatically. Disable for virtualized renderers.',
+          },
           {
             name: 'class',
             type: 'string | undefined',
@@ -119,7 +128,7 @@ export const componentApiMetadata = {
       'MessageThumbsDown',
       'MessageThumbsUp',
     ],
-    inputs: ['from', 'class', 'markdown', 'text', 'aria-label', 'active'],
+    inputs: ['from', 'class', 'codeTemplate', 'markdown', 'text', 'aria-label', 'active'],
     outputs: ['copiedChange', 'thumbsDown', 'thumbsUp'],
     sourcePaths: [
       'projects/duxkit-ai/src/lib/message/message.ts',
@@ -157,11 +166,19 @@ export const componentApiMetadata = {
         selectors: ['ai-message-content', '[aiMessageContent]'],
         inputs: [
           {
+            name: 'codeTemplate',
+            type: 'TemplateRef<MarkdownCodeContext>',
+            defaultValue: 'undefined',
+            required: false,
+            description:
+              'Replace code fences while retaining markdown parsing. Template receives the block as $implicit.',
+          },
+          {
             name: 'markdown',
             type: 'string | undefined',
             defaultValue: 'undefined',
             required: false,
-            description: 'Markdown source rendered as rich message content.',
+            description: 'Markdown source rendered with the configured code-fence template.',
           },
           {
             name: 'class',
@@ -292,7 +309,7 @@ export const componentApiMetadata = {
       '[aiCheckpointIcon]',
     ],
     exports: ['Checkpoint', 'CheckpointTrigger', 'CheckpointIcon'],
-    inputs: ['class', 'ariaLabel', 'disabled'],
+    inputs: ['showSeparator', 'class', 'ariaLabel', 'disabled'],
     outputs: ['checkpointRestore'],
     sourcePaths: [
       'projects/duxkit-ai/src/lib/checkpoint/checkpoint.ts',
@@ -304,6 +321,13 @@ export const componentApiMetadata = {
         name: 'Checkpoint',
         selectors: ['ai-checkpoint', '[aiCheckpoint]'],
         inputs: [
+          {
+            name: 'showSeparator',
+            type: 'boolean',
+            defaultValue: 'true',
+            required: false,
+            description: 'Render the preset separator.',
+          },
           {
             name: 'class',
             type: 'string | undefined',
@@ -381,6 +405,8 @@ export const componentApiMetadata = {
       '[aiContextContentFooter]',
       'ai-context-content-header',
       '[aiContextContentHeader]',
+      '[aiContextData]',
+      'ai-context-data',
       'ai-context-icon',
       '[aiContextIcon]',
       'ai-context-percentage',
@@ -401,6 +427,7 @@ export const componentApiMetadata = {
       'ContextContentBody',
       'ContextContentFooter',
       'ContextContentHeader',
+      'ContextData',
       'ContextIcon',
       'ContextPercentage',
       'ContextInputUsage',
@@ -408,7 +435,7 @@ export const componentApiMetadata = {
       'ContextReasoningUsage',
       'ContextCacheUsage',
     ],
-    inputs: ['usedTokens', 'maxTokens', 'usage', 'modelId', 'class'],
+    inputs: ['usedTokens', 'maxTokens', 'usage', 'modelId', 'class', 'contentTarget', 'showZero'],
     outputs: [],
     sourcePaths: [
       'projects/duxkit-ai/src/lib/context/context.ts',
@@ -417,6 +444,7 @@ export const componentApiMetadata = {
       'projects/duxkit-ai/src/lib/context/context-content-body.ts',
       'projects/duxkit-ai/src/lib/context/context-content-footer.ts',
       'projects/duxkit-ai/src/lib/context/context-content-header.ts',
+      'projects/duxkit-ai/src/lib/context/context-data.ts',
       'projects/duxkit-ai/src/lib/context/context-icon.ts',
       'projects/duxkit-ai/src/lib/context/context-percentage.ts',
       'projects/duxkit-ai/src/lib/context/context-usage.ts',
@@ -486,6 +514,14 @@ export const componentApiMetadata = {
         selectors: ['button[aiContextTrigger]'],
         inputs: [
           {
+            name: 'contentTarget',
+            type: 'BrnHoverCardContent',
+            defaultValue: 'undefined',
+            required: false,
+            description:
+              'Explicit hover content target, including content exposed by a wrapper component.',
+          },
+          {
             name: 'class',
             type: 'string | undefined',
             defaultValue: 'undefined',
@@ -542,6 +578,51 @@ export const componentApiMetadata = {
         sourcePath: 'projects/duxkit-ai/src/lib/context/context-content-header.ts',
       },
       {
+        name: 'ContextData',
+        selectors: ['[aiContextData]', 'ai-context-data'],
+        exportAs: 'aiContextData',
+        inputs: [
+          {
+            name: 'usedTokens',
+            type: 'number',
+            defaultValue: '-',
+            required: true,
+            description: 'Number of tokens currently used in the model context window.',
+          },
+          {
+            name: 'maxTokens',
+            type: 'number',
+            defaultValue: '-',
+            required: true,
+            description: 'Maximum number of tokens available in the model context window.',
+          },
+          {
+            name: 'usage',
+            type: 'LanguageModelUsage | undefined',
+            defaultValue: 'undefined',
+            required: false,
+            description:
+              'AI SDK usage object used to render token breakdown rows and optional cost estimates.',
+          },
+          {
+            name: 'modelId',
+            type: 'ContextModelId | undefined',
+            defaultValue: 'undefined',
+            required: false,
+            description: 'Model identifier passed to the optional context cost calculator.',
+          },
+          {
+            name: 'class',
+            type: 'string | undefined',
+            defaultValue: 'undefined',
+            required: false,
+            description: 'Additional classes merged onto the context root element.',
+          },
+        ],
+        outputs: [],
+        sourcePath: 'projects/duxkit-ai/src/lib/context/context-data.ts',
+      },
+      {
         name: 'ContextIcon',
         selectors: ['ai-context-icon', '[aiContextIcon]'],
         inputs: [
@@ -582,6 +663,13 @@ export const componentApiMetadata = {
             required: false,
             description: 'Additional classes merged onto the input usage row.',
           },
+          {
+            name: 'showZero',
+            type: 'boolean',
+            defaultValue: 'false',
+            required: false,
+            description: 'Render the default row even when token usage is zero.',
+          },
         ],
         outputs: [],
         sourcePath: 'projects/duxkit-ai/src/lib/context/context-usage.ts',
@@ -596,6 +684,13 @@ export const componentApiMetadata = {
             defaultValue: 'undefined',
             required: false,
             description: 'Additional classes merged onto the output usage row.',
+          },
+          {
+            name: 'showZero',
+            type: 'boolean',
+            defaultValue: 'false',
+            required: false,
+            description: 'Render the default row even when token usage is zero.',
           },
         ],
         outputs: [],
@@ -612,6 +707,13 @@ export const componentApiMetadata = {
             required: false,
             description: 'Additional classes merged onto the reasoning usage row.',
           },
+          {
+            name: 'showZero',
+            type: 'boolean',
+            defaultValue: 'false',
+            required: false,
+            description: 'Render the default row even when token usage is zero.',
+          },
         ],
         outputs: [],
         sourcePath: 'projects/duxkit-ai/src/lib/context/context-usage.ts',
@@ -627,6 +729,13 @@ export const componentApiMetadata = {
             required: false,
             description: 'Additional classes merged onto the cache usage row.',
           },
+          {
+            name: 'showZero',
+            type: 'boolean',
+            defaultValue: 'false',
+            required: false,
+            description: 'Render the default row even when token usage is zero.',
+          },
         ],
         outputs: [],
         sourcePath: 'projects/duxkit-ai/src/lib/context/context-usage.ts',
@@ -641,6 +750,8 @@ export const componentApiMetadata = {
       '[aiModelSelectorContent]',
       'button[aiModelSelectorTrigger]',
       'button[ai-model-selector-trigger]',
+      '[aiModelSelectorCommand]',
+      'ai-model-selector-command',
       '[aiModelSelectorDescription]',
       'ai-model-selector-description',
       'ai-model-selector-empty',
@@ -650,6 +761,9 @@ export const componentApiMetadata = {
       'ai-model-selector-group',
       '[aiModelSelectorGroup]',
       'ai-model-selector-input',
+      'input[aiModelSelectorInput]',
+      '[aiModelSelectorSearch]',
+      'ai-model-selector-search',
       'button[aiModelSelectorItem]',
       'button[ai-model-selector-item]',
       'ai-model-selector-list',
@@ -670,11 +784,14 @@ export const componentApiMetadata = {
       'ModelSelector',
       'ModelSelectorContent',
       'ModelSelectorTrigger',
+      'ModelSelectorCommand',
       'ModelSelectorDescription',
       'ModelSelectorEmpty',
       'ModelSelectorGroupHeading',
       'ModelSelectorGroup',
       'ModelSelectorInput',
+      'ModelSelectorNativeInput',
+      'ModelSelectorSearch',
       'ModelSelectorItem',
       'ModelSelectorList',
       'ModelSelectorLogoGroup',
@@ -684,12 +801,24 @@ export const componentApiMetadata = {
       'ModelSelectorShortcut',
       'ModelSelectorTitle',
     ],
-    inputs: ['open', 'openShortcut', 'class', 'inputId', 'placeholder', 'provider', 'alt'],
+    inputs: [
+      'open',
+      'openShortcut',
+      'class',
+      'showOverlay',
+      'overlayClass',
+      'inputId',
+      'placeholder',
+      'provider',
+      'alt',
+      'src',
+    ],
     outputs: ['openChange'],
     sourcePaths: [
       'projects/duxkit-ai/src/lib/model-selector/model-selector.ts',
       'projects/duxkit-ai/src/lib/model-selector/model-selector-content.ts',
       'projects/duxkit-ai/src/lib/model-selector/model-selector-trigger.ts',
+      'projects/duxkit-ai/src/lib/model-selector/model-selector-command.ts',
       'projects/duxkit-ai/src/lib/model-selector/model-selector-description.ts',
       'projects/duxkit-ai/src/lib/model-selector/model-selector-empty.ts',
       'projects/duxkit-ai/src/lib/model-selector/model-selector-group-heading.ts',
@@ -730,6 +859,21 @@ export const componentApiMetadata = {
             required: false,
             description: 'Additional classes merged onto the model selector root element.',
           },
+          {
+            name: 'showOverlay',
+            type: 'boolean',
+            defaultValue: 'true',
+            required: false,
+            description:
+              'Render the default dialog overlay. Disable to project a custom BrnDialogOverlay.',
+          },
+          {
+            name: 'overlayClass',
+            type: 'string',
+            defaultValue: 'undefined',
+            required: false,
+            description: 'Additional default overlay classes.',
+          },
         ],
         outputs: [
           {
@@ -769,6 +913,13 @@ export const componentApiMetadata = {
         ],
         outputs: [],
         sourcePath: 'projects/duxkit-ai/src/lib/model-selector/model-selector-trigger.ts',
+      },
+      {
+        name: 'ModelSelectorCommand',
+        selectors: ['[aiModelSelectorCommand]', 'ai-model-selector-command'],
+        inputs: [],
+        outputs: [],
+        sourcePath: 'projects/duxkit-ai/src/lib/model-selector/model-selector-command.ts',
       },
       {
         name: 'ModelSelectorDescription',
@@ -852,6 +1003,28 @@ export const componentApiMetadata = {
         sourcePath: 'projects/duxkit-ai/src/lib/model-selector/model-selector-input.ts',
       },
       {
+        name: 'ModelSelectorNativeInput',
+        selectors: ['input[aiModelSelectorInput]'],
+        inputs: [],
+        outputs: [],
+        sourcePath: 'projects/duxkit-ai/src/lib/model-selector/model-selector-input.ts',
+      },
+      {
+        name: 'ModelSelectorSearch',
+        selectors: ['[aiModelSelectorSearch]', 'ai-model-selector-search'],
+        inputs: [
+          {
+            name: 'class',
+            type: 'string | undefined',
+            defaultValue: 'undefined',
+            required: false,
+            description: 'Additional search wrapper classes.',
+          },
+        ],
+        outputs: [],
+        sourcePath: 'projects/duxkit-ai/src/lib/model-selector/model-selector-input.ts',
+      },
+      {
         name: 'ModelSelectorItem',
         selectors: ['button[aiModelSelectorItem]', 'button[ai-model-selector-item]'],
         inputs: [
@@ -903,8 +1076,8 @@ export const componentApiMetadata = {
           {
             name: 'provider',
             type: 'ModelSelectorProvider',
-            defaultValue: '-',
-            required: true,
+            defaultValue: 'undefined',
+            required: false,
             description: 'Provider slug used to resolve the models.dev logo.',
           },
           {
@@ -920,6 +1093,13 @@ export const componentApiMetadata = {
             defaultValue: 'undefined',
             required: false,
             description: 'Additional classes merged onto the logo image.',
+          },
+          {
+            name: 'src',
+            type: 'string',
+            defaultValue: 'undefined',
+            required: false,
+            description: 'Custom logo URL.',
           },
         ],
         outputs: [],
@@ -1024,9 +1204,13 @@ export const componentApiMetadata = {
       'maxFiles',
       'maxFileSize',
       'status',
+      'text',
+      'files',
+      'allowSubmitWhileGenerating',
+      'resetOnSubmit',
       'name',
     ],
-    outputs: ['promptSubmit', 'fileError', 'stop'],
+    outputs: ['promptSubmit', 'fileError', 'textChange', 'filesChange', 'stop'],
     sourcePaths: [
       'projects/duxkit-ai/src/lib/prompt-input/prompt-input-attachments.ts',
       'projects/duxkit-ai/src/lib/prompt-input/prompt-input-button.ts',
@@ -1176,6 +1360,7 @@ export const componentApiMetadata = {
       {
         name: 'PromptInput',
         selectors: ['form[aiPromptInput]'],
+        exportAs: 'aiPromptInput',
         inputs: [
           {
             name: 'accept',
@@ -1219,6 +1404,43 @@ export const componentApiMetadata = {
             required: false,
             description: 'Additional classes merged onto the prompt input form.',
           },
+          {
+            name: 'text',
+            type: 'string',
+            defaultValue: "''",
+            required: false,
+            description: 'Controlled prompt text.',
+          },
+          {
+            name: 'files',
+            type: 'readonly PromptInputFilePart[]',
+            defaultValue: '[]',
+            required: false,
+            description:
+              'Controlled file parts. Use addFiles for validated local uploads. External URLs remain consumer-owned.',
+          },
+          {
+            name: 'disabled',
+            type: 'boolean',
+            defaultValue: 'false',
+            required: false,
+            description: 'Disable every submission path.',
+          },
+          {
+            name: 'allowSubmitWhileGenerating',
+            type: 'boolean',
+            defaultValue: 'false',
+            required: false,
+            description: 'Allow additional prompts during generation.',
+          },
+          {
+            name: 'resetOnSubmit',
+            type: 'boolean',
+            defaultValue: 'true',
+            required: false,
+            description:
+              'Clear the submitted draft automatically; disable to clear after async success.',
+          },
         ],
         outputs: [
           {
@@ -1231,6 +1453,17 @@ export const componentApiMetadata = {
             type: 'PromptInputFileError',
             description: 'Emits when files are rejected by accept, size, or count constraints.',
           },
+          {
+            name: 'textChange',
+            type: 'string',
+            description: 'Controlled prompt text.',
+          },
+          {
+            name: 'filesChange',
+            type: 'readonly PromptInputFilePart[]',
+            description:
+              'Controlled file parts. Use addFiles for validated local uploads. External URLs remain consumer-owned.',
+          },
         ],
         sourcePath: 'projects/duxkit-ai/src/lib/prompt-input/prompt-input-root.ts',
       },
@@ -1239,12 +1472,12 @@ export const componentApiMetadata = {
         selectors: ['button[aiPromptInputSubmit]', 'button[ai-prompt-input-submit]'],
         inputs: [
           {
-            name: 'status',
-            type: 'PromptInputStatus | undefined',
-            defaultValue: 'undefined',
+            name: 'disabled',
+            type: 'boolean',
+            defaultValue: 'false',
             required: false,
             description:
-              'Chat status used to switch between submit, loading, stop, and error states.',
+              'Disable this control. Root disabled state applies to all submission paths.',
           },
           {
             name: 'size',
@@ -1346,7 +1579,7 @@ export const componentApiMetadata = {
       'QueueSectionTrigger',
       'QueueSection',
     ],
-    inputs: ['class', 'type', 'completed', 'alt', 'height', 'width', 'role'],
+    inputs: ['class', 'type', 'completed', 'showIcon', 'alt', 'height', 'width', 'role'],
     outputs: [],
     sourcePaths: [
       'projects/duxkit-ai/src/lib/queue/queue.ts',
@@ -1482,6 +1715,13 @@ export const componentApiMetadata = {
         name: 'QueueItemFile',
         selectors: ['[aiQueueItemFile]', 'ai-queue-item-file'],
         inputs: [
+          {
+            name: 'showIcon',
+            type: 'boolean',
+            defaultValue: 'true',
+            required: false,
+            description: 'Render the preset file icon.',
+          },
           {
             name: 'class',
             type: 'string | undefined',
@@ -1630,6 +1870,13 @@ export const componentApiMetadata = {
         selectors: ['[aiQueueSectionLabel]', 'ai-queue-section-label'],
         inputs: [
           {
+            name: 'showIcon',
+            type: 'boolean',
+            defaultValue: 'true',
+            required: false,
+            description: 'Render the preset disclosure icon.',
+          },
+          {
             name: 'class',
             type: 'string | undefined',
             defaultValue: 'undefined',
@@ -1676,6 +1923,8 @@ export const componentApiMetadata = {
     selectors: [
       '[aiAttachment]',
       'ai-attachment',
+      '[aiAttachmentDefaultPreview]',
+      'ai-attachment-default-preview',
       '[aiAttachmentMediaType]',
       'ai-attachment-media-type',
       '[aiAttachmentName]',
@@ -1691,6 +1940,7 @@ export const componentApiMetadata = {
     ],
     exports: [
       'Attachment',
+      'AttachmentDefaultPreview',
       'AttachmentMediaType',
       'AttachmentName',
       'AttachmentPreview',
@@ -1698,10 +1948,11 @@ export const componentApiMetadata = {
       'AttachmentThumbnail',
       'Attachments',
     ],
-    inputs: ['data', 'class', 'ariaLabel', 'variant'],
+    inputs: ['data', 'class', 'ariaLabel', 'placement', 'variant'],
     outputs: ['removed'],
     sourcePaths: [
       'projects/duxkit-ai/src/lib/attachment/attachment.ts',
+      'projects/duxkit-ai/src/lib/attachment/attachment-default-preview.ts',
       'projects/duxkit-ai/src/lib/attachment/attachment-media-type.ts',
       'projects/duxkit-ai/src/lib/attachment/attachment-name.ts',
       'projects/duxkit-ai/src/lib/attachment/attachment-preview.ts',
@@ -1737,6 +1988,13 @@ export const componentApiMetadata = {
           },
         ],
         sourcePath: 'projects/duxkit-ai/src/lib/attachment/attachment.ts',
+      },
+      {
+        name: 'AttachmentDefaultPreview',
+        selectors: ['[aiAttachmentDefaultPreview]', 'ai-attachment-default-preview'],
+        inputs: [],
+        outputs: [],
+        sourcePath: 'projects/duxkit-ai/src/lib/attachment/attachment-default-preview.ts',
       },
       {
         name: 'AttachmentMediaType',
@@ -1777,7 +2035,7 @@ export const componentApiMetadata = {
             type: 'string | undefined',
             defaultValue: 'undefined',
             required: false,
-            description: 'Additional classes merged onto the attachment preview element.',
+            description: 'Additional classes merged onto the preview container.',
           },
         ],
         outputs: [],
@@ -1800,6 +2058,13 @@ export const componentApiMetadata = {
             defaultValue: 'undefined',
             required: false,
             description: 'Additional classes merged onto the attachment remove control.',
+          },
+          {
+            name: 'placement',
+            type: "'flow' | 'grid' | 'list' | 'inline-preview'",
+            defaultValue: "'flow'",
+            required: false,
+            description: 'Position the control independently of its nesting.',
           },
         ],
         outputs: [],
@@ -1853,6 +2118,8 @@ export const componentApiMetadata = {
       'button[aiChainOfThoughtTrigger]',
       '[aiChainOfThoughtImageCaption]',
       'ai-chain-of-thought-image-caption',
+      '[aiChainOfThoughtImageFrame]',
+      'ai-chain-of-thought-image-frame',
       '[aiChainOfThoughtImage]',
       'ai-chain-of-thought-image',
       '[aiChainOfThoughtSearchResult]',
@@ -1873,6 +2140,7 @@ export const componentApiMetadata = {
       'ChainOfThoughtContent',
       'ChainOfThoughtTrigger',
       'ChainOfThoughtImageCaption',
+      'ChainOfThoughtImageFrame',
       'ChainOfThoughtImage',
       'ChainOfThoughtSearchResult',
       'ChainOfThoughtSearchResults',
@@ -1885,18 +2153,22 @@ export const componentApiMetadata = {
       'autoToggle',
       'isStreaming',
       'class',
+      'layout',
       'status',
-      'collapsedMaxHeight',
-      'pinToBottom',
       'showMoreLabel',
       'showLessLabel',
+      'collapsedMaxHeight',
+      'pinToBottom',
+      'showControls',
+      'expanded',
     ],
-    outputs: [],
+    outputs: ['expandedChange'],
     sourcePaths: [
       'projects/duxkit-ai/src/lib/chain-of-thought/chain-of-thought.ts',
       'projects/duxkit-ai/src/lib/chain-of-thought/chain-of-thought-content.ts',
       'projects/duxkit-ai/src/lib/chain-of-thought/chain-of-thought-trigger.ts',
       'projects/duxkit-ai/src/lib/chain-of-thought/chain-of-thought-image-caption.ts',
+      'projects/duxkit-ai/src/lib/chain-of-thought/chain-of-thought-image-frame.ts',
       'projects/duxkit-ai/src/lib/chain-of-thought/chain-of-thought-image.ts',
       'projects/duxkit-ai/src/lib/chain-of-thought/chain-of-thought-search-result.ts',
       'projects/duxkit-ai/src/lib/chain-of-thought/chain-of-thought-search-results.ts',
@@ -1981,6 +2253,21 @@ export const componentApiMetadata = {
         ],
         outputs: [],
         sourcePath: 'projects/duxkit-ai/src/lib/chain-of-thought/chain-of-thought-image-caption.ts',
+      },
+      {
+        name: 'ChainOfThoughtImageFrame',
+        selectors: ['[aiChainOfThoughtImageFrame]', 'ai-chain-of-thought-image-frame'],
+        inputs: [
+          {
+            name: 'class',
+            type: 'string | undefined',
+            defaultValue: 'undefined',
+            required: false,
+            description: 'Additional classes merged onto the optional image frame.',
+          },
+        ],
+        outputs: [],
+        sourcePath: 'projects/duxkit-ai/src/lib/chain-of-thought/chain-of-thought-image-frame.ts',
       },
       {
         name: 'ChainOfThoughtImage',
@@ -2077,27 +2364,22 @@ export const componentApiMetadata = {
       {
         name: 'ChainOfThoughtStep',
         selectors: ['[aiChainOfThoughtStep]', 'ai-chain-of-thought-step'],
+        exportAs: 'aiChainOfThoughtStep',
         inputs: [
+          {
+            name: 'layout',
+            type: 'TemplateRef<{ $implicit: ChainOfThoughtStep }>',
+            defaultValue: 'undefined',
+            required: false,
+            description:
+              'Replace the complete step layout. Template receives the step state as $implicit.',
+          },
           {
             name: 'status',
             type: 'ChainOfThoughtStepStatus',
             defaultValue: "'complete'",
             required: false,
             description: 'Visual status used to style the step marker.',
-          },
-          {
-            name: 'collapsedMaxHeight',
-            type: 'number | string | undefined',
-            defaultValue: 'undefined',
-            required: false,
-            description: 'Maximum collapsed content height before the show more control appears.',
-          },
-          {
-            name: 'pinToBottom',
-            type: 'boolean',
-            defaultValue: 'false',
-            required: false,
-            description: 'Keeps step content scrolled to the bottom when new content is appended.',
           },
           {
             name: 'showMoreLabel',
@@ -2120,8 +2402,42 @@ export const componentApiMetadata = {
             required: false,
             description: 'Additional classes merged onto the step root element.',
           },
+          {
+            name: 'collapsedMaxHeight',
+            type: 'number | string | undefined',
+            defaultValue: 'undefined',
+            required: false,
+            description: 'Maximum collapsed height, in pixels or a CSS length.',
+          },
+          {
+            name: 'pinToBottom',
+            type: 'boolean',
+            defaultValue: 'false',
+            required: false,
+            description: 'Pin clipped content to the latest appended text.',
+          },
+          {
+            name: 'showControls',
+            type: 'boolean',
+            defaultValue: 'true',
+            required: false,
+            description: 'Show built-in controls. Disable when providing controls elsewhere.',
+          },
+          {
+            name: 'expanded',
+            type: 'boolean',
+            defaultValue: 'false',
+            required: false,
+            description: 'Controlled expansion of clipped content.',
+          },
         ],
-        outputs: [],
+        outputs: [
+          {
+            name: 'expandedChange',
+            type: 'boolean',
+            description: 'Controlled expansion of clipped content.',
+          },
+        ],
         sourcePath: 'projects/duxkit-ai/src/lib/chain-of-thought/chain-of-thought-step.ts',
       },
     ],
@@ -2344,23 +2660,28 @@ export const componentApiMetadata = {
       '[aiReasoningContent]',
       'ai-reasoning-content',
       'button[aiReasoningTrigger]',
+      '[aiContentClamp]',
     ],
-    exports: ['Reasoning', 'ReasoningContent', 'ReasoningTrigger'],
+    exports: ['Reasoning', 'ReasoningContent', 'ReasoningTrigger', 'ContentClampDirective'],
     inputs: [
       'autoToggle',
       'isStreaming',
       'class',
+      'codeTemplate',
       'markdown',
-      'collapsedMaxHeight',
-      'pinToBottom',
       'showMoreLabel',
       'showLessLabel',
+      'collapsedMaxHeight',
+      'pinToBottom',
+      'showControls',
+      'expanded',
     ],
-    outputs: [],
+    outputs: ['expandedChange'],
     sourcePaths: [
       'projects/duxkit-ai/src/lib/reasoning/reasoning.ts',
       'projects/duxkit-ai/src/lib/reasoning/reasoning-content.ts',
       'projects/duxkit-ai/src/lib/reasoning/reasoning-trigger.ts',
+      'projects/duxkit-ai/src/lib/reasoning/content-clamp.ts',
     ],
     symbols: [
       {
@@ -2396,28 +2717,22 @@ export const componentApiMetadata = {
       {
         name: 'ReasoningContent',
         selectors: ['[aiReasoningContent]', 'ai-reasoning-content'],
+        exportAs: 'aiReasoningContent',
         inputs: [
+          {
+            name: 'codeTemplate',
+            type: 'TemplateRef<MarkdownCodeContext>',
+            defaultValue: 'undefined',
+            required: false,
+            description:
+              'Replace code fences while retaining markdown parsing. Template receives the block as $implicit.',
+          },
           {
             name: 'markdown',
             type: 'string | undefined',
             defaultValue: 'undefined',
             required: false,
-            description: 'Markdown source rendered inside the reasoning panel.',
-          },
-          {
-            name: 'collapsedMaxHeight',
-            type: 'number | string | undefined',
-            defaultValue: 'undefined',
-            required: false,
-            description: 'Maximum collapsed content height before the show more control appears.',
-          },
-          {
-            name: 'pinToBottom',
-            type: 'boolean',
-            defaultValue: 'false',
-            required: false,
-            description:
-              'Keeps the reasoning content scrolled to the bottom when new content is appended.',
+            description: 'Markdown source rendered with the configured code-fence template.',
           },
           {
             name: 'showMoreLabel',
@@ -2441,8 +2756,42 @@ export const componentApiMetadata = {
             required: false,
             description: 'Additional classes merged onto the reasoning content element.',
           },
+          {
+            name: 'collapsedMaxHeight',
+            type: 'number | string | undefined',
+            defaultValue: 'undefined',
+            required: false,
+            description: 'Maximum collapsed height, in pixels or a CSS length.',
+          },
+          {
+            name: 'pinToBottom',
+            type: 'boolean',
+            defaultValue: 'false',
+            required: false,
+            description: 'Pin clipped content to the latest appended text.',
+          },
+          {
+            name: 'showControls',
+            type: 'boolean',
+            defaultValue: 'true',
+            required: false,
+            description: 'Show built-in controls. Disable when providing controls elsewhere.',
+          },
+          {
+            name: 'expanded',
+            type: 'boolean',
+            defaultValue: 'false',
+            required: false,
+            description: 'Controlled expansion of clipped content.',
+          },
         ],
-        outputs: [],
+        outputs: [
+          {
+            name: 'expandedChange',
+            type: 'boolean',
+            description: 'Controlled expansion of clipped content.',
+          },
+        ],
         sourcePath: 'projects/duxkit-ai/src/lib/reasoning/reasoning-content.ts',
       },
       {
@@ -2460,6 +2809,49 @@ export const componentApiMetadata = {
         outputs: [],
         sourcePath: 'projects/duxkit-ai/src/lib/reasoning/reasoning-trigger.ts',
       },
+      {
+        name: 'ContentClampDirective',
+        selectors: ['[aiContentClamp]'],
+        exportAs: 'aiContentClamp',
+        inputs: [
+          {
+            name: 'collapsedMaxHeight',
+            type: 'number | string | undefined',
+            defaultValue: 'undefined',
+            required: false,
+            description: 'Maximum collapsed height, in pixels or a CSS length.',
+          },
+          {
+            name: 'pinToBottom',
+            type: 'boolean',
+            defaultValue: 'false',
+            required: false,
+            description: 'Pin clipped content to the latest appended text.',
+          },
+          {
+            name: 'showControls',
+            type: 'boolean',
+            defaultValue: 'true',
+            required: false,
+            description: 'Show built-in controls. Disable when providing controls elsewhere.',
+          },
+          {
+            name: 'expanded',
+            type: 'boolean',
+            defaultValue: 'false',
+            required: false,
+            description: 'Controlled expansion of clipped content.',
+          },
+        ],
+        outputs: [
+          {
+            name: 'expandedChange',
+            type: 'boolean',
+            description: 'Controlled expansion of clipped content.',
+          },
+        ],
+        sourcePath: 'projects/duxkit-ai/src/lib/reasoning/content-clamp.ts',
+      },
     ],
   },
   'reasoning-effort': {
@@ -2476,6 +2868,7 @@ export const componentApiMetadata = {
       '[aiReasoningEffortLabel]',
       'ai-reasoning-effort-list',
       '[aiReasoningEffortList]',
+      '[aiReasoningEffortSliderState]',
       'ai-reasoning-effort-slider',
       '[aiReasoningEffortSlider]',
       'ai-reasoning-effort-value',
@@ -2488,6 +2881,7 @@ export const componentApiMetadata = {
       'ReasoningEffortItem',
       'ReasoningEffortLabel',
       'ReasoningEffortList',
+      'ReasoningEffortSliderState',
       'ReasoningEffortSlider',
       'ReasoningEffortValue',
     ],
@@ -2500,6 +2894,7 @@ export const componentApiMetadata = {
       'class',
       'ariaLabel',
       'showIndicator',
+      'orientation',
       'showLabels',
       'sliderClass',
       'trackClass',
@@ -2516,6 +2911,7 @@ export const componentApiMetadata = {
       'projects/duxkit-ai/src/lib/reasoning-effort/reasoning-effort-item.ts',
       'projects/duxkit-ai/src/lib/reasoning-effort/reasoning-effort-label.ts',
       'projects/duxkit-ai/src/lib/reasoning-effort/reasoning-effort-list.ts',
+      'projects/duxkit-ai/src/lib/reasoning-effort/reasoning-effort-slider-state.ts',
       'projects/duxkit-ai/src/lib/reasoning-effort/reasoning-effort-slider.ts',
       'projects/duxkit-ai/src/lib/reasoning-effort/reasoning-effort-value.ts',
     ],
@@ -2695,22 +3091,39 @@ export const componentApiMetadata = {
         sourcePath: 'projects/duxkit-ai/src/lib/reasoning-effort/reasoning-effort-list.ts',
       },
       {
+        name: 'ReasoningEffortSliderState',
+        selectors: ['[aiReasoningEffortSliderState]'],
+        exportAs: 'aiReasoningEffortSliderState',
+        inputs: [
+          {
+            name: 'disabled',
+            type: 'boolean',
+            defaultValue: 'false',
+            required: false,
+            description: 'Disable effort changes through this slider.',
+          },
+        ],
+        outputs: [],
+        sourcePath: 'projects/duxkit-ai/src/lib/reasoning-effort/reasoning-effort-slider-state.ts',
+      },
+      {
         name: 'ReasoningEffortSlider',
         selectors: ['ai-reasoning-effort-slider', '[aiReasoningEffortSlider]'],
+        exportAs: 'aiReasoningEffortSlider',
         inputs: [
+          {
+            name: 'orientation',
+            type: "'horizontal' | 'vertical'",
+            defaultValue: "'horizontal'",
+            required: false,
+            description: 'Direction of the default slider.',
+          },
           {
             name: 'ariaLabel',
             type: 'string | undefined',
             defaultValue: 'undefined',
             required: false,
             description: 'Accessible label for the slider. Defaults to the root label.',
-          },
-          {
-            name: 'disabled',
-            type: 'boolean',
-            defaultValue: 'false',
-            required: false,
-            description: 'Whether this slider alone is disabled.',
           },
           {
             name: 'showLabels',
@@ -2767,6 +3180,13 @@ export const componentApiMetadata = {
             defaultValue: 'undefined',
             required: false,
             description: 'Additional classes applied to each level label.',
+          },
+          {
+            name: 'disabled',
+            type: 'boolean',
+            defaultValue: 'false',
+            required: false,
+            description: 'Disable effort changes through this slider.',
           },
         ],
         outputs: [],
@@ -2845,8 +3265,8 @@ export const componentApiMetadata = {
           {
             name: 'count',
             type: 'number',
-            defaultValue: '-',
-            required: true,
+            defaultValue: '0',
+            required: false,
             description: 'Number of sources referenced by the response.',
           },
           {
@@ -3025,15 +3445,43 @@ export const componentApiMetadata = {
     ],
   },
   'code-block': {
-    selectors: ['ai-code-block'],
-    exports: ['CodeBlock'],
+    selectors: [
+      'ai-code-block',
+      '[aiCodeBlockHeader]',
+      'ai-code-block-header',
+      '[aiCodeBlockActions]',
+      'ai-code-block-actions',
+      '[aiCodeBlockLanguage]',
+      'ai-code-block-language',
+      '[aiCodeBlockContent]',
+      'ai-code-block-content',
+      'button[aiCodeBlockCopy]',
+      'button[aiCodeBlockDownload]',
+      '[aiCodeBlockRoot]',
+      'ai-code-block-root',
+    ],
+    exports: [
+      'CodeBlock',
+      'CodeBlockHeader',
+      'CodeBlockActions',
+      'CodeBlockLanguage',
+      'CodeBlockContent',
+      'CodeBlockCopy',
+      'CodeBlockDownload',
+      'CodeBlockRoot',
+    ],
     inputs: ['code', 'language', 'class'],
     outputs: [],
-    sourcePaths: ['projects/duxkit-ai/src/lib/code-block/code-block.ts'],
+    sourcePaths: [
+      'projects/duxkit-ai/src/lib/code-block/code-block.ts',
+      'projects/duxkit-ai/src/lib/code-block/code-block-parts.ts',
+      'projects/duxkit-ai/src/lib/code-block/code-block-root.ts',
+    ],
     symbols: [
       {
         name: 'CodeBlock',
         selectors: ['ai-code-block'],
+        exportAs: 'aiCodeBlock',
         inputs: [
           {
             name: 'code',
@@ -3060,6 +3508,127 @@ export const componentApiMetadata = {
         ],
         outputs: [],
         sourcePath: 'projects/duxkit-ai/src/lib/code-block/code-block.ts',
+      },
+      {
+        name: 'CodeBlockHeader',
+        selectors: ['[aiCodeBlockHeader]', 'ai-code-block-header'],
+        inputs: [
+          {
+            name: 'class',
+            type: 'string | undefined',
+            defaultValue: 'undefined',
+            required: false,
+            description: 'Additional header classes.',
+          },
+        ],
+        outputs: [],
+        sourcePath: 'projects/duxkit-ai/src/lib/code-block/code-block-parts.ts',
+      },
+      {
+        name: 'CodeBlockActions',
+        selectors: ['[aiCodeBlockActions]', 'ai-code-block-actions'],
+        inputs: [
+          {
+            name: 'class',
+            type: 'string | undefined',
+            defaultValue: 'undefined',
+            required: false,
+            description: 'Additional action group classes.',
+          },
+        ],
+        outputs: [],
+        sourcePath: 'projects/duxkit-ai/src/lib/code-block/code-block-parts.ts',
+      },
+      {
+        name: 'CodeBlockLanguage',
+        selectors: ['[aiCodeBlockLanguage]', 'ai-code-block-language'],
+        inputs: [
+          {
+            name: 'class',
+            type: 'string | undefined',
+            defaultValue: 'undefined',
+            required: false,
+            description: 'Additional language label classes.',
+          },
+        ],
+        outputs: [],
+        sourcePath: 'projects/duxkit-ai/src/lib/code-block/code-block-parts.ts',
+      },
+      {
+        name: 'CodeBlockContent',
+        selectors: ['[aiCodeBlockContent]', 'ai-code-block-content'],
+        inputs: [
+          {
+            name: 'class',
+            type: 'string | undefined',
+            defaultValue: 'undefined',
+            required: false,
+            description: 'Additional highlighted body classes.',
+          },
+        ],
+        outputs: [],
+        sourcePath: 'projects/duxkit-ai/src/lib/code-block/code-block-parts.ts',
+      },
+      {
+        name: 'CodeBlockCopy',
+        selectors: ['button[aiCodeBlockCopy]'],
+        inputs: [
+          {
+            name: 'class',
+            type: 'string | undefined',
+            defaultValue: 'undefined',
+            required: false,
+            description: 'Additional copy control classes.',
+          },
+        ],
+        outputs: [],
+        sourcePath: 'projects/duxkit-ai/src/lib/code-block/code-block-parts.ts',
+      },
+      {
+        name: 'CodeBlockDownload',
+        selectors: ['button[aiCodeBlockDownload]'],
+        inputs: [
+          {
+            name: 'class',
+            type: 'string | undefined',
+            defaultValue: 'undefined',
+            required: false,
+            description: 'Additional download control classes.',
+          },
+        ],
+        outputs: [],
+        sourcePath: 'projects/duxkit-ai/src/lib/code-block/code-block-parts.ts',
+      },
+      {
+        name: 'CodeBlockRoot',
+        selectors: ['[aiCodeBlockRoot]', 'ai-code-block-root'],
+        exportAs: 'aiCodeBlockRoot',
+        inputs: [
+          {
+            name: 'code',
+            type: 'string',
+            defaultValue: '-',
+            required: true,
+            description: 'Code string to render, copy, and download.',
+          },
+          {
+            name: 'language',
+            type: 'string',
+            defaultValue: "'text'",
+            required: false,
+            description:
+              'Language identifier used for syntax highlighting and file extension detection.',
+          },
+          {
+            name: 'class',
+            type: 'string | undefined',
+            defaultValue: 'undefined',
+            required: false,
+            description: 'Additional classes merged onto the code block root element.',
+          },
+        ],
+        outputs: [],
+        sourcePath: 'projects/duxkit-ai/src/lib/code-block/code-block-root.ts',
       },
     ],
   },

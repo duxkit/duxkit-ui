@@ -1,10 +1,9 @@
-import { Component, computed, input } from '@angular/core';
+import { Directive, computed, input } from '@angular/core';
 import { twMerge } from 'tailwind-merge';
 
-@Component({
+@Directive({
   selector: '[aiChainOfThoughtStepIcon],ai-chain-of-thought-step-icon',
   host: { '[class]': 'classes()' },
-  template: '<ng-content />',
 })
 export class ChainOfThoughtStepIcon {
   /** Additional classes merged onto the step icon slot. */

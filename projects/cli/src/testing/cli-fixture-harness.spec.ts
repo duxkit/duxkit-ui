@@ -543,7 +543,7 @@ describe('CLI fixture harness', () => {
       result.assertReadOnly();
       result.assertFileUnchanged('package.json');
       result.assertStdoutIncludes('Ready to add message');
-      result.assertStdoutIncludes('13 files to create');
+      result.assertStdoutIncludes('15 files to create');
       expect(result.stdout).not.toContain('Generated files');
       expect(result.stdout).not.toContain('message/message-content.ts');
       result.assertSourceFixtureUnchanged();
@@ -582,9 +582,9 @@ describe('CLI fixture harness', () => {
       expect(JSON.parse(await workspace.readText('duxkit-ai.json'))).toEqual(
         expect.objectContaining({
           primitives: {
-            'code-block': '0.1.0',
-            markdown: '0.1.0',
-            message: '0.1.0',
+            'code-block': '0.2.0',
+            markdown: '0.2.0',
+            message: '0.2.0',
           },
         }),
       );
@@ -724,7 +724,7 @@ describe('CLI fixture harness', () => {
 
       result.assertExitCode(0);
       result.assertStdoutIncludes('Ready to add message');
-      result.assertStdoutIncludes('13 files to create');
+      result.assertStdoutIncludes('15 files to create');
       result.assertStderrIncludes('Apply these changes? (y/N) y');
       result.assertFileChanged('libs/dux-ui/message/message.ts');
     });
@@ -877,10 +877,9 @@ describe('CLI fixture harness', () => {
     await withCliFixtureWorkspace('angular-cli-app', async (workspace) => {
       await workspace.writeExecutable(
         '.test-bin/npm',
-        [
-          '#!/bin/sh',
-          'mkdir -p "$DUXKIT_ROOT/libs/dux-ui/message/message-action-classes.ts"',
-        ].join('\n') + '\n',
+        ['#!/bin/sh', 'mkdir -p "$DUXKIT_ROOT/libs/dux-ui/message/message-action-classes.ts"'].join(
+          '\n',
+        ) + '\n',
       );
       const result = await workspace.run(['add', 'message', '--yes', '--package-manager', 'npm'], {
         DUXKIT_ROOT: workspace.root,
@@ -1140,7 +1139,7 @@ describe('CLI fixture harness', () => {
       expect(parsed.included).toEqual(['markdown', 'code-block']);
       expect(parsed.componentDestination).toBe('libs/dux-ui');
       expect(parsed.config.action).toBe('create');
-      expect(parsed.files).toHaveLength(13);
+      expect(parsed.files).toHaveLength(15);
       expect(parsed.files.every((file) => file.status === 'create')).toBe(true);
       expect(parsed.stylesheetChanges).toEqual([
         expect.objectContaining({ file: 'markdown.scss' }),

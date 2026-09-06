@@ -1,12 +1,11 @@
-import { Component, computed, input } from '@angular/core';
+import { Directive, computed, input } from '@angular/core';
 import { twMerge } from 'tailwind-merge';
 
-@Component({
+@Directive({
   selector: '[aiQueueItemContent],ai-queue-item-content',
   host: {
     '[class]': 'classes()',
   },
-  template: '<ng-content />',
 })
 export class QueueItemContent {
   /** Whether the queue item content should render as completed. */
@@ -17,7 +16,7 @@ export class QueueItemContent {
   protected readonly classes = computed(() =>
     twMerge(
       'min-w-0 grow truncate',
-      this.completed() ? 'text-muted-foreground/50 line-through' : 'text-muted-foreground',
+      this.completed() ? 'text-muted-foreground line-through' : 'text-muted-foreground',
       this.userClass(),
     ),
   );

@@ -27,7 +27,7 @@ export class ChainOfThought {
   private readonly manualOverride = signal(false);
   private readonly startedAt = signal<number | null>(null);
   private readonly endedAt = signal<number | null>(null);
-  private wasStreaming = false;
+  private wasStreaming: boolean | undefined;
 
   public readonly durationSeconds = computed(() => {
     const startedAt = this.startedAt();
@@ -59,9 +59,10 @@ export class ChainOfThought {
         this.endedAt.set(Date.now());
       }
 
+      const transitioned = this.wasStreaming !== undefined && isStreaming !== this.wasStreaming;
       this.wasStreaming = isStreaming;
 
-      if (!this.shouldAutoToggle()) {
+      if (!transitioned || !this.shouldAutoToggle()) {
         return;
       }
 

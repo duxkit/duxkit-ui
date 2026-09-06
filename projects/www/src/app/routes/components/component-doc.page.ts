@@ -7,6 +7,8 @@ import {
   type ComponentApiSymbolMetadata,
 } from '../docs/data/component-api-metadata.generated';
 import { anatomySnippets, componentImports } from '../docs/data/component-doc-snippets';
+import { componentComposition } from '../docs/data/component-composition';
+import { migrationForComponent, migrationHref } from '../docs/data/migrations';
 import {
   attachmentPreviewSnippets,
   ComponentDocPreview,
@@ -98,6 +100,47 @@ const attachmentPreviewExamples = [
               >
                 <app-component-doc-preview [slug]="doc.slug" />
               </app-docs-code-tabs>
+            }
+          </section>
+
+          <section class="docs-section border-b border-border" aria-labelledby="composition">
+            <div class="docs-section-copy">
+              <h2 id="composition" class="text-foreground">Composition</h2>
+              @if (migration(); as migration) {
+                <p class="text-muted-foreground">
+                  Updating existing components?
+                  <a
+                    class="text-foreground underline underline-offset-4"
+                    [routerLink]="migrationHref(migration.guide)"
+                    [fragment]="migration.fragment"
+                  >
+                    Read the {{ migration.guide.toRelease }} migration steps.
+                  </a>
+                </p>
+              }
+              @for (note of composition().notes; track note) {
+                <p class="text-muted-foreground">{{ note }}</p>
+              }
+            </div>
+            @if (composition().migration; as migration) {
+              <div class="docs-section-copy">
+                <h3 class="text-foreground">Migrating existing compositions</h3>
+                <p class="text-muted-foreground">{{ migration }}</p>
+              </div>
+            }
+            @if (compositionTabs().length > 0) {
+              <div class="docs-section-copy">
+                <p class="text-muted-foreground">
+                  Import the pieces into your standalone component. Signal values and event handlers
+                  in this example belong to your application; adjust import paths to your generated
+                  library.
+                </p>
+                <app-docs-code-tabs
+                  ariaLabel="Composition example"
+                  copyLabel="Copy composition snippet"
+                  [tabs]="compositionTabs()"
+                />
+              </div>
             }
           </section>
 
@@ -468,6 +511,23 @@ export class ComponentDocPage {
 
   protected readonly doc = computed(() => findComponentDoc(this.slug() ?? ''));
   protected readonly attachmentPreviewExamples = attachmentPreviewExamples;
+  protected readonly composition = computed(
+    () => componentComposition[this.doc()?.slug ?? 'conversation'],
+  );
+  protected readonly migrationHref = migrationHref;
+  protected readonly migration = computed(() => {
+    const doc = this.doc();
+    return doc ? migrationForComponent(doc.slug) : undefined;
+  });
+  protected readonly compositionTabs = computed(() => {
+    const composition = this.composition();
+    return composition.template
+      ? [
+          { id: 'template', label: 'Template', code: composition.template, language: 'html' },
+          { id: 'imports', label: 'Imports', code: composition.imports ?? '', language: 'ts' },
+        ]
+      : [];
+  });
   protected readonly componentHref = componentHref;
   protected readonly apiMetadata = computed(() => {
     const doc = this.doc();

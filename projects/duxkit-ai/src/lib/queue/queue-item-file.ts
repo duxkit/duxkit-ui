@@ -11,11 +11,15 @@ import { twMerge } from 'tailwind-merge';
     '[class]': 'classes()',
   },
   template: `
-    <ng-icon name="lucidePaperclip" style="--ng-icon__size: 12px" aria-hidden="true" />
-    <span class="max-w-[100px] truncate"><ng-content /></span>
+    @if (showIcon()) {
+      <ng-icon name="lucidePaperclip" style="--ng-icon__size: 12px" aria-hidden="true" />
+    }
+    <ng-content />
   `,
 })
 export class QueueItemFile {
+  /** Render the preset file icon. */
+  public readonly showIcon = input(true);
   /** Additional classes merged onto the queue item file badge. */
   public readonly userClass = input<string | undefined>(undefined, { alias: 'class' });
 

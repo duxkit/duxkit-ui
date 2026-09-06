@@ -14,6 +14,8 @@ describe('www app routes', () => {
       '',
       'installation',
       'cli',
+      'migrations',
+      'migrations/:slug',
       'changelog',
     ]);
     expect(componentsRoute?.children?.map((route) => route.path)).toEqual(['', ':slug']);

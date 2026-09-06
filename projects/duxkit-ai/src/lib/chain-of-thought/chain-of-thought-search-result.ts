@@ -1,12 +1,11 @@
-import { Component, computed, input } from '@angular/core';
+import { Directive, computed, input } from '@angular/core';
 import { twMerge } from 'tailwind-merge';
 
-@Component({
+@Directive({
   selector: '[aiChainOfThoughtSearchResult],ai-chain-of-thought-search-result',
   host: {
     '[class]': 'classes()',
   },
-  template: '<ng-content />',
 })
 export class ChainOfThoughtSearchResult {
   /** Additional classes merged onto the search result token element. */
@@ -14,7 +13,7 @@ export class ChainOfThoughtSearchResult {
 
   protected readonly classes = computed(() =>
     twMerge(
-      'inline-flex items-center gap-1 rounded-md bg-muted px-2 py-0.5 font-normal text-muted-foreground text-xs',
+      'inline-flex items-center gap-1 rounded-md bg-muted px-2 py-0.5 font-normal text-foreground text-xs',
       this.userClass(),
     ),
   );

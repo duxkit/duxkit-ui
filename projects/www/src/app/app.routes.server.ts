@@ -1,5 +1,6 @@
 import { PrerenderFallback, RenderMode, type ServerRoute } from '@angular/ssr';
 import { componentDocs } from './routes/docs/data/component-docs.registry';
+import { migrationGuides } from './routes/docs/data/migrations';
 
 export const appServerRoutes: ServerRoute[] = [
   {
@@ -17,6 +18,18 @@ export const appServerRoutes: ServerRoute[] = [
   {
     path: 'docs/cli',
     renderMode: RenderMode.Prerender,
+  },
+  {
+    path: 'docs/migrations',
+    renderMode: RenderMode.Prerender,
+  },
+  {
+    path: 'docs/migrations/:slug',
+    renderMode: RenderMode.Prerender,
+    fallback: PrerenderFallback.None,
+    async getPrerenderParams() {
+      return migrationGuides.map((guide) => ({ slug: guide.slug }));
+    },
   },
   {
     path: 'docs/changelog',

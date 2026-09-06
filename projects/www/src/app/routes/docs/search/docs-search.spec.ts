@@ -1,3 +1,4 @@
+import { componentApiMetadata } from '../data/component-api-metadata.generated';
 import '@angular/compiler';
 import { describe, expect, it } from 'vitest';
 import {
@@ -9,8 +10,20 @@ import {
 import { componentDocs } from '../data/component-docs.registry';
 import { anatomySnippets, componentImports } from '../data/component-doc-snippets';
 import { componentPreviewSnippets } from '../components/component-doc-preview.component';
+import { componentComposition } from '../data/component-composition';
 
 describe('docs search', () => {
+  it('finds behavioral APIs and migration guidance beyond input/output tables', () => {
+    expect(searchComponentDocs('notifyMessageAdded').map((item) => item.slug)).toContain(
+      'conversation',
+    );
+    expect(searchComponentDocs('selectSliderValue').map((item) => item.slug)).toContain(
+      'reasoning-effort',
+    );
+    expect(
+      searchComponentDocs('button status input was removed').map((item) => item.slug),
+    ).toContain('prompt-input');
+  });
   it('matches component docs by title, selector, export, and API metadata', () => {
     expect(searchComponentDocs('reasoning').map((item) => item.slug)).toContain('reasoning');
     expect(searchComponentDocs('ai-message-content').map((item) => item.slug)).toContain('message');
@@ -80,6 +93,26 @@ describe('docs search', () => {
     expect(searchComponentDocs('text length').map((item) => item.slug)).toContain('shimmer');
   });
 
+  it('documents inherited inputs and model outputs on the consumer-facing symbols', () => {
+    const code = componentApiMetadata['code-block'].symbols.find(
+      (symbol) => symbol.name === 'CodeBlock',
+    );
+    expect(code?.inputs).toContainEqual(expect.objectContaining({ name: 'code', required: true }));
+    const content = componentApiMetadata.reasoning.symbols.find(
+      (symbol) => symbol.name === 'ReasoningContent',
+    );
+    expect(content?.inputs).toContainEqual(
+      expect.objectContaining({ name: 'expanded', required: false }),
+    );
+    expect(content?.outputs).toContainEqual(expect.objectContaining({ name: 'expandedChange' }));
+    const context = componentApiMetadata.context.symbols.find(
+      (symbol) => symbol.name === 'Context',
+    );
+    expect(context?.inputs).toContainEqual(
+      expect.objectContaining({ name: 'usedTokens', required: true }),
+    );
+  });
+
   it('keeps generated API metadata attached to every indexed component doc', () => {
     expect(componentDocsSearchIndex).toHaveLength(componentDocs.length);
 
@@ -108,6 +141,7 @@ describe('component docs snippets', () => {
       expect(componentImports[doc.slug]).toContain("from './components/ai/");
       expect(anatomySnippets[doc.slug].trim().length).toBeGreaterThan(0);
       expect(componentPreviewSnippets[doc.slug].trim().length).toBeGreaterThan(0);
+      expect(componentComposition[doc.slug].notes.length).toBeGreaterThan(0);
     }
   });
 });

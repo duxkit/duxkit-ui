@@ -1,12 +1,11 @@
-import { Component, computed, input } from '@angular/core';
+import { Directive, computed, input } from '@angular/core';
 import { twMerge } from 'tailwind-merge';
 
-@Component({
+@Directive({
   selector: '[aiQueueItemActions],ai-queue-item-actions',
   host: {
     '[class]': 'classes()',
   },
-  template: '<ng-content />',
 })
 export class QueueItemActions {
   /** Additional classes merged onto the queue item actions container. */

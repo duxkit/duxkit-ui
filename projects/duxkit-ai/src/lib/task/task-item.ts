@@ -1,12 +1,11 @@
-import { Component, computed, input } from '@angular/core';
+import { Directive, computed, input } from '@angular/core';
 import { twMerge } from 'tailwind-merge';
 
-@Component({
+@Directive({
   selector: '[aiTaskItem],ai-task-item',
   host: {
     '[class]': 'classes()',
   },
-  template: '<ng-content />',
 })
 export class TaskItem {
   /** Additional classes merged onto the task item element. */

@@ -4,6 +4,7 @@ import {
   type ComponentDocSlug,
 } from '../../routes/docs/data/component-docs.registry';
 import { componentHref } from '../../routes/docs/data/docs-navigation';
+import { migrationGuides, migrationHref } from '../../routes/docs/data/migrations';
 
 export const siteName = 'Duxkit UI';
 export const siteOrigin = 'https://duxkit.com';
@@ -30,6 +31,8 @@ export const staticSeoRoutes = [
   '/docs',
   '/docs/installation',
   '/docs/cli',
+  '/docs/migrations',
+  ...migrationGuides.map(migrationHref),
   '/docs/changelog',
   '/components',
   ...componentDocs.map((doc) => docsComponentRoutePath(doc.slug)),
@@ -92,6 +95,45 @@ export function getSeoPage(path: string): SeoPage {
           'Use the @duxkit/ui CLI to initialize Angular, add primitives, inspect setup, and plan safe changes.',
           '/docs/cli',
         ),
+      ],
+    });
+  }
+
+  if (path === '/docs/migrations') {
+    return buildSeoPage({
+      canonicalPath: path,
+      title: 'Duxkit UI Migrations - Update Your App',
+      description:
+        'Find migration steps, before-and-after examples and checks for updating your Duxkit UI components.',
+      jsonLd: [
+        breadcrumbJsonLd([
+          { name: 'Docs', path: '/docs' },
+          { name: 'Migrations', path },
+        ]),
+      ],
+    });
+  }
+
+  const migration = migrationGuides.find((guide) => migrationHref(guide) === path);
+  if (migration) {
+    const title = `Migrate ${migration.fromRelease} to ${migration.toRelease}`;
+    return buildSeoPage({
+      canonicalPath: path,
+      title: `${title} - Duxkit UI`,
+      description: migration.description,
+      jsonLd: [
+        breadcrumbJsonLd([
+          { name: 'Docs', path: '/docs' },
+          { name: 'Migrations', path: '/docs/migrations' },
+          { name: title, path },
+        ]),
+        {
+          '@context': 'https://schema.org',
+          '@type': 'TechArticle',
+          headline: title,
+          description: migration.description,
+          url: absoluteUrl(path),
+        },
       ],
     });
   }

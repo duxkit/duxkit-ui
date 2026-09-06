@@ -24,7 +24,9 @@ export const modelSelectorOverlayClasses =
     '(document:keydown)': 'handleDocumentKeydown($event)',
   },
   template: `
-    <div brnDialogOverlay [class]="overlayClasses"></div>
+    @if (showOverlay()) {
+      <div brnDialogOverlay [class]="overlayClasses()"></div>
+    }
     <ng-content />
   `,
 })
@@ -41,7 +43,13 @@ export class ModelSelector {
   /** Emits when the selector opens or closes. */
   public readonly openChange = output<boolean>();
 
-  protected readonly overlayClasses = modelSelectorOverlayClasses;
+  /** Render the default dialog overlay. Disable to project a custom BrnDialogOverlay. */
+  public readonly showOverlay = input(true);
+  /** Additional default overlay classes. */
+  public readonly overlayClass = input<string>();
+  protected readonly overlayClasses = computed(() =>
+    twMerge(modelSelectorOverlayClasses, this.overlayClass()),
+  );
   protected readonly classes = computed(() => twMerge('not-prose', this.userClass()));
 
   public constructor() {

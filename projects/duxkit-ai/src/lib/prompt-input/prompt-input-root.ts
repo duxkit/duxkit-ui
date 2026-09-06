@@ -1,18 +1,19 @@
+import { DOCUMENT, isPlatformBrowser } from '@angular/common';
 import {
   booleanAttribute,
   computed,
   DestroyRef,
   Directive,
-  ElementRef,
   effect,
+  ElementRef,
   inject,
   input,
+  model,
   numberAttribute,
   output,
   PLATFORM_ID,
   signal,
 } from '@angular/core';
-import { DOCUMENT, isPlatformBrowser } from '@angular/common';
 import { twMerge } from 'tailwind-merge';
 import type {
   AiPromptSubmit,
@@ -27,6 +28,7 @@ export const promptInputClasses =
 let promptInputId = 0;
 
 @Directive({
+  exportAs: 'aiPromptInput',
   selector: 'form[aiPromptInput]',
   host: {
     '[class]': 'classes()',
@@ -63,8 +65,24 @@ export class PromptInput {
   /** Emits when files are rejected by accept, size, or count constraints. */
   public readonly fileError = output<PromptInputFileError>();
 
-  public readonly text = signal('');
-  public readonly files = signal<readonly PromptInputFilePart[]>([]);
+  /** Controlled prompt text. */
+  public readonly text = model('');
+  /** Controlled file parts. Use addFiles for validated local uploads. External URLs remain consumer-owned. */
+  public readonly files = model<readonly PromptInputFilePart[]>([]);
+  /** Disable every submission path. */
+  public readonly disabled = input(false, { transform: booleanAttribute });
+  /** Allow additional prompts during generation. */
+  public readonly allowSubmitWhileGenerating = input(false, { transform: booleanAttribute });
+  /** Clear the submitted draft automatically; disable to clear after async success. */
+  public readonly resetOnSubmit = input(true, { transform: booleanAttribute });
+  private readonly submitting = signal(false);
+  private readonly ownedUrls = new Set<string>();
+  private readonly submissionAllowed = computed(
+    () =>
+      !this.disabled() &&
+      (this.allowSubmitWhileGenerating() || !['submitted', 'streaming'].includes(this.status())),
+  );
+  public readonly canSubmit = computed(() => this.submissionAllowed() && !this.submitting());
   public readonly attachmentInputId = `ai-prompt-input-file-${++promptInputId}`;
 
   private readonly fileInput = this.isBrowser ? this.createFileInput() : undefined;
@@ -86,10 +104,19 @@ export class PromptInput {
       this.fileInput.multiple = this.multiple();
     });
 
-    this.destroyRef.onDestroy(() => {
-      for (const file of this.files()) {
-        revokeObjectUrl(file);
+    effect(() => {
+      const active = new Set(this.files().map((file) => file.url));
+      for (const url of this.ownedUrls) {
+        if (!active.has(url)) {
+          URL.revokeObjectURL(url);
+          this.ownedUrls.delete(url);
+        }
       }
+    });
+
+    this.destroyRef.onDestroy(() => {
+      for (const url of this.ownedUrls) URL.revokeObjectURL(url);
+      this.ownedUrls.clear();
       this.fileInput?.remove();
     });
   }
@@ -145,7 +172,7 @@ export class PromptInput {
         id: createPromptInputFileId(),
         mediaType: file.type,
         type: 'file' as const,
-        url: URL.createObjectURL(file),
+        url: this.createOwnedUrl(file),
       })),
     ]);
   }
@@ -153,7 +180,7 @@ export class PromptInput {
   public removeFile(id: string): void {
     const found = this.files().find((file) => file.id === id);
     if (found) {
-      revokeObjectUrl(found);
+      this.releaseUrl(found.url);
     }
     this.files.update((files) => files.filter((file) => file.id !== id));
   }
@@ -166,29 +193,38 @@ export class PromptInput {
   }
 
   public async submit(): Promise<void> {
-    const payload: AiPromptSubmit = {
-      text: this.text(),
-      files: await Promise.all(
-        this.files().map(async ({ file, id: _id, ...part }) => {
-          return {
-            ...part,
-            url: await fileToDataUrl(file),
-          };
-        }),
-      ),
-    };
+    if (!this.canSubmit()) return;
+    const text = this.text();
+    const files = this.files();
+    this.submitting.set(true);
+    try {
+      const payload: AiPromptSubmit = {
+        text,
+        files: await Promise.all(
+          files.map(async ({ file, id: _id, ...part }) => {
+            return {
+              ...part,
+              url: await fileToDataUrl(file),
+            };
+          }),
+        ),
+      };
 
-    this.promptSubmit.emit(payload);
-    this.clear();
+      if (!this.submissionAllowed() || this.destroyRef.destroyed) return;
+      this.promptSubmit.emit(payload);
+      if (this.resetOnSubmit() && this.text() === text && this.files() === files) this.clear();
+    } finally {
+      this.submitting.set(false);
+    }
   }
 
   public clear(): void {
     for (const file of this.files()) {
-      revokeObjectUrl(file);
+      this.releaseUrl(file.url);
     }
     this.files.set([]);
     this.text.set('');
-    this.elementRef.nativeElement.reset();
+
     if (this.fileInput) {
       this.fileInput.value = '';
     }
@@ -214,6 +250,16 @@ export class PromptInput {
 
     event.preventDefault();
     this.addFiles(event.dataTransfer.files);
+  }
+
+  private createOwnedUrl(file: File): string {
+    const url = URL.createObjectURL(file);
+    this.ownedUrls.add(url);
+    return url;
+  }
+
+  private releaseUrl(url: string): void {
+    if (this.ownedUrls.delete(url)) URL.revokeObjectURL(url);
   }
 
   private createFileInput(): HTMLInputElement {
@@ -306,10 +352,4 @@ async function fileToDataUrl(file: File): Promise<string> {
   }
 
   return `data:${file.type || 'application/octet-stream'};base64,${btoa(binary)}`;
-}
-
-function revokeObjectUrl(file: PromptInputFilePart): void {
-  if (file.url.startsWith('blob:')) {
-    URL.revokeObjectURL(file.url);
-  }
 }

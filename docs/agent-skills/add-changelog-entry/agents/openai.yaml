@@ -1,4 +1,4 @@
 interface:
   display_name: 'Add Changelog Entry'
-  short_description: 'Record completed features in the current release'
-  default_prompt: 'Use $add-changelog-entry to record this completed feature in the current changelog bundle.'
+  short_description: 'Select the release bundle and record completed work'
+  default_prompt: 'Use $add-changelog-entry to select the correct release bundle and record this completed work while preserving previous releases.'

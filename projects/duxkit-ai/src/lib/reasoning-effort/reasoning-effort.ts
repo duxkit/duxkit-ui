@@ -1,7 +1,7 @@
 import {
   booleanAttribute,
-  Component,
   computed,
+  Directive,
   ElementRef,
   inject,
   input,
@@ -16,7 +16,7 @@ import {
 
 export const reasoningEffortClasses = 'not-prose inline-flex min-w-0';
 
-@Component({
+@Directive({
   selector: 'ai-reasoning-effort,[aiReasoningEffort]',
   exportAs: 'aiReasoningEffort',
   providers: [provideBrnPopoverDefaultOptions({ role: null })],
@@ -31,7 +31,6 @@ export const reasoningEffortClasses = 'not-prose inline-flex min-w-0';
     'data-slot': 'reasoning-effort',
     '[class]': 'classes()',
   },
-  template: '<ng-content />',
 })
 export class ReasoningEffort {
   private readonly popover = inject(BrnPopover);

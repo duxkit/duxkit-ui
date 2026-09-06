@@ -53,12 +53,7 @@ import type { AiPromptSubmit } from './prompt-input.types';
             Custom
           </ai-prompt-input-button>
         </ai-prompt-input-tools>
-        <button
-          aiPromptInputSubmit
-          class="custom-submit"
-          [status]="status()"
-          (stop)="stopped.set(true)"
-        ></button>
+        <button aiPromptInputSubmit class="custom-submit" (stop)="stopped.set(true)"></button>
       </ai-prompt-input-toolbar>
     </form>
   `,
@@ -203,6 +198,7 @@ describe('PromptInput', () => {
       text: 'Summarize this',
       files: [],
     });
+    fixture.detectChanges();
     expect(textarea.value).toBe('');
 
     setTextareaValue(textarea, 'line one');
@@ -348,6 +344,7 @@ describe('PromptInput', () => {
     expect(submitted?.text).toBe('Use this image');
     expect(submitted?.files.map((part) => (part as FileUIPart).filename)).toEqual(['diagram.png']);
     expect((submitted?.files[0] as FileUIPart | undefined)?.url).toBe('data:image/png;base64,eA==');
+    fixture.detectChanges();
     expect(textarea.value).toBe('');
     expect(fixture.componentInstance.promptInput().files()).toEqual([]);
     expect(URL.revokeObjectURL).toHaveBeenCalledWith('blob:prompt-input-1');

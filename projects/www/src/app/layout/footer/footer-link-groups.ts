@@ -26,7 +26,7 @@ const footerComponentGroups = [
   },
   {
     title: 'Thinking',
-    slugs: ['reasoning', 'chain-of-thought', 'context', 'model-selector'],
+    slugs: ['reasoning', 'reasoning-effort', 'chain-of-thought', 'context', 'model-selector'],
   },
   {
     title: 'Output',

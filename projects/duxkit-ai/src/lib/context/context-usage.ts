@@ -1,4 +1,4 @@
-import { Component, computed, inject, input, type Signal } from '@angular/core';
+import { Component, Directive, computed, inject, input, type Signal } from '@angular/core';
 import { twMerge } from 'tailwind-merge';
 import { formatContextTokens } from './context';
 import {
@@ -11,7 +11,10 @@ import { injectContext } from './context-root';
 
 export const contextUsageClasses = 'grid grid-cols-[minmax(0,1fr)_auto] items-center gap-4 text-xs';
 
+@Directive()
 abstract class ContextUsageRow {
+  /** Render the default row even when token usage is zero. */
+  public readonly showZero = input(false);
   protected readonly context = injectContext();
   private readonly costCalculator = inject(AI_CONTEXT_COST_CALCULATOR, { optional: true });
 
@@ -38,8 +41,8 @@ abstract class ContextUsageRow {
     '[class]': 'classes()',
   },
   template: `
-    @if (hasTokens()) {
-      <ng-content>
+    <ng-content>
+      @if (showZero() || hasTokens()) {
         <span class="text-muted-foreground">{{ label }}</span>
         <span class="whitespace-nowrap text-right tabular-nums">
           {{ renderedTokens() }}
@@ -47,8 +50,8 @@ abstract class ContextUsageRow {
             <span class="ml-2 text-muted-foreground">- {{ renderedCost() }}</span>
           }
         </span>
-      </ng-content>
-    }
+      }
+    </ng-content>
   `,
 })
 export class ContextInputUsage extends ContextUsageRow {
@@ -67,8 +70,8 @@ export class ContextInputUsage extends ContextUsageRow {
     '[class]': 'classes()',
   },
   template: `
-    @if (hasTokens()) {
-      <ng-content>
+    <ng-content>
+      @if (showZero() || hasTokens()) {
         <span class="text-muted-foreground">{{ label }}</span>
         <span class="whitespace-nowrap text-right tabular-nums">
           {{ renderedTokens() }}
@@ -76,8 +79,8 @@ export class ContextInputUsage extends ContextUsageRow {
             <span class="ml-2 text-muted-foreground">- {{ renderedCost() }}</span>
           }
         </span>
-      </ng-content>
-    }
+      }
+    </ng-content>
   `,
 })
 export class ContextOutputUsage extends ContextUsageRow {
@@ -96,8 +99,8 @@ export class ContextOutputUsage extends ContextUsageRow {
     '[class]': 'classes()',
   },
   template: `
-    @if (hasTokens()) {
-      <ng-content>
+    <ng-content>
+      @if (showZero() || hasTokens()) {
         <span class="text-muted-foreground">{{ label }}</span>
         <span class="whitespace-nowrap text-right tabular-nums">
           {{ renderedTokens() }}
@@ -105,8 +108,8 @@ export class ContextOutputUsage extends ContextUsageRow {
             <span class="ml-2 text-muted-foreground">- {{ renderedCost() }}</span>
           }
         </span>
-      </ng-content>
-    }
+      }
+    </ng-content>
   `,
 })
 export class ContextReasoningUsage extends ContextUsageRow {
@@ -125,8 +128,8 @@ export class ContextReasoningUsage extends ContextUsageRow {
     '[class]': 'classes()',
   },
   template: `
-    @if (hasTokens()) {
-      <ng-content>
+    <ng-content>
+      @if (showZero() || hasTokens()) {
         <span class="text-muted-foreground">{{ label }}</span>
         <span class="whitespace-nowrap text-right tabular-nums">
           {{ renderedTokens() }}
@@ -134,8 +137,8 @@ export class ContextReasoningUsage extends ContextUsageRow {
             <span class="ml-2 text-muted-foreground">- {{ renderedCost() }}</span>
           }
         </span>
-      </ng-content>
-    }
+      }
+    </ng-content>
   `,
 })
 export class ContextCacheUsage extends ContextUsageRow {

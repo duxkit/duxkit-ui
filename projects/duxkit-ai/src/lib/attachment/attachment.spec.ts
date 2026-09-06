@@ -6,11 +6,12 @@ import { beforeEach, describe, expect, it } from 'vitest';
 
 import {
   Attachment,
+  AttachmentDefaultPreview,
   AttachmentMediaType,
   AttachmentName,
-  Attachments,
   AttachmentPreview,
   AttachmentRemove,
+  Attachments,
   AttachmentThumbnail,
   getAttachmentName,
 } from './';
@@ -62,7 +63,7 @@ const sourcePart: SourceDocumentUIPart = {
           (removed)="recordRemoved($event)"
         >
           <ai-attachment-preview class="custom-preview" />
-          <button aiAttachmentRemove class="custom-remove"></button>
+          <button aiAttachmentRemove placement="grid" class="custom-remove"></button>
         </ai-attachment>
       }
     </ai-attachments>
@@ -91,11 +92,19 @@ class Host {
 class OrphanPreviewHost {}
 
 @Component({
-  imports: [Attachment, Attachments, AttachmentPreview, AttachmentRemove, HlmButton],
+  imports: [
+    Attachment,
+    Attachments,
+    AttachmentPreview,
+    AttachmentDefaultPreview,
+    AttachmentRemove,
+    HlmButton,
+  ],
   template: `
     <ai-attachments variant="inline">
       <ai-attachment [data]="attachment">
         <ai-attachment-preview>
+          <ai-attachment-default-preview />
           <button aiAttachmentRemove hlmBtn variant="ghost" size="icon-xs"></button>
         </ai-attachment-preview>
       </ai-attachment>
@@ -287,19 +296,19 @@ describe('Attachment', () => {
     expect(fixture.componentInstance.removedId()).toBe('mountain-landscape.jpg');
   });
 
-  it('reveals the grid remove button when the attachment is hovered', () => {
+  it('keeps explicitly positioned grid removal visible before hover', () => {
     const element = fixture.nativeElement as HTMLElement;
     const attachment = element.querySelector('ai-attachment');
     const button = attachment?.querySelector<HTMLButtonElement>('button[aiAttachmentRemove]');
 
     expect(button?.getAttribute('data-slot-variant')).toBe('grid');
-    expect(button?.classList).toContain('opacity-0');
+    expect(button?.hasAttribute('hidden')).toBe(false);
     expect(button?.classList).not.toContain('opacity-100');
 
     attachment?.dispatchEvent(new MouseEvent('mouseenter'));
     fixture.detectChanges();
 
-    expect(button?.classList).toContain('opacity-100');
+    expect(button?.hasAttribute('hidden')).toBe(false);
     expect(button?.classList).not.toContain('opacity-0');
   });
 
@@ -325,22 +334,16 @@ describe('Attachment', () => {
     );
     expect(preview?.classList).toContain('relative');
     expect(inlineThumbnail?.classList).not.toContain('opacity-0');
-    expect(button?.hasAttribute('hidden')).toBe(true);
+    expect(button?.hasAttribute('hidden')).toBe(false);
 
     attachment?.dispatchEvent(new MouseEvent('mouseenter'));
     inlineFixture.detectChanges();
     await inlineFixture.whenStable();
 
-    expect(button?.getAttribute('data-slot-variant')).toBe('inline-preview');
+    expect(button?.getAttribute('data-slot-variant')).toBe('inline');
     expect(button?.hasAttribute('hidden')).toBe(false);
     expect(button?.classList).toContain('group/button');
-    expect(button?.classList).toContain('!size-5');
-    expect(button?.classList).toContain('absolute');
-    expect(button?.classList).toContain('left-0');
-    expect(button?.classList).toContain('inset-y-0');
-    expect(button?.classList).toContain('my-auto');
-    expect(button?.classList).not.toContain('-translate-y-1/2');
-    expect(inlineThumbnail?.classList).toContain('opacity-0');
+    expect(inlineThumbnail?.classList).not.toContain('opacity-0');
   });
 
   it('keeps the inline remove button reachable when focus moves within the attachment', async () => {
