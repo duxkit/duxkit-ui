@@ -183,6 +183,7 @@ import { migrationGuides, migrationHref, type MigrationStep } from './data/migra
       width: 100%;
       max-width: 820px;
       min-width: 0;
+      margin-inline: auto;
     }
     .migration-header,
     .migration-section {
